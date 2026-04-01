@@ -4,6 +4,7 @@ export const metadata = {
   metadataBase: new URL('http://localhost:3002'),
   title: 'PivotIQ — See Which Parts of Your Job Are Next',
   description: 'A premium task-level career scan that shows where AI pressure is building, what still compounds, and where to pivot next.',
+  authors: [{ name: 'Jened', url: 'https://pivotiq.app' }],
   openGraph: {
     title: 'PivotIQ — See Which Parts of Your Job Are Next',
     description: 'Start with a free scan. See risk by task, not by title, then decide if the full pivot roadmap earns your trust.',
@@ -20,7 +21,38 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body style={{ margin: 0 }}>
+        {children}
+        <footer
+          style={{
+            borderTop: '1px solid rgba(19, 27, 35, 0.08)',
+            background: '#F4EFE7',
+            padding: '18px 24px 28px',
+          }}
+        >
+          <div
+            style={{
+              maxWidth: '1220px',
+              margin: '0 auto',
+              display: 'flex',
+              justifyContent: 'space-between',
+              gap: '12px',
+              flexWrap: 'wrap',
+              color: '#5D6A74',
+              fontSize: '13px',
+              lineHeight: 1.7,
+            }}
+          >
+            <span>Jened · KvK 90948211</span>
+            <a
+              href="mailto:contact@pivotiq.app"
+              style={{ color: '#13202A', textDecoration: 'none', fontWeight: 600 }}
+            >
+              contact@pivotiq.app
+            </a>
+          </div>
+        </footer>
+      </body>
     </html>
   );
 }
