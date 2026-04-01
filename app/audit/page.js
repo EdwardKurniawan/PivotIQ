@@ -607,11 +607,6 @@ export default function AuditPage() {
                     ))}
                   </div>
                 )}
-                <p style={{ margin: '10px 0 0', color: palette.textSoft, fontSize: '12px', lineHeight: 1.6 }}>
-                  {titleCatalogStats
-                    ? `Searches ${titleCatalogStats.titleCount.toLocaleString()} official white-collar titles from O*NET.`
-                    : 'Start typing to search official white-collar job titles.'}
-                </p>
                 {titleProfile && (
                   <div style={{ marginTop: '10px', display: 'inline-flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center', padding: '10px 12px', borderRadius: '999px', background: 'rgba(27, 111, 99, 0.10)', border: '1px solid rgba(27, 111, 99, 0.16)' }}>
                     <span style={{ color: palette.teal, fontSize: '12px', fontWeight: 800, letterSpacing: '0.05em', textTransform: 'uppercase' }}>Matched title family</span>
