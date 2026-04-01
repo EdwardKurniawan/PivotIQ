@@ -2,6 +2,7 @@
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { BrandLogo, BrandMarkBadge } from '../../components/brand-logo';
 
 const palette = {
   bg: '#F4EFE7',
@@ -117,21 +118,13 @@ function SuccessContent() {
       />
 
       <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 3, maxWidth: '1180px', margin: '0 auto', width: '100%', padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: 'linear-gradient(135deg, #F28A43, #1B6F63)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#071015', fontWeight: 900 }}>
-            P
-          </div>
-          <div>
-            <div style={{ color: palette.text, fontSize: '17px', fontWeight: 800, letterSpacing: '-0.03em' }}>PivotIQ</div>
-            <div style={{ color: palette.textSoft, fontSize: '12px' }}>Unlock complete</div>
-          </div>
-        </Link>
+        <BrandLogo subtitle="Unlock complete" />
       </nav>
 
       {status === 'loading' || status === 'unlocking' ? (
         <div style={{ position: 'relative', zIndex: 2 }}>
-          <div style={{ width: '96px', height: '96px', background: 'linear-gradient(135deg, #F28A43, #1B6F63)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '42px', margin: '0 auto 28px', animation: 'pulse-ring 1.5s ease-in-out infinite', color: '#071015', fontWeight: 900 }}>
-            P
+          <div style={{ width: '96px', height: '96px', margin: '0 auto 28px', animation: 'pulse-ring 1.5s ease-in-out infinite', display: 'grid', placeItems: 'center' }}>
+            <BrandMarkBadge size={96} />
           </div>
           <h2 style={{ color: palette.text, fontSize: '24px', fontWeight: 900, marginBottom: '8px', letterSpacing: '-0.03em' }}>
             Unlocking your report…

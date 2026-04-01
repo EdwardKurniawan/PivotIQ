@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import { BrandLogo } from './brand-logo';
 
 function riskColor(score) {
   return score >= 70 ? '#C86A2C' : score >= 40 ? '#8B6B2E' : '#1B6F63';
@@ -454,13 +455,7 @@ function TeaserView({ payload, onCheckout, loading }) {
     <div style={{ minHeight: '100vh', background: palette.bg, paddingBottom: '90px', position: 'relative', overflow: 'hidden' }}>
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(circle at 18% 0%, rgba(242, 138, 67, 0.16), transparent 26%), radial-gradient(circle at 82% 12%, rgba(27, 111, 99, 0.14), transparent 28%)' }} />
       <nav style={{ position: 'relative', zIndex: 2, maxWidth: '1180px', margin: '0 auto', width: '100%', padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: 'linear-gradient(135deg, #F28A43, #1B6F63)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#071015', fontWeight: 900 }}>P</div>
-          <div>
-            <div style={{ color: palette.text, fontSize: '17px', fontWeight: 800, letterSpacing: '-0.03em' }}>PivotIQ</div>
-            <div style={{ color: palette.textSoft, fontSize: '12px' }}>Report preview</div>
-          </div>
-        </Link>
+        <BrandLogo subtitle="Report preview" />
         <Link href="/audit">
           <button style={{ border: 'none', borderRadius: '999px', background: palette.navy, color: '#FFF7F1', padding: '13px 18px', fontSize: '14px', fontWeight: 800, cursor: 'pointer', boxShadow: '0 18px 40px rgba(19, 32, 42, 0.14)' }}>New Audit</button>
         </Link>
@@ -769,13 +764,7 @@ export default function ReportExperience({ payload, embedded = false }) {
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(circle at 18% 0%, rgba(242, 138, 67, 0.16), transparent 26%), radial-gradient(circle at 82% 12%, rgba(27, 111, 99, 0.14), transparent 28%)' }} />
       {!embedded && (
         <nav style={{ position: 'relative', zIndex: 2, maxWidth: '1180px', margin: '0 auto', width: '100%', padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: 'linear-gradient(135deg, #F28A43, #1B6F63)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#071015', fontWeight: 900 }}>P</div>
-            <div>
-              <div style={{ color: palette.text, fontSize: '17px', fontWeight: 800, letterSpacing: '-0.03em' }}>PivotIQ</div>
-              <div style={{ color: palette.textSoft, fontSize: '12px' }}>Report experience</div>
-            </div>
-          </Link>
+          <BrandLogo subtitle="Report experience" />
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
             <Link href="/dashboard">
               <button className="btn-ghost" style={{ width: 'auto', padding: '10px 16px', background: 'rgba(255,255,255,0.58)', borderColor: palette.border, color: palette.text, borderRadius: '18px' }}>Dashboard</button>

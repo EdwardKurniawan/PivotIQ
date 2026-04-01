@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { BrandLogo } from '../../components/brand-logo';
 import {
   createCustomTask,
   getRecommendedTasks,
@@ -480,15 +481,7 @@ export default function AuditPage() {
         }}
       />
       <nav style={{ position: 'relative', zIndex: 2, maxWidth: '1180px', margin: '0 auto', width: '100%', padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: 'linear-gradient(135deg, #F28A43, #1B6F63)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#071015', fontWeight: 900 }}>
-            P
-          </div>
-          <div>
-            <div style={{ color: palette.text, fontSize: '17px', fontWeight: 800, letterSpacing: '-0.03em' }}>PivotIQ</div>
-            <div style={{ color: palette.textSoft, fontSize: '12px' }}>Free scan first</div>
-          </div>
-        </Link>
+        <BrandLogo subtitle="Free scan first" />
         <span className="hide-mobile" style={{ color: palette.textSoft, fontSize: '13px', padding: '10px 14px', borderRadius: '999px', border: `1px solid ${palette.border}`, background: 'rgba(255,255,255,0.58)' }}>
           Tell us your work. We map the pressure.
         </span>

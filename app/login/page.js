@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { createSupabaseBrowserClient } from '../../lib/supabase/browser';
+import { BrandLogo } from '../../components/brand-logo';
 
 const palette = {
   bg: '#F4EFE7',
@@ -80,15 +81,9 @@ export default function LoginPage() {
           }}
         >
           <div>
-            <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', marginBottom: '28px' }}>
-              <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: 'linear-gradient(135deg, #F28A43, #1B6F63)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#071015', fontWeight: 900 }}>
-                P
-              </div>
-              <div>
-                <div style={{ color: 'white', fontSize: '17px', fontWeight: 800, letterSpacing: '-0.03em' }}>PivotIQ</div>
-                <div style={{ color: palette.textSoft, fontSize: '12px' }}>Account access</div>
-              </div>
-            </Link>
+            <div style={{ marginBottom: '28px' }}>
+              <BrandLogo subtitle="Account access" textColor="white" subColor={palette.textSoft} />
+            </div>
 
             <div style={{ color: '#9FD6CE', fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '14px' }}>
               Save your momentum

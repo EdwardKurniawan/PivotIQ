@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { createSupabaseServerClient } from '../../lib/supabase/server';
 import { isSupabaseConfigured } from '../../lib/supabase/config';
 import { normalizeReportData } from '../../lib/report-data';
+import { BrandLogo } from '../../components/brand-logo';
 
 const palette = {
   bg: '#F4EFE7',
@@ -142,15 +143,7 @@ export default async function DashboardPage() {
 
       <div style={{ maxWidth: '1120px', margin: '0 auto', position: 'relative', zIndex: 2 }}>
         <nav style={{ marginBottom: '24px', padding: '22px 26px', borderRadius: '26px', background: palette.panel, border: `1px solid ${palette.border}`, boxShadow: '0 24px 70px rgba(19, 33, 45, 0.12)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: 'linear-gradient(135deg, #F28A43, #1B6F63)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#071015', fontWeight: 900 }}>
-              P
-            </div>
-            <div>
-              <div style={{ color: palette.text, fontSize: '17px', fontWeight: 800, letterSpacing: '-0.03em' }}>PivotIQ</div>
-              <div style={{ color: palette.textSoft, fontSize: '12px' }}>Dashboard</div>
-            </div>
-          </Link>
+          <BrandLogo subtitle="Dashboard" />
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             <Link href="/audit">
               <button style={{ border: 'none', borderRadius: '999px', background: palette.navy, color: '#FFF7F1', padding: '13px 18px', fontSize: '14px', fontWeight: 800, cursor: 'pointer', boxShadow: '0 18px 40px rgba(18, 31, 41, 0.12)' }}>New Audit</button>

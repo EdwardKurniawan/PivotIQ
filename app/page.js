@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import ScrollReveal from '../components/scroll-reveal';
+import { BrandLogo } from '../components/brand-logo';
 
 const metrics = [
   { label: 'Time to first read', value: '2 min', tone: '#F28A43' },
@@ -172,27 +173,7 @@ export default function Home() {
           flexWrap: 'wrap',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div
-            style={{
-              width: '40px',
-              height: '40px',
-              borderRadius: '14px',
-              background: 'linear-gradient(135deg, #F28A43, #1B6F63)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#0D141A',
-              fontWeight: 900,
-            }}
-          >
-            P
-          </div>
-          <div>
-            <div style={{ fontSize: '18px', fontWeight: 800, letterSpacing: '-0.03em' }}>PivotIQ</div>
-            <div style={{ fontSize: '12px', color: palette.textSoft }}>See the shift before it hits</div>
-          </div>
-        </div>
+        <BrandLogo subtitle="See the shift before it hits" />
 
         <Link
           href="/audit"
