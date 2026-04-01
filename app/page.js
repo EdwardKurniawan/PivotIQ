@@ -5,84 +5,24 @@ import LanguageSwitcher from '../components/language-switcher';
 import { getMessages } from '../lib/i18n';
 import { getServerLocale } from '../lib/i18n-server';
 
-const metrics = [
-  { label: 'Time to first read', value: '2 min', tone: '#F28A43' },
-  { label: 'Free layer', value: 'Useful', tone: '#15384B' },
-  { label: 'Upgrade', value: 'One-time', tone: '#1B6F63' },
-];
-
 const sampleTasks = [
   {
+    key: 'task1',
     label: 'Reporting and recurring updates',
     value: 82,
     color: '#F28A43',
-    note: 'High pressure',
   },
   {
+    key: 'task2',
     label: 'Forecasting and scenario framing',
     value: 61,
     color: '#E8D8C0',
-    note: 'Needs repositioning',
   },
   {
+    key: 'task3',
     label: 'Cross-functional planning',
     value: 24,
     color: '#50B8A6',
-    note: 'Human edge',
-  },
-];
-
-const valueCards = [
-  {
-    eyebrow: 'Spot the pressure',
-    title: 'See what inside your role is getting cheaper.',
-    body: 'The scan maps the actual work inside the job, so the answer feels specific instead of generic.',
-  },
-  {
-    eyebrow: 'Find the leverage',
-    title: 'See where your advantage still compounds.',
-    body: 'We highlight the work that gets stronger when trust, judgment, communication, and ownership matter more.',
-  },
-  {
-    eyebrow: 'Move with signal',
-    title: 'Get adjacent pivots that actually feel believable.',
-    body: 'The roadmap turns the diagnosis into role directions, skill gaps, and proof you can build week by week.',
-  },
-];
-
-const pivotLanes = [
-  {
-    label: 'For operators',
-    title: 'From repetitive execution to system ownership',
-    body: 'Move closer to workflow design, enablement, and cross-functional coordination other teams depend on.',
-  },
-  {
-    label: 'For analysts',
-    title: 'From reporting output to business interpretation',
-    body: 'Shift toward planning, scenario framing, and translating numbers into choices leaders can act on.',
-  },
-  {
-    label: 'For specialists',
-    title: 'From isolated tasks to trusted domain judgment',
-    body: 'Build around context, client nuance, and accountable recommendations that generic tools still cannot carry.',
-  },
-];
-
-const roadmapSteps = [
-  {
-    number: '01',
-    title: 'Map the fragile work',
-    body: 'Separate what is getting cheaper from the work that still holds durable value.',
-  },
-  {
-    number: '02',
-    title: 'Pick the believable pivot',
-    body: 'Choose the direction that keeps your context while increasing defensibility.',
-  },
-  {
-    number: '03',
-    title: 'Build proof that compounds',
-    body: 'Follow a roadmap designed to create visible momentum, not vague intentions.',
   },
 ];
 
@@ -143,6 +83,15 @@ function primaryLinkStyle() {
 export default function Home() {
   const locale = getServerLocale();
   const messages = getMessages(locale);
+  const metrics = [
+    { label: messages.home.metrics[0], value: '2 min', tone: '#F28A43' },
+    { label: messages.home.metrics[1], value: 'Useful', tone: '#15384B' },
+    { label: messages.home.metrics[2], value: 'One-time', tone: '#1B6F63' },
+  ];
+  const valueCards = messages.home.valueCards.map(([eyebrow, title, body]) => ({ eyebrow, title, body }));
+  const pivotLanes = messages.home.pivotLanes.map(([label, title, body]) => ({ label, title, body }));
+  const roadmapSteps = messages.home.roadmapSteps.map(([number, title, body]) => ({ number, title, body }));
+  const sampleTaskNotes = messages.home.sampleNotes;
 
   return (
     <div
@@ -334,7 +283,7 @@ export default function Home() {
             >
               <div className="home-sample-head" style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
                 <div>
-                  <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#91A0AA' }}>Sample diagnosis</div>
+                  <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#91A0AA' }}>{messages.home.sampleDiagnosis}</div>
                   <div style={{ fontSize: '26px', fontWeight: 800, marginTop: '6px', letterSpacing: '-0.03em' }}>Finance Manager</div>
                   <div style={{ fontSize: '14px', lineHeight: 1.6, color: '#C4D0D6', marginTop: '6px', maxWidth: '420px' }}>
                     Stable title. Fragile reporting layer. Clear path toward planning, systems, and strategic operations.
@@ -350,7 +299,7 @@ export default function Home() {
                     fontWeight: 800,
                   }}
                 >
-                  Pressure building
+                  {messages.home.pressureBuilding}
                 </div>
               </div>
 
@@ -391,7 +340,7 @@ export default function Home() {
                         <div style={{ width: `${task.value}%`, height: '100%', borderRadius: '999px', background: task.color, transition: 'width 0.9s ease' }} />
                       </div>
                       <div style={{ color: task.color, fontSize: '11px', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', marginTop: '6px' }}>
-                        {task.note}
+                        {sampleTaskNotes[sampleTasks.findIndex((item) => item.key === task.key)]}
                       </div>
                     </div>
                   ))}
@@ -407,7 +356,7 @@ export default function Home() {
                 }}
               >
                 <div style={{ fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#D9CCBA', marginBottom: '8px', fontWeight: 800 }}>
-                  Strongest next move
+                  {messages.home.strongestNextMove}
                 </div>
                 <div style={{ fontSize: '20px', fontWeight: 800, letterSpacing: '-0.03em', marginBottom: '8px' }}>
                   Reposition toward strategic finance, systems, or planning.
@@ -436,11 +385,11 @@ export default function Home() {
           >
             <div style={{ borderRadius: '22px', background: palette.cream, padding: '16px', color: '#15212B' }}>
               <div style={{ fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6D7A84', marginBottom: '8px', fontWeight: 800 }}>
-                Roadmap preview
+                {messages.home.roadmapPreview}
               </div>
               <div style={{ fontSize: '18px', fontWeight: 800, letterSpacing: '-0.03em', marginBottom: '10px' }}>Weeks 1-12</div>
               <div style={{ display: 'grid', gap: '8px' }}>
-                {['Reframe the narrative', 'Close the skill gap', 'Build proof that compounds'].map((item, index) => (
+                {messages.home.roadmapItems.map((item, index) => (
                   <div
                     key={item}
                     style={{

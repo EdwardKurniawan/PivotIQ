@@ -811,7 +811,7 @@ export default function ReportExperience({ payload, embedded = false }) {
               <div style={{ padding: '20px', borderRadius: '22px', background: `${recommendationAccent(decision.recommendation_type).bg}`, border: `1px solid ${recommendationAccent(decision.recommendation_type).border}` }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
                   <MonoIcon name="decision" tone="orange" />
-                  <div className="section-label" style={{ color: recommendationAccent(decision.recommendation_type).color, marginBottom: 0 }}>Decision clarity</div>
+                  <div className="section-label" style={{ color: recommendationAccent(decision.recommendation_type).color, marginBottom: 0 }}>{messages.report.decisionClarity}</div>
                 </div>
                 <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 12px', borderRadius: '999px', background: 'rgba(255,255,255,0.62)', border: `1px solid ${recommendationAccent(decision.recommendation_type).border}`, color: recommendationAccent(decision.recommendation_type).color, fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '12px' }}>
                   {decision.urgency || 'Recommended next move'}
@@ -832,14 +832,14 @@ export default function ReportExperience({ payload, embedded = false }) {
                 <div style={{ padding: '18px', borderRadius: '22px', background: 'rgba(255,255,255,0.74)', border: `1px solid ${palette.border}` }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
                     <MonoIcon name="roi" tone="teal" />
-                    <div className="section-label" style={{ marginBottom: 0 }}>Career ROI</div>
+                    <div className="section-label" style={{ marginBottom: 0 }}>{messages.report.careerRoi}</div>
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
                     {[
-                      ['Upside', careerRoi.salary_delta || pivot.salary_delta],
-                      ['Transition', careerRoi.transition_time || pivot.transition_time],
-                      ['Learning cost', careerRoi.learning_cost_estimate || 'TBD'],
-                      ['Payback', careerRoi.payback_period || 'TBD'],
+                      [messages.report.roiLabels[0], careerRoi.salary_delta || pivot.salary_delta],
+                      [messages.report.roiLabels[1], careerRoi.transition_time || pivot.transition_time],
+                      [messages.report.roiLabels[2], careerRoi.learning_cost_estimate || 'TBD'],
+                      [messages.report.roiLabels[3], careerRoi.payback_period || 'TBD'],
                     ].map(([label, value]) => (
                       <div key={label} style={{ padding: '12px 13px', borderRadius: '16px', background: 'rgba(244,239,231,0.9)', border: `1px solid ${palette.border}` }}>
                         <div style={{ color: palette.textSoft, fontSize: '11px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '5px' }}>{label}</div>
@@ -858,7 +858,7 @@ export default function ReportExperience({ payload, embedded = false }) {
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
                 <MonoIcon name="proof" tone="default" />
                 <div>
-                  <div className="section-label" style={{ marginBottom: '4px' }}>First 30 days</div>
+                  <div className="section-label" style={{ marginBottom: '4px' }}>{messages.report.first30Days}</div>
                   <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>
                     The goal is not more content. The goal is visible proof that makes the pivot believable.
                   </div>
@@ -1002,10 +1002,10 @@ export default function ReportExperience({ payload, embedded = false }) {
 
                 <div style={{ display: 'grid', gap: '10px' }}>
                   {[
-                    ['What is weakening first', summary.narrative],
-                    ['What still compounds', interpretation.durable_advantages?.[0] || summary.what_this_means],
-                    ['Why this path wins now', pivot.why_this_path_wins || pivot.outcome || pivot.fit_summary],
-                    ['What to do this week', reportData.next_move?.explanation || 'Set a start date, pick the first milestone, and turn the roadmap into visible motion.'],
+                    [messages.report.whatWeakensFirst, summary.narrative],
+                    [messages.report.whatStillCompounds, interpretation.durable_advantages?.[0] || summary.what_this_means],
+                    [messages.report.whyThisPathWinsNow, pivot.why_this_path_wins || pivot.outcome || pivot.fit_summary],
+                    [messages.report.whatToDoThisWeek, reportData.next_move?.explanation || 'Set a start date, pick the first milestone, and turn the roadmap into visible motion.'],
                   ].map(([label, value]) => (
                     <div key={label} style={{ padding: '14px 16px', borderRadius: '16px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
                       <div style={{ color: palette.textSoft, fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px' }}>
@@ -1023,7 +1023,7 @@ export default function ReportExperience({ payload, embedded = false }) {
         )}
 
         <div className="tab-bar">
-          {[['breakdown', 'tab-breakdown', 'Task Breakdown'], ['pivots', 'tab-pivots', 'Pivot Paths'], ...(tier === 'full' ? [['plan', 'tab-plan', 'Milestone Plan']] : [])].map(([key, icon, label]) => (
+          {[['breakdown', 'tab-breakdown', messages.report.tabs[0]], ['pivots', 'tab-pivots', messages.report.tabs[1]], ...(tier === 'full' ? [['plan', 'tab-plan', messages.report.tabs[2]]] : [])].map(([key, icon, label]) => (
             <button key={key} onClick={() => setActiveTab(key)} className={`tab-btn ${activeTab === key ? 'active' : ''}`}>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}><MonoIcon name={icon} size={22} />{label}</span>
             </button>
@@ -1036,9 +1036,9 @@ export default function ReportExperience({ payload, embedded = false }) {
           <>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px', marginBottom: '28px' }}>
               {[
-                { label: 'High risk tasks', value: reportData.task_breakdown.filter((item) => item.risk_score >= 70).length, sub: 'need immediate repositioning' },
-                { label: 'Moderate risk tasks', value: reportData.task_breakdown.filter((item) => item.risk_score >= 40 && item.risk_score < 70).length, sub: 'need leverage, not panic' },
-                { label: 'Human-advantage tasks', value: reportData.task_breakdown.filter((item) => item.risk_score < 40).length, sub: 'protect and elevate these' },
+                { label: messages.report.breakdownStats[0][0], value: reportData.task_breakdown.filter((item) => item.risk_score >= 70).length, sub: messages.report.breakdownStats[0][1] },
+                { label: messages.report.breakdownStats[1][0], value: reportData.task_breakdown.filter((item) => item.risk_score >= 40 && item.risk_score < 70).length, sub: messages.report.breakdownStats[1][1] },
+                { label: messages.report.breakdownStats[2][0], value: reportData.task_breakdown.filter((item) => item.risk_score < 40).length, sub: messages.report.breakdownStats[2][1] },
               ].map((item) => (
                 <div key={item.label} className="piq-card" style={{ padding: '18px' }}>
                   <div style={{ color: '#9CA3AF', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700, marginBottom: '8px' }}>{item.label}</div>
@@ -1102,11 +1102,11 @@ export default function ReportExperience({ payload, embedded = false }) {
 
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '10px', marginBottom: '18px' }}>
                     {[
-                      ['Salary', item.salary_range],
-                      ['Upside', item.salary_delta],
-                      ['Transition', item.transition_time],
-                      ['Difficulty', item.difficulty],
-                      ['Critical gaps', String(criticalCount)],
+                      [messages.report.pivotStats[0], item.salary_range],
+                      [messages.report.pivotStats[1], item.salary_delta],
+                      [messages.report.pivotStats[2], item.transition_time],
+                      [messages.report.pivotStats[3], item.difficulty],
+                      [messages.report.pivotStats[4], String(criticalCount)],
                     ].map(([label, value]) => (
                       <div key={label} style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '14px', padding: '12px 14px' }}>
                         <div style={{ color: palette.textSoft, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px', fontWeight: 700 }}>{label}</div>
@@ -1117,9 +1117,9 @@ export default function ReportExperience({ payload, embedded = false }) {
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }} className="two-col">
                     <div style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '14px', padding: '14px' }}>
-                      <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>Who this is for</div>
+                      <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>{messages.report.whoThisIsFor}</div>
                       <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7, marginBottom: '10px' }}>{item.who_this_is_for || item.fit_summary}</div>
-                      <div style={{ color: '#10B981', fontSize: '11px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '8px' }}>Strengths to leverage</div>
+                      <div style={{ color: '#10B981', fontSize: '11px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '8px' }}>{messages.report.strengthsToLeverage}</div>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                         {(item.strengths_to_leverage || []).map((strength) => (
                           <span key={strength} style={{ padding: '6px 10px', borderRadius: '999px', background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.25)', color: '#10B981', fontSize: '12px', fontWeight: 700 }}>
@@ -1129,11 +1129,11 @@ export default function ReportExperience({ payload, embedded = false }) {
                       </div>
                     </div>
                     <div style={{ background: `${itemColor}10`, border: `1px solid ${itemColor}24`, borderRadius: '14px', padding: '14px' }}>
-                      <div style={{ color: itemColor, fontSize: '11px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '8px' }}>Why this path wins</div>
+                      <div style={{ color: itemColor, fontSize: '11px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '8px' }}>{messages.report.whyThisPathWins}</div>
                       <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7, marginBottom: '10px' }}>{item.why_this_path_wins || item.outcome}</div>
                       {item.what_you_are_betting_on && (
                         <>
-                          <div style={{ color: itemColor, fontSize: '11px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '6px' }}>What you are betting on</div>
+                          <div style={{ color: itemColor, fontSize: '11px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '6px' }}>{messages.report.whatYouAreBettingOn}</div>
                           <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7 }}>{item.what_you_are_betting_on}</div>
                         </>
                       )}
@@ -1142,7 +1142,7 @@ export default function ReportExperience({ payload, embedded = false }) {
 
                   {Array.isArray(item.tradeoffs) && item.tradeoffs.length > 0 && (
                     <div style={{ marginTop: '14px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}`, borderRadius: '14px', padding: '14px' }}>
-                      <div style={{ color: '#8B4A1B', fontSize: '11px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '8px' }}>Tradeoffs</div>
+                      <div style={{ color: '#8B4A1B', fontSize: '11px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '8px' }}>{messages.report.tradeoffs}</div>
                       <div style={{ display: 'grid', gap: '7px' }}>
                         {item.tradeoffs.map((tradeoff) => (
                         <div key={tradeoff} style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{tradeoff}</div>
@@ -1177,18 +1177,18 @@ export default function ReportExperience({ payload, embedded = false }) {
 
             <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.2fr) minmax(300px, 0.8fr)', gap: '18px', marginBottom: '24px' }} className="two-col">
               <div className="piq-card" style={{ padding: '24px', background: `linear-gradient(160deg, ${pColor}12 0%, rgba(255, 255, 255, 0.94) 62%)`, border: `1px solid ${pColor}24`, boxShadow: '0 24px 50px rgba(19, 32, 42, 0.08)' }}>
-                <div style={{ color: pColor, fontSize: '11px', fontWeight: 800, letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '10px' }}>Current focus</div>
+                <div style={{ color: pColor, fontSize: '11px', fontWeight: 800, letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '10px' }}>{messages.report.currentFocus}</div>
                 <h2 style={{ color: palette.text, fontSize: '24px', fontWeight: 900, marginBottom: '8px' }}>{currentFocus?.week?.title || pivot.title}</h2>
                 <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.75, marginBottom: '14px' }}>{currentFocus?.week?.goal || pivot.fit_summary}</p>
                 {currentFocus?.week && (
                   <>
                     <div style={{ display: 'grid', gap: '10px', marginBottom: '14px' }}>
                       <div style={{ background: 'rgba(255,255,255,0.72)', border: `1px solid ${palette.border}`, borderRadius: '14px', padding: '14px' }}>
-                        <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>Why this week exists</div>
+                        <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>{messages.report.whyThisWeekExists}</div>
                         <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{currentFocus.week.why_this_week}</div>
                       </div>
                       <div style={{ background: 'rgba(255,255,255,0.72)', border: `1px solid ${palette.border}`, borderRadius: '14px', padding: '14px' }}>
-                        <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>Problem this week solves</div>
+                        <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>{messages.report.problemThisWeekSolves}</div>
                         <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{currentFocus.week.problem_being_solved}</div>
                       </div>
                     </div>
@@ -1205,14 +1205,14 @@ export default function ReportExperience({ payload, embedded = false }) {
               </div>
 
               <div className="piq-card" style={{ padding: '24px' }}>
-                <div style={{ color: '#10B981', fontSize: '11px', fontWeight: 800, letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '10px' }}>Progress cockpit</div>
+                <div style={{ color: '#10B981', fontSize: '11px', fontWeight: 800, letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '10px' }}>{messages.report.progressCockpit}</div>
                 <div style={{ color: palette.text, fontSize: '28px', fontWeight: 900, marginBottom: '4px' }}>{progressPercent}%</div>
                 <div style={{ color: palette.textSoft, fontSize: '13px', marginBottom: '14px' }}>{completedCount} of {pivot.roadmap?.weeks?.length || 0} milestones completed</div>
                 <div style={{ height: '10px', background: 'var(--bg)', borderRadius: '999px', overflow: 'hidden', marginBottom: '18px' }}>
                   <div style={{ width: `${progressPercent}%`, height: '100%', background: `linear-gradient(90deg, ${pColor}, ${pColor}AA)` }} />
                 </div>
 
-                <label className="section-label" style={{ marginBottom: '8px' }}>Roadmap start date</label>
+                <label className="section-label" style={{ marginBottom: '8px' }}>{messages.report.roadmapStartDate}</label>
                 <input
                   type="date"
                   className="piq-input"
@@ -1221,7 +1221,7 @@ export default function ReportExperience({ payload, embedded = false }) {
                   style={{ marginBottom: '14px' }}
                 />
                 <p style={{ color: palette.textSoft, fontSize: '12px', lineHeight: 1.6, margin: 0 }}>
-                  We use this date to determine which milestone is current, which ones are overdue, and when reminder logic should nudge or celebrate the user.
+                  {messages.report.roadmapStartDateBody}
                 </p>
               </div>
             </div>
@@ -1229,7 +1229,7 @@ export default function ReportExperience({ payload, embedded = false }) {
             <div style={{ marginBottom: '28px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap' }}>
                 <div>
-                  <div className="section-label" style={{ marginBottom: '4px' }}>Skill gap map</div>
+                  <div className="section-label" style={{ marginBottom: '4px' }}>{messages.report.skillGapMap}</div>
                   <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.7 }}>
                     {skillGapCounts.critical} critical gaps, {skillGapCounts.medium} medium gaps, {skillGapCounts.low} lower-priority gaps. Build order is designed to get the user employable fastest.
                   </div>
@@ -1243,9 +1243,9 @@ export default function ReportExperience({ payload, embedded = false }) {
             </div>
 
             <div style={{ marginBottom: '18px' }}>
-              <div className="section-label" style={{ marginBottom: '6px' }}>12-week milestone journey</div>
+              <div className="section-label" style={{ marginBottom: '6px' }}>{messages.report.milestoneJourney}</div>
               <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.7 }}>
-                Each milestone explains the problem it solves, the actions to take, how to know you are on track, and what to do if life interrupts the plan.
+                {messages.report.milestoneJourneyBody}
               </div>
             </div>
 
@@ -1274,7 +1274,7 @@ export default function ReportExperience({ payload, embedded = false }) {
                       <div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', gap: '14px', alignItems: 'center', flexWrap: 'wrap', marginBottom: '8px' }}>
                           <div>
-                            <div style={{ color: palette.textSoft, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700, marginBottom: '4px' }}>Week {week.week_number}</div>
+                            <div style={{ color: palette.textSoft, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700, marginBottom: '4px' }}>{messages.report.week} {week.week_number}</div>
                             <div style={{ color: palette.text, fontSize: '18px', fontWeight: 800 }}>{week.title}</div>
                           </div>
                           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -1291,10 +1291,10 @@ export default function ReportExperience({ payload, embedded = false }) {
 
                         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '14px' }}>
                           <button className="btn-ghost" style={{ width: 'auto', padding: '9px 14px' }} onClick={() => toggleExpandedWeek(week.week_number)}>
-                            {isExpanded ? 'Hide details' : 'View details'}
+                            {isExpanded ? messages.report.hideDetails : messages.report.viewDetails}
                           </button>
                           <button className="btn-primary" style={{ width: 'auto', padding: '9px 14px' }} onClick={() => toggleWeekComplete(week.week_number)}>
-                            {completedWeeks.includes(week.week_number) ? 'Mark incomplete' : 'Mark complete'}
+                            {completedWeeks.includes(week.week_number) ? messages.report.markIncomplete : messages.report.markComplete}
                           </button>
                         </div>
 
@@ -1302,17 +1302,17 @@ export default function ReportExperience({ payload, embedded = false }) {
                           <div style={{ display: 'grid', gap: '12px' }}>
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }} className="two-col">
                               <div style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '14px', padding: '14px' }}>
-                                <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>Why this week matters</div>
+                                <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>{messages.report.whyThisWeekMatters}</div>
                                 <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7 }}>{week.why_this_week}</div>
                               </div>
                               <div style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '14px', padding: '14px' }}>
-                                <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>Problem being solved</div>
+                                <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>{messages.report.problemBeingSolved}</div>
                                 <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7 }}>{week.problem_being_solved}</div>
                               </div>
                             </div>
 
                             <div style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '14px', padding: '14px' }}>
-                              <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '8px' }}>What to do</div>
+                              <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '8px' }}>{messages.report.whatToDo}</div>
                               <div style={{ display: 'grid', gap: '8px' }}>
                                 {(week.actions || []).map((action, actionIndex) => (
                                   <div key={actionIndex} style={{ display: 'grid', gridTemplateColumns: '22px minmax(0, 1fr)', gap: '10px', alignItems: 'start' }}>
@@ -1325,18 +1325,18 @@ export default function ReportExperience({ payload, embedded = false }) {
 
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }} className="two-col">
                               <div style={{ background: `${pColor}10`, border: `1px solid ${pColor}22`, borderRadius: '14px', padding: '14px' }}>
-                                <div style={{ color: pColor, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>Success signal</div>
+                                <div style={{ color: pColor, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>{messages.report.successSignal}</div>
                                 <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7 }}>{week.success_signal}</div>
                               </div>
                               <div style={{ background: 'rgba(16,185,129,0.10)', border: '1px solid rgba(16,185,129,0.22)', borderRadius: '14px', padding: '14px' }}>
-                                <div style={{ color: '#10B981', fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>Proof of completion</div>
+                                <div style={{ color: '#10B981', fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>{messages.report.proofOfCompletion}</div>
                                 <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7 }}>{week.proof_of_completion}</div>
                               </div>
                             </div>
 
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }} className="two-col">
                               <div style={{ background: 'rgba(239,68,68,0.10)', border: '1px solid rgba(239,68,68,0.22)', borderRadius: '14px', padding: '14px' }}>
-                                <div style={{ color: '#EF4444', fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>Common blockers</div>
+                                <div style={{ color: '#EF4444', fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>{messages.report.commonBlockers}</div>
                                 <ul style={{ margin: 0, paddingLeft: '18px', color: palette.textMuted, fontSize: '13px', lineHeight: 1.7 }}>
                                   {(week.common_blockers || []).map((blocker) => (
                                     <li key={blocker}>{blocker}</li>
@@ -1344,22 +1344,22 @@ export default function ReportExperience({ payload, embedded = false }) {
                                 </ul>
                               </div>
                               <div style={{ background: 'rgba(245,158,11,0.10)', border: '1px solid rgba(245,158,11,0.22)', borderRadius: '14px', padding: '14px' }}>
-                                <div style={{ color: '#F59E0B', fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>Catch-up plan</div>
+                                <div style={{ color: '#F59E0B', fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>{messages.report.catchUpPlan}</div>
                                 <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7 }}>{week.catch_up_plan}</div>
                               </div>
                             </div>
 
                             <div style={{ background: 'rgba(99,102,241,0.10)', border: '1px solid rgba(99,102,241,0.22)', borderRadius: '14px', padding: '14px' }}>
-                              <div style={{ color: '#5B65C6', fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>Encouragement</div>
+                              <div style={{ color: '#5B65C6', fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>{messages.report.encouragement}</div>
                               <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7 }}>{week.encouragement}</div>
                             </div>
 
                             <div style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '14px', padding: '14px' }}>
-                              <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>Progress notes</div>
+                              <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>{messages.report.progressNotes}</div>
                               <textarea
                                 className="piq-input"
                                 style={{ minHeight: '100px' }}
-                                placeholder="Add notes, links, wins, or blockers here..."
+                                placeholder={messages.report.progressNotesPlaceholder}
                                 value={note}
                                 onChange={(event) => setWeekNotes((prev) => ({ ...prev, [week.week_number]: event.target.value }))}
                                 onBlur={(event) => saveWeekNote(week.week_number, event.target.value)}
@@ -1376,7 +1376,7 @@ export default function ReportExperience({ payload, embedded = false }) {
 
             {reportData.next_move?.explanation && (
               <div style={{ marginTop: '28px', background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.22)', borderRadius: '18px', padding: '22px' }}>
-                <div className="section-label" style={{ marginBottom: '6px' }}>Your move this week</div>
+                <div className="section-label" style={{ marginBottom: '6px' }}>{messages.report.yourMoveThisWeek}</div>
                 <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.8, margin: 0 }}>{reportData.next_move.explanation}</p>
               </div>
             )}
@@ -1386,14 +1386,14 @@ export default function ReportExperience({ payload, embedded = false }) {
         {!embedded && (
           <div style={{ marginTop: '60px', textAlign: 'center', borderTop: '1px solid var(--border)', paddingTop: '40px' }}>
             <p style={{ color: 'var(--text-muted)', fontSize: '14px', lineHeight: 1.7, marginBottom: '18px' }}>
-              Come back later to continue progress, update milestones, and revisit older audits from your dashboard.
+              {messages.report.dashboardReturn}
             </p>
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
               <Link href="/dashboard">
-                <button className="btn-primary" style={{ width: 'auto', padding: '14px 24px' }}>Open Dashboard →</button>
+                <button className="btn-primary" style={{ width: 'auto', padding: '14px 24px' }}>{messages.report.openDashboard}</button>
               </Link>
               <Link href="/audit">
-                <button className="btn-ghost" style={{ width: 'auto', padding: '14px 24px' }}>Run Another Audit</button>
+                <button className="btn-ghost" style={{ width: 'auto', padding: '14px 24px' }}>{messages.report.runAnotherAudit}</button>
               </Link>
             </div>
           </div>

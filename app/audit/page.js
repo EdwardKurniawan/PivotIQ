@@ -620,7 +620,7 @@ export default function AuditPage() {
                 )}
                 {titleProfile && (
                   <div style={{ marginTop: '10px', display: 'inline-flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center', padding: '10px 12px', borderRadius: '999px', background: 'rgba(27, 111, 99, 0.10)', border: '1px solid rgba(27, 111, 99, 0.16)' }}>
-                    <span style={{ color: palette.teal, fontSize: '12px', fontWeight: 800, letterSpacing: '0.05em', textTransform: 'uppercase' }}>Matched title family</span>
+                    <span style={{ color: palette.teal, fontSize: '12px', fontWeight: 800, letterSpacing: '0.05em', textTransform: 'uppercase' }}>{messages.audit.mappedTitleFamily}</span>
                     <span style={{ color: palette.text, fontSize: '13px', fontWeight: 700 }}>
                       {titleRecommendationContext.titleFamily}
                     </span>
@@ -650,7 +650,7 @@ export default function AuditPage() {
               )}
 
               <button onClick={goStep2} disabled={!step1Ready} style={step1Ready ? ctaStyle : { ...ctaStyle, opacity: 0.45, cursor: 'default', boxShadow: 'none' }}>
-                Continue to workload →
+                {messages.audit.continueToWorkload}
               </button>
             </div>
           )}
@@ -658,15 +658,15 @@ export default function AuditPage() {
           {step === 2 && (
             <div style={stepShell} className="audit-step-shell">
               <div style={{ maxWidth: '680px', marginBottom: '28px' }}>
-                <div style={{ color: '#6A7882', fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '12px' }}>Map the workload</div>
+                <div style={{ color: '#6A7882', fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '12px' }}>{messages.audit.workloadLabel}</div>
                 <h1 style={{ color: palette.text, fontSize: 'clamp(32px, 5vw, 54px)', fontWeight: 900, marginBottom: '10px', letterSpacing: '-0.05em', lineHeight: 0.98, fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif' }}>
-                  What actually fills your week?
+                  {messages.audit.tasksLabel}
                 </h1>
                 <p style={{ color: palette.textMuted, fontSize: '16px', lineHeight: 1.72, marginBottom: '6px' }}>
-                  Pick the work that takes real time. Then tell us which tasks dominate your week so the report can connect the problem to the right pivot.
+                  {messages.audit.tasksBody}
                 </p>
                 <p style={{ color: palette.textSoft, fontSize: '13px' }}>
-                  Recommended target: 5–8 tasks. Minimum: 3.
+                  {messages.audit.tasksTarget}
                 </p>
               </div>
 
@@ -681,9 +681,9 @@ export default function AuditPage() {
               >
                 <div style={{ ...panelStyle({ accent: 'rgba(27, 111, 99, 0.16)', background: 'rgba(255,255,255,0.68)', padding: '20px' }), boxShadow: 'none' }}>
                   <div style={{ marginBottom: '18px' }}>
-                    <p style={{ color: palette.text, fontSize: '16px', fontWeight: 800, margin: '0 0 6px', letterSpacing: '-0.02em' }}>Recommended for your role</p>
+                    <p style={{ color: palette.text, fontSize: '16px', fontWeight: 800, margin: '0 0 6px', letterSpacing: '-0.02em' }}>{messages.audit.recommendedTitle}</p>
                     <p style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7, margin: 0 }}>
-                      Suggested from your matched title family, title wording, and industry. Start here, then search or add what is missing.
+                      {messages.audit.recommendedBody}
                     </p>
                   </div>
 
@@ -695,15 +695,15 @@ export default function AuditPage() {
                 </div>
 
                 <div style={{ ...panelStyle({ accent: 'rgba(19, 27, 35, 0.08)', background: 'rgba(255,255,255,0.68)', padding: '20px' }), boxShadow: 'none' }}>
-                  <p style={{ color: palette.text, fontSize: '16px', fontWeight: 800, margin: '0 0 6px', letterSpacing: '-0.02em' }}>Search more tasks</p>
+                  <p style={{ color: palette.text, fontSize: '16px', fontWeight: 800, margin: '0 0 6px', letterSpacing: '-0.02em' }}>{messages.audit.searchTitle}</p>
                   <p style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7, margin: '0 0 14px' }}>
-                    Search for work like forecasting, stakeholder reporting, vendor coordination, QA, or policy documentation.
+                    {messages.audit.searchBody}
                   </p>
                   <input
                     className="piq-input"
                     value={taskSearch}
                     onChange={(event) => setTaskSearch(event.target.value)}
-                    placeholder="Search tasks"
+                    placeholder={messages.audit.searchPlaceholder}
                     style={{ marginBottom: taskSearch ? '12px' : 0 }}
                   />
                   {taskSearch && (
@@ -714,7 +714,7 @@ export default function AuditPage() {
                         ))
                       ) : (
                         <div style={{ color: palette.textSoft, fontSize: '13px', lineHeight: 1.7 }}>
-                          No exact match yet. Add it as a custom task below if it is a real part of your week.
+                          {messages.audit.noSearchMatch}
                         </div>
                       )}
                     </div>
@@ -725,15 +725,15 @@ export default function AuditPage() {
               <div style={{ ...panelStyle({ accent: 'rgba(242, 138, 67, 0.16)', background: 'rgba(255,255,255,0.72)', padding: '20px' }), boxShadow: 'none', marginBottom: '24px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', alignItems: 'flex-start', flexWrap: 'wrap', marginBottom: '14px' }}>
                   <div>
-                    <p style={{ color: palette.text, fontSize: '16px', fontWeight: 800, margin: '0 0 6px', letterSpacing: '-0.02em' }}>Selected workload</p>
+                    <p style={{ color: palette.text, fontSize: '16px', fontWeight: 800, margin: '0 0 6px', letterSpacing: '-0.02em' }}>{messages.audit.selectedTitle}</p>
                     <p style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7, margin: 0 }}>
                       {selectedTasks.length > 0
                         ? `${selectedTasks.length} task${selectedTasks.length > 1 ? 's' : ''} selected · ${getTaskSelectionSummary(selectedTasks)}`
-                        : 'Pick at least 3 tasks that truly consume time every week.'}
+                        : messages.audit.selectedBodyEmpty}
                     </p>
                   </div>
                   <span style={{ color: selectedTasks.length >= 3 && selectedTasks.length <= 8 ? palette.teal : '#8B4A1B', fontSize: '12px', fontWeight: 800, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
-                    Target 5–8
+                    {messages.audit.selectedTarget}
                   </span>
                 </div>
 
