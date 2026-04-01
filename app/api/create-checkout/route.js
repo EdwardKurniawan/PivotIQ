@@ -5,6 +5,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: '2024-04-10',
 });
 
+const STRIPE_PRODUCT_ID = process.env.STRIPE_PRODUCT_ID || 'prod_UG2FLksJs2g5TH';
+
 const TIERS = {
   peek: {
     name: 'PivotIQ Quick Peek',
@@ -89,11 +91,7 @@ export async function POST(req) {
       line_items: [{
         price_data: {
           currency: 'usd',
-          product_data: {
-            name: t.name,
-            description: t.description,
-            images: [], // add your logo URL here
-          },
+          product: STRIPE_PRODUCT_ID,
           unit_amount: t.price,
         },
         quantity: 1,
