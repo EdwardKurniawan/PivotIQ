@@ -106,8 +106,8 @@ function SquarePiqOne() {
   return (
     <svg width="132" height="132" viewBox="0 0 132 132" fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect x="14" y="14" width="104" height="104" rx="30" fill={cream} stroke="rgba(19,27,35,0.08)" />
-      <path d="M34 92V40" stroke={ink} strokeWidth="12" strokeLinecap="round" />
-      <path d="M34 40H58C69.046 40 78 48.954 78 60C78 71.046 69.046 80 58 80H46" stroke={ink} strokeWidth="12" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M32 92V40" stroke={ink} strokeWidth="12" strokeLinecap="round" />
+      <path d="M46 40H58C69.046 40 78 48.954 78 60C78 71.046 69.046 80 58 80H46" stroke={ink} strokeWidth="12" strokeLinecap="round" strokeLinejoin="round" />
       <path d="M66 40V92" stroke={orange} strokeWidth="8" strokeLinecap="round" />
       <circle cx="88" cy="60" r="18" stroke={teal} strokeWidth="10" />
       <path d="M99 71L108 82" stroke={teal} strokeWidth="8" strokeLinecap="round" />
@@ -119,8 +119,8 @@ function SquarePiqTwo() {
   return (
     <svg width="132" height="132" viewBox="0 0 132 132" fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect x="14" y="14" width="104" height="104" rx="30" fill={ink} />
-      <path d="M34 92V40" stroke={cream} strokeWidth="10" strokeLinecap="round" />
-      <path d="M34 40H58C69.046 40 78 48.954 78 60C78 71.046 69.046 80 58 80H46" stroke={cream} strokeWidth="10" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M32 92V40" stroke={cream} strokeWidth="10" strokeLinecap="round" />
+      <path d="M46 40H58C69.046 40 78 48.954 78 60C78 71.046 69.046 80 58 80H46" stroke={cream} strokeWidth="10" strokeLinecap="round" strokeLinejoin="round" />
       <path d="M67 42V90" stroke={orange} strokeWidth="7" strokeLinecap="round" />
       <circle cx="90" cy="60" r="16" stroke={teal} strokeWidth="9" />
       <path d="M100 70L108 80" stroke={teal} strokeWidth="7" strokeLinecap="round" />
@@ -132,8 +132,8 @@ function SquarePiqThree() {
   return (
     <svg width="132" height="132" viewBox="0 0 132 132" fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect x="14" y="14" width="104" height="104" rx="24" fill={cream} stroke={ink} strokeOpacity="0.08" />
-      <path d="M34 90V40" stroke={ink} strokeWidth="12" strokeLinecap="round" />
-      <path d="M34 40H56C68.15 40 78 49.85 78 62C78 74.15 68.15 84 56 84H46" stroke={ink} strokeWidth="12" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M32 90V40" stroke={ink} strokeWidth="12" strokeLinecap="round" />
+      <path d="M46 40H56C68.15 40 78 49.85 78 62C78 74.15 68.15 84 56 84H46" stroke={ink} strokeWidth="12" strokeLinecap="round" strokeLinejoin="round" />
       <rect x="66" y="38" width="8" height="54" rx="4" fill={orange} />
       <circle cx="91" cy="61" r="17" stroke={teal} strokeWidth="10" />
       <path d="M101 71L109 80" stroke={teal} strokeWidth="8" strokeLinecap="round" />
@@ -145,8 +145,8 @@ function SquarePiqFour() {
   return (
     <svg width="132" height="132" viewBox="0 0 132 132" fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect x="14" y="14" width="104" height="104" rx="32" fill={ink} />
-      <path d="M34 90V40" stroke={cream} strokeWidth="11" strokeLinecap="round" />
-      <path d="M34 40H56C68.15 40 78 49.85 78 62C78 74.15 68.15 84 56 84H46" stroke={cream} strokeWidth="11" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M32 90V40" stroke={cream} strokeWidth="11" strokeLinecap="round" />
+      <path d="M46 40H56C68.15 40 78 49.85 78 62C78 74.15 68.15 84 56 84H46" stroke={cream} strokeWidth="11" strokeLinecap="round" strokeLinejoin="round" />
       <path d="M69 40V90" stroke={orange} strokeWidth="9" strokeLinecap="round" />
       <path d="M90 43C100.493 43 109 51.507 109 62C109 72.493 100.493 81 90 81C79.507 81 71 72.493 71 62C71 51.507 79.507 43 90 43Z" stroke={teal} strokeWidth="9" />
       <path d="M100 73L107 81" stroke={teal} strokeWidth="7" strokeLinecap="round" />
@@ -158,8 +158,8 @@ function SquarePiqFive() {
   return (
     <svg width="132" height="132" viewBox="0 0 132 132" fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect x="14" y="14" width="104" height="104" rx="26" fill={cream} stroke="rgba(19,27,35,0.08)" />
-      <path d="M34 92V40" stroke={ink} strokeWidth="13" strokeLinecap="round" />
-      <path d="M34 40H58C71.255 40 82 50.745 82 64C82 77.255 71.255 88 58 88H46" stroke={ink} strokeWidth="13" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M32 92V40" stroke={ink} strokeWidth="13" strokeLinecap="round" />
+      <path d="M46 40H58C71.255 40 82 50.745 82 64C82 77.255 71.255 88 58 88H46" stroke={ink} strokeWidth="13" strokeLinecap="round" strokeLinejoin="round" />
       <path d="M70 40V92" stroke={orange} strokeWidth="6" strokeLinecap="round" />
       <circle cx="92" cy="62" r="16" stroke={teal} strokeWidth="11" />
       <path d="M102 72L110 82" stroke={teal} strokeWidth="6" strokeLinecap="round" />
