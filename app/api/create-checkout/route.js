@@ -18,6 +18,13 @@ const TIERS = {
   },
 };
 
+function getTesterBypassEmails() {
+  return String(process.env.ADMIN_BYPASS_EMAILS || '')
+    .split(',')
+    .map((value) => value.trim().toLowerCase())
+    .filter(Boolean);
+}
+
 export async function POST(req) {
   try {
     const { tier, reportId, jobTitle, industry, email } = await req.json();
@@ -30,6 +37,7 @@ export async function POST(req) {
     const requestOrigin = req.headers.get('origin') || req.headers.get('referer') || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
     const appUrl = new URL(requestOrigin).origin;
     let userId = '';
+    let userEmail = '';
 
     if (reportId) {
       const supabase = createSupabaseServerClient();
@@ -57,12 +65,22 @@ export async function POST(req) {
       }
 
       userId = user.id;
+      userEmail = String(user.email || '').toLowerCase();
     }
 
     if (!process.env.STRIPE_SECRET_KEY) {
       return Response.json({
         url: `${appUrl}/success?tier=${tier}&demo=1${reportId ? `&report_id=${reportId}` : ''}`,
         demoMode: true,
+      });
+    }
+
+    const testerBypassEmails = getTesterBypassEmails();
+    if (reportId && userEmail && testerBypassEmails.includes(userEmail)) {
+      return Response.json({
+        url: `${appUrl}/success?tier=${tier}&demo=1${reportId ? `&report_id=${reportId}` : ''}`,
+        demoMode: true,
+        testerBypass: true,
       });
     }
 

@@ -9,6 +9,13 @@ const stripe = process.env.STRIPE_SECRET_KEY
 
 const UNLOCKABLE_TIERS = new Set(['peek', 'full']);
 
+function getTesterBypassEmails() {
+  return String(process.env.ADMIN_BYPASS_EMAILS || '')
+    .split(',')
+    .map((value) => value.trim().toLowerCase())
+    .filter(Boolean);
+}
+
 async function authorizeReport(supabase, reportId) {
   const {
     data: { user },
@@ -50,7 +57,14 @@ export async function POST(request) {
       return Response.json({ success: false, error: 'Unauthorized.' }, { status: 401 });
     }
 
-    if (!demoMode) {
+    if (demoMode) {
+      const testerBypassEmails = getTesterBypassEmails();
+      const isAllowedBypassUser = testerBypassEmails.includes(String(user.email || '').toLowerCase());
+
+      if (stripe && !isAllowedBypassUser) {
+        return Response.json({ success: false, error: 'Demo unlock is not allowed for this account.' }, { status: 403 });
+      }
+    } else {
       if (!stripe) {
         return Response.json({ success: false, error: 'Stripe is not configured.' }, { status: 400 });
       }
