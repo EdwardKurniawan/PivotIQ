@@ -40,6 +40,7 @@ export async function POST(req) {
     const appUrl = new URL(requestOrigin).origin;
     let userId = '';
     let userEmail = '';
+    const requestedEmail = String(email || '').trim().toLowerCase();
 
     if (reportId) {
       const supabase = createSupabaseServerClient();
@@ -67,7 +68,7 @@ export async function POST(req) {
       }
 
       userId = user.id;
-      userEmail = String(user.email || '').toLowerCase();
+      userEmail = String(user.email || '').trim().toLowerCase();
     }
 
     if (!process.env.STRIPE_SECRET_KEY) {
@@ -78,7 +79,8 @@ export async function POST(req) {
     }
 
     const testerBypassEmails = getTesterBypassEmails();
-    if (reportId && userEmail && testerBypassEmails.includes(userEmail)) {
+    const bypassEmail = userEmail || requestedEmail;
+    if (bypassEmail && testerBypassEmails.includes(bypassEmail)) {
       return Response.json({
         url: `${appUrl}/success?tier=${tier}&demo=1${reportId ? `&report_id=${reportId}` : ''}`,
         demoMode: true,
