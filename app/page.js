@@ -1,6 +1,9 @@
 import Link from 'next/link';
 import ScrollReveal from '../components/scroll-reveal';
 import { BrandLogo } from '../components/brand-logo';
+import LanguageSwitcher from '../components/language-switcher';
+import { getMessages } from '../lib/i18n';
+import { getServerLocale } from '../lib/i18n-server';
 
 const metrics = [
   { label: 'Time to first read', value: '2 min', tone: '#F28A43' },
@@ -138,6 +141,9 @@ function primaryLinkStyle() {
 }
 
 export default function Home() {
+  const locale = getServerLocale();
+  const messages = getMessages(locale);
+
   return (
     <div
       style={{
@@ -173,9 +179,10 @@ export default function Home() {
           flexWrap: 'wrap',
         }}
       >
-        <BrandLogo subtitle="See the shift before it hits" />
+        <BrandLogo subtitle={messages.home.subtitle} />
 
         <div className="home-nav-actions" style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+          <LanguageSwitcher locale={locale} />
           <Link
             className="home-nav-signin"
             href="/login"
@@ -189,7 +196,7 @@ export default function Home() {
               fontWeight: 800,
             }}
           >
-            Sign in
+            {messages.common.signIn}
           </Link>
 
           <Link
@@ -205,7 +212,7 @@ export default function Home() {
               boxShadow: '0 18px 40px rgba(18, 31, 41, 0.16)',
             }}
           >
-            Start free scan
+            {messages.common.startFreeScan}
           </Link>
         </div>
       </nav>
@@ -226,7 +233,7 @@ export default function Home() {
         }}
       >
         <div className="home-hero-copy">
-          <div className="home-badge home-reveal-1" style={{ ...badgeStyle(), marginBottom: '18px' }}>Career intelligence for the AI shift</div>
+          <div className="home-badge home-reveal-1" style={{ ...badgeStyle(), marginBottom: '18px' }}>{messages.home.badge}</div>
 
           <h1
             className="home-reveal-2"
@@ -241,7 +248,7 @@ export default function Home() {
               textWrap: 'balance',
             }}
           >
-            Career clarity, before your role gets quietly redefined.
+            {messages.home.heroTitle}
           </h1>
 
           <p
@@ -255,12 +262,12 @@ export default function Home() {
               textWrap: 'pretty',
             }}
           >
-            PivotIQ breaks your role into the work that is becoming automated, the work that still compounds, and the moves that make sense before urgency decides for you.
+            {messages.home.heroBody}
           </p>
 
           <div className="home-reveal-4 home-hero-actions" style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', marginBottom: '26px' }}>
             <Link href="/audit" style={primaryLinkStyle()}>
-              Run my free scan
+              {messages.common.runFreeScan}
             </Link>
             <div
               className="home-hero-note"
@@ -274,7 +281,7 @@ export default function Home() {
                 fontWeight: 700,
               }}
             >
-              Free diagnosis first. Roadmap later if it earns it.
+              {messages.home.heroNote}
             </div>
           </div>
 

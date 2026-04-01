@@ -3,6 +3,7 @@ import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { BrandLogo, BrandMarkBadge } from '../../components/brand-logo';
+import { getBrowserLocale, getMessages } from '../../lib/i18n';
 
 const palette = {
   bg: '#F4EFE7',
@@ -20,13 +21,16 @@ const palette = {
 function SuccessContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const [locale, setLocale] = useState('en');
   const [status, setStatus] = useState('loading');
   const [tier, setTier] = useState('full');
   const [emailStatus, setEmailStatus] = useState('idle');
   const [persistStatus, setPersistStatus] = useState('idle');
   const [destination, setDestination] = useState('/report');
+  const messages = getMessages(locale);
 
   useEffect(() => {
+    setLocale(getBrowserLocale());
     const urlTier = searchParams.get('tier') || 'full';
     const sessionId = searchParams.get('session_id');
     const reportIdFromUrl = searchParams.get('report_id');
@@ -118,7 +122,7 @@ function SuccessContent() {
       />
 
       <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 3, maxWidth: '1180px', margin: '0 auto', width: '100%', padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <BrandLogo subtitle="Unlock complete" />
+        <BrandLogo subtitle={messages.success.subtitle} />
       </nav>
 
       {status === 'loading' || status === 'unlocking' ? (
@@ -140,11 +144,11 @@ function SuccessContent() {
           </div>
 
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(27,111,99,0.10)', border: '1px solid rgba(27,111,99,0.18)', color: '#1B6F63', borderRadius: '999px', padding: '7px 16px', fontSize: '12px', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '18px' }}>
-            Payment confirmed
+            {messages.success.confirmed}
           </div>
 
           <h1 style={{ color: palette.text, fontSize: 'clamp(30px, 5vw, 46px)', fontWeight: 900, marginBottom: '12px', letterSpacing: '-0.05em', lineHeight: 0.98, fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif' }}>
-            Your {tierLabel.toLowerCase()} is unlocked.
+            Your {tierLabel.toLowerCase()} {messages.success.unlocked}
           </h1>
           <p style={{ color: palette.textMuted, fontSize: '16px', maxWidth: '470px', lineHeight: 1.72, margin: '0 auto 16px' }}>
             {tier === 'full'
@@ -207,12 +211,12 @@ function SuccessContent() {
           )}
 
           <p style={{ color: palette.textSoft, fontSize: '13px', marginBottom: '28px' }}>
-            Redirecting you to the report in a moment…
+            {messages.success.redirecting}
           </p>
 
           <Link href={destination}>
             <button style={{ border: 'none', borderRadius: '20px', background: palette.navy, color: '#FFF7F1', padding: '16px 28px', fontSize: '16px', fontWeight: 900, cursor: 'pointer', boxShadow: '0 18px 40px rgba(19, 32, 42, 0.18)' }}>
-              View my report now →
+              {messages.success.viewNow}
             </button>
           </Link>
 

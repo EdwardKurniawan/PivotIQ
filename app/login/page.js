@@ -4,6 +4,8 @@ import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { createSupabaseBrowserClient } from '../../lib/supabase/browser';
 import { BrandLogo } from '../../components/brand-logo';
+import LanguageSwitcher from '../../components/language-switcher';
+import { getBrowserLocale, getMessages } from '../../lib/i18n';
 
 const palette = {
   bg: '#F4EFE7',
@@ -20,11 +22,13 @@ const palette = {
 };
 
 export default function LoginPage() {
+  const [locale, setLocale] = useState(getBrowserLocale());
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState('idle');
   const [message, setMessage] = useState('');
   const authConfigured = Boolean(supabase);
+  const messages = getMessages(locale);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -51,7 +55,7 @@ export default function LoginPage() {
     }
 
     setStatus('success');
-    setMessage('Magic link sent. Open your email and use the sign-in link to reach your dashboard.');
+    setMessage(messages.login.sentMessage);
   };
 
   return (
@@ -83,17 +87,17 @@ export default function LoginPage() {
         >
           <div>
             <div style={{ marginBottom: '28px' }}>
-              <BrandLogo subtitle="Account access" textColor="white" subColor={palette.textSoft} />
+              <BrandLogo subtitle={messages.login.subtitle} textColor="white" subColor={palette.textSoft} />
             </div>
 
             <div style={{ color: '#9FD6CE', fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '14px' }}>
-              Save your momentum
+              {messages.login.eyebrow}
             </div>
             <h1 className="auth-title" style={{ color: 'white', fontSize: 'clamp(34px, 6vw, 56px)', fontWeight: 900, letterSpacing: '-0.05em', lineHeight: 0.96, margin: '0 0 14px', fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif' }}>
-              Come back to your reports, not just your browser tab.
+              {messages.login.title}
             </h1>
             <p className="auth-copy" style={{ color: palette.textMuted, fontSize: '16px', lineHeight: 1.76, margin: 0 }}>
-              A magic link lets users save audit history, revisit structured reports, and keep milestone progress synced across sessions.
+              {messages.login.body}
             </p>
           </div>
 
@@ -139,14 +143,17 @@ export default function LoginPage() {
             boxShadow: '0 24px 70px rgba(19, 33, 45, 0.12)',
           }}
         >
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '18px' }}>
+            <LanguageSwitcher locale={locale} onChange={setLocale} />
+          </div>
           <div style={{ color: '#A7602E', fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '12px' }}>
-            Magic-link sign in
+            {messages.login.sendLabel}
           </div>
           <h2 style={{ color: palette.text, fontSize: '28px', fontWeight: 900, letterSpacing: '-0.04em', margin: '0 0 10px' }}>
-            Send the link
+            {messages.login.sendTitle}
           </h2>
           <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.72, marginBottom: '24px' }}>
-            No password, no setup friction. We email a secure sign-in link and drop you into the dashboard.
+            {messages.login.sendBody}
           </p>
 
           {!authConfigured && (
@@ -156,13 +163,13 @@ export default function LoginPage() {
           )}
 
           <form onSubmit={handleSubmit}>
-            <label className="section-label" style={{ color: '#7A5A43' }}>Email address</label>
+            <label className="section-label" style={{ color: '#7A5A43' }}>{messages.login.emailLabel}</label>
             <input
               className="piq-input"
               type="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              placeholder="you@example.com"
+              placeholder={messages.login.emailPlaceholder}
               style={{ marginBottom: '18px' }}
             />
             <button
@@ -171,7 +178,7 @@ export default function LoginPage() {
                 ? { width: '100%', border: 'none', borderRadius: '20px', background: palette.navy, color: '#FFF7F1', padding: '17px 22px', fontSize: '16px', fontWeight: 900, opacity: 0.45, cursor: 'default', boxShadow: 'none' }
                 : { width: '100%', border: 'none', borderRadius: '20px', background: palette.navy, color: '#FFF7F1', padding: '17px 22px', fontSize: '16px', fontWeight: 900, cursor: 'pointer', boxShadow: '0 18px 40px rgba(19, 32, 42, 0.18)' }}
             >
-              {status === 'loading' ? 'Sending magic link…' : 'Send Magic Link →'}
+              {status === 'loading' ? messages.login.sendingButton : messages.login.sendButton}
             </button>
           </form>
 
@@ -193,8 +200,8 @@ export default function LoginPage() {
           )}
 
           <div className="auth-links" style={{ marginTop: '24px', display: 'flex', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
-            <Link href="/report" style={{ color: palette.textMuted, fontSize: '13px', fontWeight: 700 }}>Continue without account</Link>
-            <Link href="/dashboard" style={{ color: palette.navy, fontSize: '13px', fontWeight: 800 }}>Go to dashboard →</Link>
+            <Link href="/report" style={{ color: palette.textMuted, fontSize: '13px', fontWeight: 700 }}>{messages.login.continueWithout}</Link>
+            <Link href="/dashboard" style={{ color: palette.navy, fontSize: '13px', fontWeight: 800 }}>{messages.login.goDashboard}</Link>
           </div>
         </div>
       </div>

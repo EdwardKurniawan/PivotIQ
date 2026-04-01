@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { BrandLogo } from '../../components/brand-logo';
+import LanguageSwitcher from '../../components/language-switcher';
+import { getBrowserLocale, getMessages } from '../../lib/i18n';
 import {
   createCustomTask,
   getRecommendedTasks,
@@ -17,13 +19,6 @@ const INDUSTRIES = [
   'Tech', 'Finance', 'Marketing', 'Healthcare',
   'Legal', 'Education', 'Sales', 'HR',
   'Consulting', 'Media', 'Real Estate', 'Other',
-];
-
-const SCAN_STEPS = [
-  'Scanning role patterns and workload signals...',
-  'Analyzing task-level AI exposure...',
-  'Mapping strengths, gaps, and pivot options...',
-  'Building your personalized 90-day plan...',
 ];
 
 const ROLE_BLEND_OPTIONS = [
@@ -97,6 +92,7 @@ function TaskCard({ task, onClick, selected = false, subtle = false }) {
 
 export default function AuditPage() {
   const router = useRouter();
+  const [locale, setLocale] = useState(getBrowserLocale());
   const [step, setStep] = useState(1);
   const [jobTitle, setJobTitle] = useState('');
   const [titleProfile, setTitleProfile] = useState(null);
@@ -115,6 +111,8 @@ export default function AuditPage() {
   const [scanStep, setScanStep] = useState(0);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const messages = getMessages(locale);
+  const SCAN_STEPS = messages.audit.scanSteps;
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -313,6 +311,7 @@ export default function AuditPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          locale,
           jobTitle,
           industry,
           tasks: selectedTaskLabels,
@@ -335,6 +334,7 @@ export default function AuditPage() {
         tasks: selectedTaskLabels,
         email,
         generatedAt: new Date().toISOString(),
+        locale,
       });
 
       sessionStorage.setItem('pivotiq_report', reportPayload);
@@ -346,7 +346,7 @@ export default function AuditPage() {
       clearInterval(interval);
       setLoading(false);
       setStep(2);
-      setError('Something went wrong. Please try again.');
+      setError(messages.audit.loadingError);
     }
   };
 
@@ -481,11 +481,12 @@ export default function AuditPage() {
         }}
       />
       <nav className="audit-nav" style={{ position: 'relative', zIndex: 2, maxWidth: '1180px', margin: '0 auto', width: '100%', padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-        <BrandLogo subtitle="Free scan first" />
+        <BrandLogo subtitle={messages.audit.subtitle} />
         <div className="audit-nav-actions" style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
           <span className="hide-mobile" style={{ color: palette.textSoft, fontSize: '13px', padding: '10px 14px', borderRadius: '999px', border: `1px solid ${palette.border}`, background: 'rgba(255,255,255,0.58)' }}>
-            Tell us your work. We map the pressure.
+            {messages.audit.helper}
           </span>
+          <LanguageSwitcher locale={locale} onChange={setLocale} />
           <Link
             href="/login"
             style={{
@@ -506,9 +507,9 @@ export default function AuditPage() {
       <div className="audit-shell" style={{ flex: 1, display: 'flex', justifyContent: 'center', padding: '34px 24px 88px', position: 'relative', zIndex: 2 }}>
         <div style={{ width: '100%', maxWidth: '880px' }} className="anim-fade-in audit-content">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-            <span style={{ color: palette.textSoft, fontSize: '13px', letterSpacing: '0.04em', textTransform: 'uppercase' }}>Step {step} of 2</span>
+            <span style={{ color: palette.textSoft, fontSize: '13px', letterSpacing: '0.04em', textTransform: 'uppercase' }}>{messages.audit.step} {step} {messages.audit.of} 2</span>
             <span style={{ color: palette.textSoft, fontSize: '13px' }}>
-              {step === 1 ? 'Your role' : 'Workload signal'}
+              {step === 1 ? messages.audit.stepRole : messages.audit.stepTasks}
             </span>
           </div>
           <div style={{ height: '6px', background: 'rgba(255,255,255,0.06)', borderRadius: '99px', marginBottom: '34px', overflow: 'hidden' }}>
@@ -526,12 +527,12 @@ export default function AuditPage() {
           {step === 1 && (
               <div style={stepShell} className="audit-step-shell">
               <div style={{ maxWidth: '600px', marginBottom: '30px' }}>
-                <div style={{ color: '#6A7882', fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '12px' }}>Start the scan</div>
+                <div style={{ color: '#6A7882', fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '12px' }}>{messages.audit.startLabel}</div>
                 <h1 style={{ color: palette.text, fontSize: 'clamp(34px, 6vw, 58px)', fontWeight: 900, marginBottom: '10px', letterSpacing: '-0.05em', lineHeight: 0.96, fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif' }}>
-                  Tell us where you sit before the shift hits.
+                  {messages.audit.startTitle}
                 </h1>
                 <p style={{ color: palette.textMuted, fontSize: '16px', lineHeight: 1.72 }}>
-                  Your title is only the start. The better signal is your real workload, your industry, and where your weekly time actually goes.
+                  {messages.audit.startBody}
                 </p>
               </div>
 

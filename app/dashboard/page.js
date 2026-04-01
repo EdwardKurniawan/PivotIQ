@@ -3,6 +3,9 @@ import { createSupabaseServerClient } from '../../lib/supabase/server';
 import { isSupabaseConfigured } from '../../lib/supabase/config';
 import { normalizeReportData } from '../../lib/report-data';
 import { BrandLogo } from '../../components/brand-logo';
+import LanguageSwitcher from '../../components/language-switcher';
+import { getMessages } from '../../lib/i18n';
+import { getServerLocale } from '../../lib/i18n-server';
 
 const palette = {
   bg: '#F4EFE7',
@@ -125,6 +128,8 @@ function riskTone(level) {
 }
 
 export default async function DashboardPage() {
+  const locale = getServerLocale();
+  const messages = getMessages(locale);
   const data = await loadDashboardData();
   const configured = isSupabaseConfigured();
   const latestSnapshot = data.mode === 'ready' && data.reports[0] ? buildCoachingSnapshot(data.reports[0]) : null;
@@ -143,25 +148,26 @@ export default async function DashboardPage() {
 
       <div className="dashboard-shell" style={{ maxWidth: '1120px', margin: '0 auto', position: 'relative', zIndex: 2 }}>
         <nav className="dashboard-nav" style={{ marginBottom: '24px', padding: '22px 26px', borderRadius: '26px', background: palette.panel, border: `1px solid ${palette.border}`, boxShadow: '0 24px 70px rgba(19, 33, 45, 0.12)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-          <BrandLogo subtitle="Dashboard" />
+          <BrandLogo subtitle={messages.dashboard.subtitle} />
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            <LanguageSwitcher locale={locale} />
             <Link href="/audit">
-              <button style={{ border: 'none', borderRadius: '999px', background: palette.navy, color: '#FFF7F1', padding: '13px 18px', fontSize: '14px', fontWeight: 800, cursor: 'pointer', boxShadow: '0 18px 40px rgba(18, 31, 41, 0.12)' }}>New Audit</button>
+              <button style={{ border: 'none', borderRadius: '999px', background: palette.navy, color: '#FFF7F1', padding: '13px 18px', fontSize: '14px', fontWeight: 800, cursor: 'pointer', boxShadow: '0 18px 40px rgba(18, 31, 41, 0.12)' }}>{messages.common.newAudit}</button>
             </Link>
             <Link href="/report">
-              <button style={{ borderRadius: '18px', background: 'rgba(255,255,255,0.58)', border: `1px solid ${palette.border}`, color: palette.text, padding: '12px 16px', fontSize: '14px', fontWeight: 700 }}>Latest Local Report</button>
+              <button style={{ borderRadius: '18px', background: 'rgba(255,255,255,0.58)', border: `1px solid ${palette.border}`, color: palette.text, padding: '12px 16px', fontSize: '14px', fontWeight: 700 }}>{messages.common.latestLocalReport}</button>
             </Link>
           </div>
         </nav>
 
         <div style={{ display: 'grid', gap: '16px', marginBottom: '24px' }}>
           <div style={{ borderRadius: '30px', padding: '30px', background: palette.panel, border: `1px solid ${palette.border}`, boxShadow: '0 24px 70px rgba(19, 33, 45, 0.12)' }}>
-            <div style={{ color: '#6A7882', fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '12px' }}>Saved progress</div>
+            <div style={{ color: '#6A7882', fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '12px' }}>{messages.dashboard.heroEyebrow}</div>
             <h1 style={{ color: palette.text, fontSize: 'clamp(34px, 6vw, 58px)', fontWeight: 900, margin: '0 0 12px', letterSpacing: '-0.05em', lineHeight: 0.96, fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif' }}>
-              Your reports, your progress, your next move.
+              {messages.dashboard.heroTitle}
             </h1>
             <p style={{ color: palette.textMuted, fontSize: '15px', lineHeight: 1.76, margin: 0, maxWidth: '760px' }}>
-              Come back to the diagnosis, pick up the roadmap where you left off, and keep momentum instead of restarting from scratch.
+              {messages.dashboard.heroBody}
             </p>
           </div>
 

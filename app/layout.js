@@ -1,4 +1,6 @@
 import './globals.css';
+import { getMessages } from '../lib/i18n';
+import { getServerLocale } from '../lib/i18n-server';
 
 export const metadata = {
   metadataBase: new URL('http://localhost:3002'),
@@ -19,8 +21,11 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+  const locale = getServerLocale();
+  const messages = getMessages(locale);
+
   return (
-    <html lang="en">
+    <html lang={locale}>
       <body style={{ margin: 0 }}>
         {children}
         <footer
@@ -43,12 +48,12 @@ export default function RootLayout({ children }) {
               lineHeight: 1.7,
             }}
           >
-            <span>Jened · KvK 90948211</span>
+            <span>{messages.common.footerCompany}</span>
             <a
               href="mailto:contact@pivotiq.app"
               style={{ color: '#13202A', textDecoration: 'none', fontWeight: 600 }}
             >
-              contact@pivotiq.app
+              {messages.common.footerContact}
             </a>
           </div>
         </footer>

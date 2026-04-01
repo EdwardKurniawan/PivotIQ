@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { BrandLogo } from './brand-logo';
+import { getBrowserLocale, getMessages } from '../lib/i18n';
 
 function riskColor(score) {
   return score >= 70 ? '#C86A2C' : score >= 40 ? '#8B6B2E' : '#1B6F63';
@@ -450,14 +451,15 @@ function TeaserView({ payload, onCheckout, loading }) {
   const color = riskColor(summary.overall_score);
   const bestPivot = pivots[0];
   const interpretation = reportData.interpretation || {};
+  const messages = getMessages(payload.locale || reportData.locale || getBrowserLocale());
 
   return (
     <div style={{ minHeight: '100vh', background: palette.bg, paddingBottom: '90px', position: 'relative', overflow: 'hidden' }}>
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(circle at 18% 0%, rgba(242, 138, 67, 0.16), transparent 26%), radial-gradient(circle at 82% 12%, rgba(27, 111, 99, 0.14), transparent 28%)' }} />
       <nav style={{ position: 'relative', zIndex: 2, maxWidth: '1180px', margin: '0 auto', width: '100%', padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-        <BrandLogo subtitle="Report preview" />
+        <BrandLogo subtitle={messages.report.previewSubtitle} />
         <Link href="/audit">
-          <button style={{ border: 'none', borderRadius: '999px', background: palette.navy, color: '#FFF7F1', padding: '13px 18px', fontSize: '14px', fontWeight: 800, cursor: 'pointer', boxShadow: '0 18px 40px rgba(19, 32, 42, 0.14)' }}>New Audit</button>
+          <button style={{ border: 'none', borderRadius: '999px', background: palette.navy, color: '#FFF7F1', padding: '13px 18px', fontSize: '14px', fontWeight: 800, cursor: 'pointer', boxShadow: '0 18px 40px rgba(19, 32, 42, 0.14)' }}>{messages.common.newAudit}</button>
         </Link>
       </nav>
 
@@ -469,7 +471,7 @@ function TeaserView({ payload, onCheckout, loading }) {
               ● {summary.risk_level} risk
             </div>
             <h1 style={{ color: palette.navy, fontSize: 'clamp(28px,5vw,42px)', fontWeight: 900, marginBottom: '10px', letterSpacing: '-0.05em', lineHeight: 0.98, fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif' }}>
-              Your pivot map is ready.
+              {messages.report.pivotReady}
             </h1>
             <p style={{ color: palette.textMuted, fontSize: '15px', lineHeight: 1.72, marginBottom: '12px' }}>{summary.narrative}</p>
             <p style={{ color, fontSize: '13px', fontWeight: 800 }}>{summary.displacement_timeline}</p>
@@ -480,13 +482,13 @@ function TeaserView({ payload, onCheckout, loading }) {
       <div style={{ position: 'relative', zIndex: 2, maxWidth: '900px', margin: '0 auto', padding: '28px 24px 0' }}>
         {(interpretation.role_read || interpretation.stop_assuming || interpretation.durable_advantages?.length) && (
           <div className="hook-stats" style={{ marginBottom: '18px' }}>
-            <span className="section-label">WHAT THIS REALLY SAYS</span>
+            <span className="section-label">{messages.report.whatThisReallySays}</span>
             <div style={{ display: 'grid', gap: '12px', marginTop: '18px' }}>
               {interpretation.role_read && (
                 <div className="hook-item" style={{ alignItems: 'flex-start' }}>
                   <MonoIcon name="role-read" tone="orange" />
                   <div>
-                    <div style={{ color: palette.text, fontSize: '14px', fontWeight: 700, marginBottom: '4px' }}>What this says about your role</div>
+                    <div style={{ color: palette.text, fontSize: '14px', fontWeight: 700, marginBottom: '4px' }}>{messages.report.roleRead}</div>
                     <div style={{ color: 'var(--text-muted)', fontSize: '13px', lineHeight: 1.65 }}>{interpretation.role_read}</div>
                   </div>
                 </div>
@@ -496,7 +498,7 @@ function TeaserView({ payload, onCheckout, loading }) {
                 <div className="hook-item" style={{ alignItems: 'flex-start' }}>
                   <MonoIcon name="durable" tone="teal" />
                   <div>
-                    <div style={{ color: palette.text, fontSize: '14px', fontWeight: 700, marginBottom: '8px' }}>Your durable advantages</div>
+                    <div style={{ color: palette.text, fontSize: '14px', fontWeight: 700, marginBottom: '8px' }}>{messages.report.durableAdvantages}</div>
                     <div style={{ display: 'grid', gap: '8px' }}>
                       {interpretation.durable_advantages.slice(0, 3).map((item) => (
                         <div key={item} style={{ color: 'var(--text-muted)', fontSize: '13px', lineHeight: 1.6 }}>
@@ -512,7 +514,7 @@ function TeaserView({ payload, onCheckout, loading }) {
                 <div className="hook-item" style={{ alignItems: 'flex-start', borderColor: 'rgba(255, 143, 77, 0.18)' }}>
                   <MonoIcon name="assumption" tone="orange" />
                   <div>
-                    <div style={{ color: palette.text, fontSize: '14px', fontWeight: 700, marginBottom: '4px' }}>What to stop assuming</div>
+                    <div style={{ color: palette.text, fontSize: '14px', fontWeight: 700, marginBottom: '4px' }}>{messages.report.stopAssuming}</div>
                     <div style={{ color: 'var(--text-muted)', fontSize: '13px', lineHeight: 1.65 }}>{interpretation.stop_assuming}</div>
                   </div>
                 </div>
@@ -523,7 +525,7 @@ function TeaserView({ payload, onCheckout, loading }) {
 
         {bestPivot && (
           <div className="hook-stats" style={{ marginBottom: '18px' }}>
-            <span className="section-label">STRONGEST NEXT MOVE</span>
+            <span className="section-label">{messages.report.strongestNextMove}</span>
             <div style={{ display: 'grid', gap: '12px', marginTop: '18px' }}>
               <div className="hook-item" style={{ alignItems: 'flex-start' }}>
                 <MonoIcon name="best-pivot" tone="orange" />
@@ -539,7 +541,7 @@ function TeaserView({ payload, onCheckout, loading }) {
                 <div className="hook-item" style={{ alignItems: 'flex-start' }}>
                   <MonoIcon name="bet" tone="teal" />
                   <div>
-                    <div style={{ color: palette.text, fontSize: '14px', fontWeight: 700, marginBottom: '4px' }}>What you are betting on</div>
+                    <div style={{ color: palette.text, fontSize: '14px', fontWeight: 700, marginBottom: '4px' }}>{messages.report.whatYouAreBettingOn}</div>
                     <div style={{ color: 'var(--text-muted)', fontSize: '13px', lineHeight: 1.65 }}>{bestPivot.what_you_are_betting_on}</div>
                   </div>
                 </div>
@@ -548,7 +550,7 @@ function TeaserView({ payload, onCheckout, loading }) {
                 <div className="hook-item" style={{ alignItems: 'flex-start', borderColor: 'rgba(65, 194, 174, 0.18)' }}>
                   <MonoIcon name="next-first" tone="default" />
                   <div>
-                    <div style={{ color: palette.text, fontSize: '14px', fontWeight: 700, marginBottom: '4px' }}>What to do first</div>
+                    <div style={{ color: palette.text, fontSize: '14px', fontWeight: 700, marginBottom: '4px' }}>{messages.report.whatToDoFirst}</div>
                     <div style={{ color: 'var(--text-muted)', fontSize: '13px', lineHeight: 1.65 }}>{reportData.next_move.explanation}</div>
                   </div>
                 </div>
@@ -639,6 +641,7 @@ export default function ReportExperience({ payload, embedded = false }) {
   const careerRoi = reportData.career_roi || {};
   const first30Days = reportData.first_30_days || {};
   const storageScope = useMemo(() => getStorageScope(reportData, payload.reportId), [reportData, payload.reportId]);
+  const messages = getMessages(payload.locale || reportData.locale || getBrowserLocale());
 
   useEffect(() => {
     const storedTier = payload.tier || localStorage.getItem('pivotiq_tier') || 'free';
@@ -764,16 +767,16 @@ export default function ReportExperience({ payload, embedded = false }) {
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(circle at 18% 0%, rgba(242, 138, 67, 0.16), transparent 26%), radial-gradient(circle at 82% 12%, rgba(27, 111, 99, 0.14), transparent 28%)' }} />
       {!embedded && (
         <nav style={{ position: 'relative', zIndex: 2, maxWidth: '1180px', margin: '0 auto', width: '100%', padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-          <BrandLogo subtitle="Report experience" />
+          <BrandLogo subtitle={messages.report.fullSubtitle} />
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
             <Link href="/dashboard">
-              <button className="btn-ghost" style={{ width: 'auto', padding: '10px 16px', background: 'rgba(255,255,255,0.58)', borderColor: palette.border, color: palette.text, borderRadius: '18px' }}>Dashboard</button>
+              <button className="btn-ghost" style={{ width: 'auto', padding: '10px 16px', background: 'rgba(255,255,255,0.58)', borderColor: palette.border, color: palette.text, borderRadius: '18px' }}>{messages.common.dashboard}</button>
             </Link>
             <button onClick={handleShare} className="btn-ghost" style={{ width: 'auto', padding: '10px 16px', background: 'rgba(255,255,255,0.58)', borderColor: palette.border, color: palette.text, borderRadius: '18px' }}>
-              {copied ? 'Link copied' : 'Share link'}
+              {copied ? messages.common.linkCopied : messages.common.shareLink}
             </button>
             <Link href="/audit">
-              <button style={{ border: 'none', borderRadius: '999px', background: palette.navy, color: '#FFF7F1', padding: '13px 18px', fontSize: '14px', fontWeight: 800, cursor: 'pointer', boxShadow: '0 18px 40px rgba(19, 32, 42, 0.14)' }}>New Audit</button>
+              <button style={{ border: 'none', borderRadius: '999px', background: palette.navy, color: '#FFF7F1', padding: '13px 18px', fontSize: '14px', fontWeight: 800, cursor: 'pointer', boxShadow: '0 18px 40px rgba(19, 32, 42, 0.14)' }}>{messages.common.newAudit}</button>
             </Link>
           </div>
         </nav>

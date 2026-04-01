@@ -47,6 +47,7 @@ async function loadPersistedReport(id) {
   return {
     reportId: report.id,
     reportSlug: report.slug,
+    locale: report.report_data?.locale || report.report_data?.profile?.locale || 'en',
     reportData,
     generatedAt: report.created_at,
     jobTitle: report.job_title,

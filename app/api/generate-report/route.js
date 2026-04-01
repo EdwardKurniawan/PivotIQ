@@ -205,6 +205,7 @@ function normalizeIntakePayload(payload) {
       : [];
 
   return {
+    locale: payload?.locale || intakeProfile?.locale || 'en',
     jobTitle: payload?.jobTitle || intakeProfile.job_title_raw || '',
     industry: payload?.industry || intakeProfile.industry || '',
     email: payload?.email || null,
@@ -221,17 +222,22 @@ function normalizeIntakePayload(payload) {
       })),
       primary_tasks: Array.isArray(intakeProfile.primary_tasks) ? intakeProfile.primary_tasks.filter(Boolean) : [],
       clarifiers: intakeProfile.clarifiers && typeof intakeProfile.clarifiers === 'object' ? intakeProfile.clarifiers : {},
+      locale: payload?.locale || intakeProfile?.locale || 'en',
     },
     selectedTaskLabels,
   };
 }
 
-function buildUserMessage(jobTitle, industry, tasks, intakeProfile) {
+function buildUserMessage(jobTitle, industry, tasks, intakeProfile, locale) {
   const selectedTasks = intakeProfile?.selected_tasks || [];
   const primaryTasks = intakeProfile?.primary_tasks || [];
   const clarifiers = intakeProfile?.clarifiers || {};
+  const normalizedLocale = String(locale || 'en').toLowerCase();
+  const languageLabel = normalizedLocale === 'nl' ? 'Dutch' : normalizedLocale === 'de' ? 'German' : 'English';
 
   return `Create a PivotIQ structured report for this user.
+
+OUTPUT LANGUAGE: ${languageLabel}
 
 JOB TITLE: ${jobTitle}
 INDUSTRY: ${industry}
@@ -268,6 +274,8 @@ Requirements:
 - Do not include any weekly roadmap content or roadmap field in the response.
 - Every skill gap must include a real resource URL.
 - Every resource URL must be a direct learning destination page from a trusted provider, not a blog post or general article.
+- All user-facing prose values must be written in ${languageLabel}.
+- Keep JSON keys, enum values, and schema structure in English exactly as defined.
 - Return valid JSON only.`;
 }
 
@@ -654,7 +662,7 @@ export async function POST(request) {
   try {
     await logGenerateReportDebug('route_start');
     const payload = await request.json();
-    const { jobTitle, industry, selectedTaskLabels, intakeProfile, email } = normalizeIntakePayload(payload);
+    const { locale, jobTitle, industry, selectedTaskLabels, intakeProfile, email } = normalizeIntakePayload(payload);
     await logGenerateReportDebug('route_payload_ready', {
       jobTitle,
       industry,
@@ -671,11 +679,11 @@ export async function POST(request) {
     let rawModelOutput = null;
 
     if (!process.env.OPENROUTER_API_KEY) {
-      reportData = buildDemoReportData(jobTitle, industry, selectedTaskLabels, intakeProfile);
+      reportData = buildDemoReportData(jobTitle, industry, selectedTaskLabels, intakeProfile, locale);
       demoMode = true;
       await logGenerateReportDebug('route_demo_mode_no_key');
     } else {
-      const userMessage = buildUserMessage(jobTitle, industry, selectedTaskLabels, intakeProfile);
+      const userMessage = buildUserMessage(jobTitle, industry, selectedTaskLabels, intakeProfile, locale);
       let parsed = null;
       let validation = null;
 
@@ -689,7 +697,7 @@ export async function POST(request) {
         });
       } catch (error) {
         console.error('OpenRouter request error:', error);
-        reportData = buildDemoReportData(jobTitle, industry, selectedTaskLabels, intakeProfile);
+        reportData = buildDemoReportData(jobTitle, industry, selectedTaskLabels, intakeProfile, locale);
         demoMode = true;
         await logGenerateReportDebug('route_fallback_demo_after_openrouter_error', {
           error: String(error),
@@ -699,7 +707,7 @@ export async function POST(request) {
 
       if (!reportData && !parsed) {
         console.error('Structured report JSON parse failed. Raw output:', rawModelOutput);
-        reportData = buildDemoReportData(jobTitle, industry, selectedTaskLabels, intakeProfile);
+        reportData = buildDemoReportData(jobTitle, industry, selectedTaskLabels, intakeProfile, locale);
         demoMode = true;
         await logGenerateReportDebug('route_fallback_demo_after_parse_failure');
       } else if (!reportData) {
@@ -778,6 +786,14 @@ export async function POST(request) {
       clarifiers: intakeProfile.clarifiers,
       linkedin_profile_url: intakeProfile.linkedin_profile_url,
     });
+    reportData = {
+      ...reportData,
+      locale,
+      profile: {
+        ...(reportData?.profile || {}),
+        locale,
+      },
+    };
 
     await logGenerateReportDebug('route_before_persist', {
       demoMode,
