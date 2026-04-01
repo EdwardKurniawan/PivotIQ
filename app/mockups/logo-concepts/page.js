@@ -68,13 +68,14 @@ function SignalCompass() {
   );
 }
 
-function FoldedPath() {
+function FoldedPathMonogram() {
   return (
-    <svg width="150" height="110" viewBox="0 0 150 110" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M20 77C20 52.147 40.147 32 65 32H91C103.703 32 114 42.297 114 55C114 67.703 103.703 78 91 78H72" stroke={ink} strokeWidth="16" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M72 78L98 78C112.912 78 125 65.912 125 51C125 36.088 112.912 24 98 24H66" stroke={teal} strokeWidth="16" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M64 24H36" stroke={orange} strokeWidth="16" strokeLinecap="round" />
-      <path d="M62 78L44 96" stroke={orange} strokeWidth="16" strokeLinecap="round" />
+    <svg width="182" height="120" viewBox="0 0 182 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M28 90V28H72C88.569 28 102 41.431 102 58C102 74.569 88.569 88 72 88H50" stroke={ink} strokeWidth="16" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M118 30V90" stroke={orange} strokeWidth="16" strokeLinecap="round" />
+      <path d="M152 30C165.255 30 176 40.745 176 54C176 67.255 165.255 78 152 78C138.745 78 128 67.255 128 54C128 40.745 138.745 30 152 30Z" stroke={teal} strokeWidth="16" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M165 74L177 88" stroke={teal} strokeWidth="16" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M52 58H74" stroke={cream} strokeWidth="8" strokeLinecap="round" />
     </svg>
   );
 }
@@ -117,11 +118,11 @@ const concepts = [
     render: <SignalCompass />,
   },
   {
-    name: 'Folded Path',
+    name: 'Folded PIQ Path',
     accent: orange,
-    description: 'A route that bends instead of breaking. Elegant and abstract, with a premium editorial tone.',
-    why: 'Best for a softer, more premium brand feeling.',
-    render: <FoldedPath />,
+    description: 'The folded-path idea translated into a clearer PIQ monogram. It keeps the sense of movement, but now reads like a true brand mark.',
+    why: 'Best balance between elegant symbolism and recognizability.',
+    render: <FoldedPathMonogram />,
   },
   {
     name: 'Monogram Grid',
