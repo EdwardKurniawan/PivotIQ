@@ -175,21 +175,39 @@ export default function Home() {
       >
         <BrandLogo subtitle="See the shift before it hits" />
 
-        <Link
-          className="home-nav-cta"
-          href="/audit"
-          style={{
-            padding: '13px 18px',
-            borderRadius: '999px',
-            color: '#FFF7F1',
-            background: palette.navy,
-            fontSize: '14px',
-            fontWeight: 800,
-            boxShadow: '0 18px 40px rgba(18, 31, 41, 0.16)',
-          }}
-        >
-          Start free scan
-        </Link>
+        <div className="home-nav-actions" style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+          <Link
+            className="home-nav-signin"
+            href="/login"
+            style={{
+              padding: '12px 18px',
+              borderRadius: '999px',
+              color: '#41515D',
+              background: 'rgba(255,255,255,0.62)',
+              border: `1px solid ${palette.border}`,
+              fontSize: '14px',
+              fontWeight: 800,
+            }}
+          >
+            Sign in
+          </Link>
+
+          <Link
+            className="home-nav-cta"
+            href="/audit"
+            style={{
+              padding: '13px 18px',
+              borderRadius: '999px',
+              color: '#FFF7F1',
+              background: palette.navy,
+              fontSize: '14px',
+              fontWeight: 800,
+              boxShadow: '0 18px 40px rgba(18, 31, 41, 0.16)',
+            }}
+          >
+            Start free scan
+          </Link>
+        </div>
       </nav>
 
       <ScrollReveal

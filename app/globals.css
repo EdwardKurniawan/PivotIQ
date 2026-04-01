@@ -588,6 +588,8 @@ input, textarea, select { font-family: var(--font); }
   .upgrade-bar-label { display: none !important; }
   .lock-gate { padding: 70px 16px 28px !important; }
   .home-nav { padding: 18px 16px !important; align-items: flex-start !important; }
+  .home-nav-actions { width: 100% !important; }
+  .home-nav-signin { width: fit-content !important; }
   .home-nav-cta { display: none !important; }
   .home-badge { margin-bottom: 14px !important; }
   .home-hero { padding: 20px 16px 28px !important; gap: 16px !important; }
@@ -619,6 +621,7 @@ input, textarea, select { font-family: var(--font); }
   .home-closing-shell { padding: 24px !important; border-radius: 30px !important; }
   .home-lane-card { padding: 18px !important; }
   .audit-nav { padding: 18px 16px !important; }
+  .audit-nav-actions { width: 100% !important; justify-content: flex-start !important; }
   .audit-shell { padding: 24px 16px 72px !important; }
   .audit-content { max-width: 100% !important; }
   .audit-step-shell { padding: 20px !important; border-radius: 24px !important; }

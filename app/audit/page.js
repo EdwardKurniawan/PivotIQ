@@ -482,9 +482,25 @@ export default function AuditPage() {
       />
       <nav className="audit-nav" style={{ position: 'relative', zIndex: 2, maxWidth: '1180px', margin: '0 auto', width: '100%', padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
         <BrandLogo subtitle="Free scan first" />
-        <span className="hide-mobile" style={{ color: palette.textSoft, fontSize: '13px', padding: '10px 14px', borderRadius: '999px', border: `1px solid ${palette.border}`, background: 'rgba(255,255,255,0.58)' }}>
-          Tell us your work. We map the pressure.
-        </span>
+        <div className="audit-nav-actions" style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+          <span className="hide-mobile" style={{ color: palette.textSoft, fontSize: '13px', padding: '10px 14px', borderRadius: '999px', border: `1px solid ${palette.border}`, background: 'rgba(255,255,255,0.58)' }}>
+            Tell us your work. We map the pressure.
+          </span>
+          <Link
+            href="/login"
+            style={{
+              padding: '12px 18px',
+              borderRadius: '999px',
+              color: '#41515D',
+              background: 'rgba(255,255,255,0.62)',
+              border: `1px solid ${palette.border}`,
+              fontSize: '14px',
+              fontWeight: 800,
+            }}
+          >
+            Sign in
+          </Link>
+        </div>
       </nav>
 
       <div className="audit-shell" style={{ flex: 1, display: 'flex', justifyContent: 'center', padding: '34px 24px 88px', position: 'relative', zIndex: 2 }}>
