@@ -102,59 +102,62 @@ function InsightAperture() {
   );
 }
 
-function PiqVariationOne() {
+function SquarePiqOne() {
   return (
-    <svg width="186" height="120" viewBox="0 0 186 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M24 92V28H70C86.569 28 100 41.431 100 58C100 74.569 86.569 88 70 88H48" stroke={ink} strokeWidth="14" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M116 28V92" stroke={orange} strokeWidth="14" strokeLinecap="round" />
-      <circle cx="152" cy="58" r="30" stroke={teal} strokeWidth="14" />
-      <path d="M170 78L182 92" stroke={teal} strokeWidth="14" strokeLinecap="round" />
+    <svg width="132" height="132" viewBox="0 0 132 132" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="14" y="14" width="104" height="104" rx="30" fill={cream} stroke="rgba(19,27,35,0.08)" />
+      <path d="M34 92V40H60C71.046 40 80 48.954 80 60C80 71.046 71.046 80 60 80H48" stroke={ink} strokeWidth="12" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M66 40V92" stroke={orange} strokeWidth="8" strokeLinecap="round" />
+      <circle cx="88" cy="60" r="18" stroke={teal} strokeWidth="10" />
+      <path d="M99 71L108 82" stroke={teal} strokeWidth="8" strokeLinecap="round" />
     </svg>
   );
 }
 
-function PiqVariationTwo() {
+function SquarePiqTwo() {
   return (
-    <svg width="186" height="120" viewBox="0 0 186 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M28 90V28H68C84.569 28 98 41.431 98 58C98 74.569 84.569 88 68 88H46" stroke={ink} strokeWidth="12" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M112 32V88" stroke={orange} strokeWidth="12" strokeLinecap="round" />
-      <path d="M152 30C166.359 30 178 41.641 178 56C178 70.359 166.359 82 152 82C137.641 82 126 70.359 126 56C126 41.641 137.641 30 152 30Z" stroke={teal} strokeWidth="12" />
-      <path d="M164 76L176 88" stroke={teal} strokeWidth="12" strokeLinecap="round" />
-      <path d="M50 58H70" stroke={cream} strokeWidth="6" strokeLinecap="round" />
+    <svg width="132" height="132" viewBox="0 0 132 132" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="14" y="14" width="104" height="104" rx="30" fill={ink} />
+      <path d="M34 92V40H60C71.046 40 80 48.954 80 60C80 71.046 71.046 80 60 80H48" stroke={cream} strokeWidth="10" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M67 42V90" stroke={orange} strokeWidth="7" strokeLinecap="round" />
+      <circle cx="90" cy="60" r="16" stroke={teal} strokeWidth="9" />
+      <path d="M100 70L108 80" stroke={teal} strokeWidth="7" strokeLinecap="round" />
     </svg>
   );
 }
 
-function PiqVariationThree() {
+function SquarePiqThree() {
   return (
-    <svg width="186" height="120" viewBox="0 0 186 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M26 92V28H64C83.33 28 99 43.67 99 63C99 82.33 83.33 98 64 98H50" stroke={ink} strokeWidth="14" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M114 24V96" stroke={orange} strokeWidth="10" strokeLinecap="round" />
-      <circle cx="152" cy="58" r="28" fill="none" stroke={teal} strokeWidth="14" />
-      <path d="M168 76L181 89" stroke={teal} strokeWidth="10" strokeLinecap="round" />
+    <svg width="132" height="132" viewBox="0 0 132 132" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="14" y="14" width="104" height="104" rx="24" fill={cream} stroke={ink} strokeOpacity="0.08" />
+      <path d="M34 90V40H58C70.15 40 80 49.85 80 62C80 74.15 70.15 84 58 84H48" stroke={ink} strokeWidth="12" strokeLinecap="round" strokeLinejoin="round" />
+      <rect x="66" y="38" width="8" height="54" rx="4" fill={orange} />
+      <circle cx="91" cy="61" r="17" stroke={teal} strokeWidth="10" />
+      <path d="M101 71L109 80" stroke={teal} strokeWidth="8" strokeLinecap="round" />
     </svg>
   );
 }
 
-function PiqVariationFour() {
+function SquarePiqFour() {
   return (
-    <svg width="186" height="120" viewBox="0 0 186 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="18" y="18" width="150" height="84" rx="28" fill={ink} />
-      <path d="M38 84V36H68C80.15 36 90 45.85 90 58C90 70.15 80.15 80 68 80H50" stroke={cream} strokeWidth="12" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M108 38V82" stroke={orange} strokeWidth="12" strokeLinecap="round" />
-      <circle cx="138" cy="58" r="20" stroke={teal} strokeWidth="12" />
-      <path d="M150 72L160 84" stroke={teal} strokeWidth="12" strokeLinecap="round" />
+    <svg width="132" height="132" viewBox="0 0 132 132" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="14" y="14" width="104" height="104" rx="32" fill={ink} />
+      <path d="M34 90V40H58C70.15 40 80 49.85 80 62C80 74.15 70.15 84 58 84H48" stroke={cream} strokeWidth="11" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M69 40V90" stroke={orange} strokeWidth="9" strokeLinecap="round" />
+      <path d="M90 43C100.493 43 109 51.507 109 62C109 72.493 100.493 81 90 81C79.507 81 71 72.493 71 62C71 51.507 79.507 43 90 43Z" stroke={teal} strokeWidth="9" />
+      <path d="M100 73L107 81" stroke={teal} strokeWidth="7" strokeLinecap="round" />
     </svg>
   );
 }
 
-function PiqVariationFive() {
+function SquarePiqFive() {
   return (
-    <svg width="186" height="120" viewBox="0 0 186 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M28 90V28H66C83.673 28 98 42.327 98 60C98 77.673 83.673 92 66 92H50" stroke={ink} strokeWidth="16" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M114 28V92" stroke={orange} strokeWidth="8" strokeLinecap="round" />
-      <path d="M154 30C168.359 30 180 41.641 180 56C180 70.359 168.359 82 154 82C139.641 82 128 70.359 128 56C128 41.641 139.641 30 154 30Z" stroke={teal} strokeWidth="16" />
-      <path d="M170 74L182 86" stroke={teal} strokeWidth="8" strokeLinecap="round" />
+    <svg width="132" height="132" viewBox="0 0 132 132" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="14" y="14" width="104" height="104" rx="26" fill={cream} stroke="rgba(19,27,35,0.08)" />
+      <path d="M34 92V40H58C71.255 40 82 50.745 82 64C82 77.255 71.255 88 58 88H48" stroke={ink} strokeWidth="13" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M70 40V92" stroke={orange} strokeWidth="6" strokeLinecap="round" />
+      <circle cx="92" cy="62" r="16" stroke={teal} strokeWidth="11" />
+      <path d="M102 72L110 82" stroke={teal} strokeWidth="6" strokeLinecap="round" />
     </svg>
   );
 }
@@ -199,39 +202,39 @@ const concepts = [
 
 const piqVariations = [
   {
-    name: 'PIQ Path 01',
+    name: 'Square PIQ 01',
     accent: orange,
-    description: 'Most literal and balanced. Clear letters first, path metaphor second.',
-    why: 'Best starting point if recognizability matters most.',
-    render: <PiqVariationOne />,
+    description: 'Balanced square monogram with the clearest letter read. The P is fully contained and the Q tail stays subtle.',
+    why: 'Best starting point for a usable production logo.',
+    render: <SquarePiqOne />,
   },
   {
-    name: 'PIQ Path 02',
+    name: 'Square PIQ 02',
     accent: teal,
-    description: 'Softer and more editorial, with a quieter internal fold inside the P.',
-    why: 'Best if you want premium over aggressive clarity.',
-    render: <PiqVariationTwo />,
+    description: 'Dark badge version with softer contrast and a calmer premium feel.',
+    why: 'Best if you want elegant and app-ready at the same time.',
+    render: <SquarePiqTwo />,
   },
   {
-    name: 'PIQ Path 03',
+    name: 'Square PIQ 03',
     accent: orange,
-    description: 'Tall and elegant, with more movement and a more directional tail on the Q.',
-    why: 'Best if you want the logo to feel dynamic and forward-leaning.',
-    render: <PiqVariationThree />,
+    description: 'More geometric and compact, with a slightly sharper center rhythm.',
+    why: 'Best if you want a cleaner tech-product aesthetic.',
+    render: <SquarePiqThree />,
   },
   {
-    name: 'PIQ Path 04',
+    name: 'Square PIQ 04',
     accent: teal,
-    description: 'Contained badge version, useful if you want an app icon and wordmark system together.',
-    why: 'Best if product UI and favicon performance matter most.',
-    render: <PiqVariationFour />,
+    description: 'Rounded-square badge with stronger internal spacing and a more polished icon feel.',
+    why: 'Best if favicon, app icon, and UI usage matter most.',
+    render: <SquarePiqFour />,
   },
   {
-    name: 'PIQ Path 05',
+    name: 'Square PIQ 05',
     accent: orange,
-    description: 'Minimal center stroke with heavier P and Q shapes. Most reduced and logo-like.',
-    why: 'Best if you want the most ownable and scalable mark.',
-    render: <PiqVariationFive />,
+    description: 'Most reduced of the set, with heavier P/Q forms and the slimmest I.',
+    why: 'Best if you want the most logo-like and scalable mark.',
+    render: <SquarePiqFive />,
   },
 ];
 
@@ -292,10 +295,10 @@ export default function LogoConceptsPage() {
             Focused second round
           </div>
           <h2 style={{ fontSize: 'clamp(34px, 5vw, 58px)', lineHeight: 0.95, letterSpacing: '-0.06em', margin: 0, fontWeight: 700, fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif' }}>
-            Five tighter PIQ variations
+            Five square PIQ variations
           </h2>
           <p style={{ maxWidth: '760px', margin: '14px 0 0', color: muted, fontSize: '17px', lineHeight: 1.7 }}>
-            These are more disciplined logo explorations of the folded-path idea, with stronger letter recognition and less abstraction.
+            These are tighter square explorations with a fully visible P, cleaner proportions, and stronger icon-read for real brand use.
           </p>
         </div>
 
