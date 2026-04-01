@@ -588,7 +588,7 @@ input, textarea, select { font-family: var(--font); }
   .upgrade-bar-label { display: none !important; }
   .lock-gate { padding: 70px 16px 28px !important; }
   .home-nav { padding: 18px 16px !important; align-items: flex-start !important; }
-  .home-nav > a { width: 100% !important; text-align: center !important; justify-content: center !important; }
+  .home-nav-cta { display: none !important; }
   .home-badge { margin-bottom: 14px !important; }
   .home-hero { padding: 20px 16px 28px !important; gap: 16px !important; }
   .home-hero-copy { max-width: 100% !important; }

@@ -176,6 +176,7 @@ export default function Home() {
         <BrandLogo subtitle="See the shift before it hits" />
 
         <Link
+          className="home-nav-cta"
           href="/audit"
           style={{
             padding: '13px 18px',
