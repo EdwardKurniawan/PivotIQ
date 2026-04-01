@@ -8,7 +8,6 @@ import {
   getRecommendedTasks,
   getTaskSelectionSummary,
   hasLeadershipSignals,
-  inferIndustrySuggestions,
   getTitleRecommendationContext,
   searchTasks,
 } from '../../lib/intake-data';
@@ -180,14 +179,6 @@ export default function AuditPage() {
     () => getTitleRecommendationContext({ jobTitle, titleProfile, industry }),
     [jobTitle, titleProfile, industry]
   );
-  const industrySuggestions = useMemo(
-    () => inferIndustrySuggestions({ jobTitle, titleProfile, currentIndustry: industry }),
-    [jobTitle, titleProfile, industry]
-  );
-  const visibleIndustries = useMemo(() => {
-    const ordered = [...industrySuggestions, ...INDUSTRIES];
-    return Array.from(new Set(ordered));
-  }, [industrySuggestions]);
   const recommendedTasks = useMemo(
     () => getRecommendedTasks({ jobTitle, industry, selectedTaskIds, titleProfile }),
     [jobTitle, industry, selectedTaskIds, titleProfile]
@@ -596,12 +587,6 @@ export default function AuditPage() {
                           setJobTitle(suggestion.title);
                           setTitleProfile(suggestion);
                           setTitleSuggestions([]);
-                          if (!industry) {
-                            const suggestions = inferIndustrySuggestions({ jobTitle: suggestion.title, titleProfile: suggestion });
-                            if (suggestions.length > 0) {
-                              setIndustry(suggestions[0]);
-                            }
-                          }
                         }}
                         style={{
                           width: '100%',
@@ -639,15 +624,15 @@ export default function AuditPage() {
 
               <label className="section-label" style={{ color: '#7A5A43' }}>INDUSTRY</label>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '34px' }}>
-                {visibleIndustries.map((value) => (
+                {INDUSTRIES.map((value) => (
                   <button
                     key={value}
                     type="button"
                     onClick={() => setIndustry(value)}
                     className={`chip ${industry === value ? 'active-primary' : ''}`}
-                    style={industry === value ? { background: 'rgba(242, 138, 67, 0.14)', color: '#8B4A1B', outlineColor: 'rgba(242, 138, 67, 0.45)' } : { background: industrySuggestions.includes(value) ? 'rgba(27, 111, 99, 0.10)' : 'rgba(255,255,255,0.58)', color: industrySuggestions.includes(value) ? palette.teal : palette.textMuted, outlineColor: industrySuggestions.includes(value) ? 'rgba(27,111,99,0.20)' : 'rgba(19,27,35,0.08)' }}
+                    style={industry === value ? { background: 'rgba(242, 138, 67, 0.14)', color: '#8B4A1B', outlineColor: 'rgba(242, 138, 67, 0.45)' } : { background: 'rgba(255,255,255,0.58)', color: palette.textMuted, outlineColor: 'rgba(19,27,35,0.08)' }}
                   >
-                    {value}{industrySuggestions.includes(value) && industry !== value ? ' · suggested' : ''}
+                    {value}
                   </button>
                 ))}
               </div>
