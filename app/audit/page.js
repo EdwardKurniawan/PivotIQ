@@ -135,6 +135,13 @@ export default function AuditPage() {
 
   useEffect(() => {
     let cancelled = false;
+    const normalizedInput = jobTitle.trim().toLowerCase();
+    const normalizedSelectedTitle = String(titleProfile?.title || '').trim().toLowerCase();
+
+    if (normalizedInput && normalizedInput === normalizedSelectedTitle) {
+      setTitleSuggestions([]);
+      return undefined;
+    }
 
     if (jobTitle.trim().length < 2) {
       setTitleSuggestions([]);
@@ -165,7 +172,7 @@ export default function AuditPage() {
       cancelled = true;
       window.clearTimeout(timeoutId);
     };
-  }, [jobTitle]);
+  }, [jobTitle, titleProfile]);
 
   const selectedTaskIds = useMemo(() => selectedTasks.map((task) => task.task_id), [selectedTasks]);
   const selectedTaskLabels = useMemo(() => selectedTasks.map((task) => task.label), [selectedTasks]);
