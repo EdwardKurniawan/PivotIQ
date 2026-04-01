@@ -244,6 +244,7 @@ export default function Home() {
               Run my free scan
             </Link>
             <div
+              className="home-hero-note"
               style={{
                 padding: '17px 20px',
                 borderRadius: '999px',
@@ -281,7 +282,7 @@ export default function Home() {
           />
 
           <div
-            className="home-float-slow"
+            className="home-float-slow home-sample-card"
             style={{
               ...shellCardStyle(),
               position: 'relative',
@@ -293,6 +294,7 @@ export default function Home() {
             }}
           >
             <div
+              className="home-sample-inner"
               style={{
                 borderRadius: '28px',
                 background: palette.navy,
@@ -304,7 +306,7 @@ export default function Home() {
                 gap: '18px',
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+              <div className="home-sample-head" style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
                 <div>
                   <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#91A0AA' }}>Sample diagnosis</div>
                   <div style={{ fontSize: '26px', fontWeight: 800, marginTop: '6px', letterSpacing: '-0.03em' }}>Finance Manager</div>
@@ -330,7 +332,7 @@ export default function Home() {
                 {metrics.map((item) => (
                   <div
                     key={item.label}
-                    className="home-hover-lift"
+                    className="home-hover-lift home-metric-card"
                     style={{
                       borderRadius: '18px',
                       padding: '14px 12px',
@@ -392,7 +394,7 @@ export default function Home() {
           </div>
 
           <div
-            className="home-float-fast"
+            className="home-float-fast home-roadmap-card"
             style={{
               ...shellCardStyle(),
               position: 'absolute',

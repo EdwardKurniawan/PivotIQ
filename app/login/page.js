@@ -55,7 +55,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: palette.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', position: 'relative', overflow: 'hidden' }}>
+    <div className="auth-page" style={{ minHeight: '100vh', background: palette.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', position: 'relative', overflow: 'hidden' }}>
       <div
         style={{
           position: 'absolute',
@@ -89,10 +89,10 @@ export default function LoginPage() {
             <div style={{ color: '#9FD6CE', fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '14px' }}>
               Save your momentum
             </div>
-            <h1 style={{ color: 'white', fontSize: 'clamp(34px, 6vw, 56px)', fontWeight: 900, letterSpacing: '-0.05em', lineHeight: 0.96, margin: '0 0 14px', fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif' }}>
+            <h1 className="auth-title" style={{ color: 'white', fontSize: 'clamp(34px, 6vw, 56px)', fontWeight: 900, letterSpacing: '-0.05em', lineHeight: 0.96, margin: '0 0 14px', fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif' }}>
               Come back to your reports, not just your browser tab.
             </h1>
-            <p style={{ color: palette.textMuted, fontSize: '16px', lineHeight: 1.76, margin: 0 }}>
+            <p className="auth-copy" style={{ color: palette.textMuted, fontSize: '16px', lineHeight: 1.76, margin: 0 }}>
               A magic link lets users save audit history, revisit structured reports, and keep milestone progress synced across sessions.
             </p>
           </div>
@@ -192,7 +192,7 @@ export default function LoginPage() {
             </div>
           )}
 
-          <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
+          <div className="auth-links" style={{ marginTop: '24px', display: 'flex', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
             <Link href="/report" style={{ color: palette.textMuted, fontSize: '13px', fontWeight: 700 }}>Continue without account</Link>
             <Link href="/dashboard" style={{ color: palette.navy, fontSize: '13px', fontWeight: 800 }}>Go to dashboard →</Link>
           </div>
