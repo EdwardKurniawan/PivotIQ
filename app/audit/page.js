@@ -480,15 +480,15 @@ export default function AuditPage() {
             'radial-gradient(circle at 18% 0%, rgba(242, 138, 67, 0.16), transparent 26%), radial-gradient(circle at 82% 12%, rgba(27, 111, 99, 0.14), transparent 28%)',
         }}
       />
-      <nav style={{ position: 'relative', zIndex: 2, maxWidth: '1180px', margin: '0 auto', width: '100%', padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+      <nav className="audit-nav" style={{ position: 'relative', zIndex: 2, maxWidth: '1180px', margin: '0 auto', width: '100%', padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
         <BrandLogo subtitle="Free scan first" />
         <span className="hide-mobile" style={{ color: palette.textSoft, fontSize: '13px', padding: '10px 14px', borderRadius: '999px', border: `1px solid ${palette.border}`, background: 'rgba(255,255,255,0.58)' }}>
           Tell us your work. We map the pressure.
         </span>
       </nav>
 
-      <div style={{ flex: 1, display: 'flex', justifyContent: 'center', padding: '34px 24px 88px', position: 'relative', zIndex: 2 }}>
-        <div style={{ width: '100%', maxWidth: '880px' }} className="anim-fade-in">
+      <div className="audit-shell" style={{ flex: 1, display: 'flex', justifyContent: 'center', padding: '34px 24px 88px', position: 'relative', zIndex: 2 }}>
+        <div style={{ width: '100%', maxWidth: '880px' }} className="anim-fade-in audit-content">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
             <span style={{ color: palette.textSoft, fontSize: '13px', letterSpacing: '0.04em', textTransform: 'uppercase' }}>Step {step} of 2</span>
             <span style={{ color: palette.textSoft, fontSize: '13px' }}>
@@ -508,7 +508,7 @@ export default function AuditPage() {
           </div>
 
           {step === 1 && (
-            <div style={stepShell}>
+              <div style={stepShell} className="audit-step-shell">
               <div style={{ maxWidth: '600px', marginBottom: '30px' }}>
                 <div style={{ color: '#6A7882', fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '12px' }}>Start the scan</div>
                 <h1 style={{ color: palette.text, fontSize: 'clamp(34px, 6vw, 58px)', fontWeight: 900, marginBottom: '10px', letterSpacing: '-0.05em', lineHeight: 0.96, fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif' }}>
@@ -547,7 +547,7 @@ export default function AuditPage() {
               </div>
 
               <label className="section-label" style={{ color: '#7A5A43' }}>YOUR JOB TITLE</label>
-              <div style={{ position: 'relative', marginBottom: '28px' }}>
+              <div className="audit-title-field" style={{ position: 'relative', marginBottom: '28px' }}>
                 <input
                   className="piq-input"
                   value={jobTitle}
@@ -558,6 +558,7 @@ export default function AuditPage() {
                 />
                 {titleSuggestions.length > 0 && (
                   <div
+                    className="audit-title-suggestions"
                     style={{
                       position: 'absolute',
                       top: 'calc(100% + 8px)',
@@ -638,7 +639,7 @@ export default function AuditPage() {
           )}
 
           {step === 2 && (
-            <div style={stepShell}>
+            <div style={stepShell} className="audit-step-shell">
               <div style={{ maxWidth: '680px', marginBottom: '28px' }}>
                 <div style={{ color: '#6A7882', fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '12px' }}>Map the workload</div>
                 <h1 style={{ color: palette.text, fontSize: 'clamp(32px, 5vw, 54px)', fontWeight: 900, marginBottom: '10px', letterSpacing: '-0.05em', lineHeight: 0.98, fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif' }}>

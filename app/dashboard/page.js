@@ -141,8 +141,8 @@ export default async function DashboardPage() {
         }}
       />
 
-      <div style={{ maxWidth: '1120px', margin: '0 auto', position: 'relative', zIndex: 2 }}>
-        <nav style={{ marginBottom: '24px', padding: '22px 26px', borderRadius: '26px', background: palette.panel, border: `1px solid ${palette.border}`, boxShadow: '0 24px 70px rgba(19, 33, 45, 0.12)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+      <div className="dashboard-shell" style={{ maxWidth: '1120px', margin: '0 auto', position: 'relative', zIndex: 2 }}>
+        <nav className="dashboard-nav" style={{ marginBottom: '24px', padding: '22px 26px', borderRadius: '26px', background: palette.panel, border: `1px solid ${palette.border}`, boxShadow: '0 24px 70px rgba(19, 33, 45, 0.12)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
           <BrandLogo subtitle="Dashboard" />
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             <Link href="/audit">
@@ -207,7 +207,7 @@ export default async function DashboardPage() {
                     boxShadow: '0 24px 70px rgba(19, 33, 45, 0.12)',
                 }}
               >
-                <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', gap: '16px', alignItems: 'center' }}>
+                <div className="dashboard-card-head" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', gap: '16px', alignItems: 'center' }}>
                   <div>
                     <div style={{ color: '#A7602E', fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '8px' }}>
                       Continue from here
@@ -261,7 +261,7 @@ export default async function DashboardPage() {
                       boxShadow: '0 24px 70px rgba(19, 33, 45, 0.12)',
                     }}
                   >
-                    <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', gap: '16px', alignItems: 'center' }}>
+                    <div className="dashboard-card-head" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', gap: '16px', alignItems: 'center' }}>
                       <div>
                         <div style={{ color: palette.text, fontSize: '20px', fontWeight: 800, marginBottom: '6px', letterSpacing: '-0.03em' }}>{report.job_title}</div>
                         <div style={{ color: palette.textSoft, fontSize: '13px', marginBottom: '12px' }}>

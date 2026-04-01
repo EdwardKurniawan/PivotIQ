@@ -159,7 +159,7 @@ export default function Home() {
       />
 
       <nav
-        className="home-reveal-0"
+        className="home-reveal-0 home-nav"
         style={{
           position: 'relative',
           zIndex: 2,
@@ -193,6 +193,7 @@ export default function Home() {
 
       <ScrollReveal
         as="section"
+        className="home-hero"
         style={{
           position: 'relative',
           zIndex: 2,
@@ -205,7 +206,7 @@ export default function Home() {
           alignItems: 'end',
         }}
       >
-        <div>
+        <div className="home-hero-copy">
           <div className="home-badge home-reveal-1" style={{ ...badgeStyle(), marginBottom: '18px' }}>Career intelligence for the AI shift</div>
 
           <h1
@@ -238,7 +239,7 @@ export default function Home() {
             PivotIQ breaks your role into the work that is becoming automated, the work that still compounds, and the moves that make sense before urgency decides for you.
           </p>
 
-          <div className="home-reveal-4" style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', marginBottom: '26px' }}>
+          <div className="home-reveal-4 home-hero-actions" style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', marginBottom: '26px' }}>
             <Link href="/audit" style={primaryLinkStyle()}>
               Run my free scan
             </Link>
@@ -260,6 +261,7 @@ export default function Home() {
         </div>
 
         <div
+          className="home-hero-art"
           style={{
             position: 'relative',
             minHeight: '620px',
@@ -324,7 +326,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '10px' }}>
+              <div className="home-metrics-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '10px' }}>
                 {metrics.map((item) => (
                   <div
                     key={item.label}
@@ -433,6 +435,7 @@ export default function Home() {
 
       <ScrollReveal
         as="section"
+        className="home-value-section"
         style={{
           position: 'relative',
           zIndex: 2,
@@ -482,6 +485,7 @@ export default function Home() {
 
       <ScrollReveal
         as="section"
+        className="home-lanes-section"
         style={{
           position: 'relative',
           zIndex: 2,
@@ -513,11 +517,11 @@ export default function Home() {
           </p>
         </ScrollReveal>
 
-        <div style={{ display: 'grid', gap: '16px' }}>
+        <div className="home-lanes-list" style={{ display: 'grid', gap: '16px' }}>
           {pivotLanes.map((lane, index) => (
             <ScrollReveal
               key={lane.title}
-              className="home-hover-lift"
+              className="home-hover-lift home-lane-card"
               delay={index * 100}
               style={{
                 ...shellCardStyle(),
@@ -556,6 +560,7 @@ export default function Home() {
 
       <ScrollReveal
         as="section"
+        className="home-closing-section"
         style={{
           position: 'relative',
           zIndex: 2,
@@ -565,6 +570,7 @@ export default function Home() {
         }}
       >
         <div
+          className="home-closing-shell"
           style={{
             borderRadius: '38px',
             background: palette.navy,

@@ -532,6 +532,21 @@ input, textarea, select { font-family: var(--font); }
 @media (max-width: 900px) {
   .piq-nav { padding: 16px 24px; }
   .hide-mobile { display: none !important; }
+  .home-hero,
+  .home-lanes-section,
+  .home-closing-shell {
+    grid-template-columns: 1fr !important;
+  }
+  .home-hero-art {
+    min-height: auto !important;
+  }
+  .home-lane-card {
+    grid-template-columns: 1fr !important;
+  }
+  .dashboard-card-head {
+    grid-template-columns: 1fr !important;
+    align-items: flex-start !important;
+  }
 }
 
 /* ── Responsive: Mobile ─────────────────────────────────────────────────────── */
@@ -572,6 +587,32 @@ input, textarea, select { font-family: var(--font); }
   .upgrade-bar { padding: 12px 14px !important; gap: 8px !important; }
   .upgrade-bar-label { display: none !important; }
   .lock-gate { padding: 70px 16px 28px !important; }
+  .home-nav { padding: 18px 16px !important; }
+  .home-hero { padding: 24px 16px 34px !important; gap: 20px !important; }
+  .home-hero-copy h1 { font-size: 50px !important; line-height: 0.92 !important; }
+  .home-hero-copy p { font-size: 17px !important; }
+  .home-hero-actions { flex-direction: column !important; align-items: stretch !important; }
+  .home-hero-actions > * { width: 100% !important; text-align: center !important; justify-content: center !important; }
+  .home-hero-art { min-height: auto !important; }
+  .home-float-slow { transform: none !important; padding: 16px !important; border-radius: 28px !important; }
+  .home-float-fast { position: relative !important; right: auto !important; bottom: auto !important; width: 100% !important; transform: none !important; margin-top: 14px !important; padding: 14px !important; border-radius: 24px !important; }
+  .home-metrics-grid { grid-template-columns: 1fr !important; }
+  .home-value-section,
+  .home-lanes-section,
+  .home-closing-section { padding-left: 16px !important; padding-right: 16px !important; }
+  .home-closing-shell { padding: 24px !important; border-radius: 30px !important; }
+  .home-lane-card { padding: 18px !important; }
+  .audit-nav { padding: 18px 16px !important; }
+  .audit-shell { padding: 24px 16px 72px !important; }
+  .audit-content { max-width: 100% !important; }
+  .audit-step-shell { padding: 20px !important; border-radius: 24px !important; }
+  .audit-title-suggestions { max-height: 260px !important; overflow: auto !important; }
+  .auth-shell { grid-template-columns: 1fr !important; gap: 18px !important; }
+  .auth-panel-dark,
+  .auth-panel-light { padding: 22px !important; border-radius: 24px !important; }
+  .dashboard-shell { padding: 0 16px 56px !important; }
+  .dashboard-nav { padding: 18px 16px !important; border-radius: 22px !important; }
+  .dashboard-card-head { grid-template-columns: 1fr !important; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -66,8 +66,9 @@ export default function LoginPage() {
         }}
       />
 
-      <div style={{ width: '100%', maxWidth: '1040px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px', alignItems: 'stretch', position: 'relative', zIndex: 2 }}>
+      <div className="auth-shell" style={{ width: '100%', maxWidth: '1040px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px', alignItems: 'stretch', position: 'relative', zIndex: 2 }}>
         <div
+          className="auth-panel-dark"
           style={{
             borderRadius: '30px',
             padding: '30px',
@@ -129,6 +130,7 @@ export default function LoginPage() {
         </div>
 
         <div
+          className="auth-panel-light"
           style={{
             borderRadius: '30px',
             padding: '30px',
