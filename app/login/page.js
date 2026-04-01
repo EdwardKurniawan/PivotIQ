@@ -35,7 +35,7 @@ export default function LoginPage() {
 
     if (!supabase) {
       setStatus('error');
-      setMessage('Supabase auth is not configured yet. Add Supabase env vars before testing magic-link login.');
+      setMessage(messages.login.supabaseWarning);
       return;
     }
 
@@ -102,11 +102,7 @@ export default function LoginPage() {
           </div>
 
           <div style={{ display: 'grid', gap: '12px' }}>
-            {[
-              'Saved report history',
-              'Persistent roadmap progress',
-              'Reminder-ready account state',
-            ].map((item) => (
+            {messages.login.featureItems.map((item) => (
               <div
                 key={item}
                 style={{
@@ -158,7 +154,7 @@ export default function LoginPage() {
 
           {!authConfigured && (
             <div style={{ marginBottom: '18px', padding: '14px 16px', borderRadius: '18px', border: '1px solid rgba(242, 138, 67, 0.22)', background: 'rgba(242, 138, 67, 0.10)', color: '#8B4A1B', fontSize: '14px', lineHeight: 1.65 }}>
-              Supabase is not configured yet. Add `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` to enable accounts.
+              {messages.login.supabasePanel}
             </div>
           )}
 

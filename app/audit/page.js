@@ -90,6 +90,10 @@ function TaskCard({ task, onClick, selected = false, subtle = false }) {
   );
 }
 
+function getSelectedTaskCountLabel(count, messages) {
+  return `${count} ${count === 1 ? messages.audit.selectedSummarySingle : messages.audit.selectedSummaryPlural}`;
+}
+
 export default function AuditPage() {
   const router = useRouter();
   const [locale, setLocale] = useState(getBrowserLocale());
@@ -545,13 +549,13 @@ export default function AuditPage() {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', gap: '14px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
                   <div>
-                    <p style={{ color: palette.text, fontSize: '15px', fontWeight: 800, margin: '0 0 6px', letterSpacing: '-0.02em' }}>LinkedIn prefill is coming</p>
+                    <p style={{ color: palette.text, fontSize: '15px', fontWeight: 800, margin: '0 0 6px', letterSpacing: '-0.02em' }}>{messages.audit.linkedinTitle}</p>
                     <p style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7, margin: 0 }}>
-                      Paste your profile for now if you want the report to reference your current positioning more cleanly.
+                      {messages.audit.linkedinBody}
                     </p>
                   </div>
                   <button type="button" className="btn-ghost" disabled style={{ ...secondaryButtonStyle, width: 'auto', opacity: 0.6, cursor: 'not-allowed' }}>
-                    LinkedIn soon
+                    {messages.audit.linkedinSoon}
                   </button>
                 </div>
                 <input
@@ -559,17 +563,17 @@ export default function AuditPage() {
                   style={{ marginTop: '16px' }}
                   value={linkedinProfileUrl}
                   onChange={(event) => setLinkedinProfileUrl(event.target.value)}
-                  placeholder="Optional LinkedIn profile URL"
+                  placeholder={messages.audit.linkedinPlaceholder}
                 />
               </div>
 
-              <label className="section-label" style={{ color: '#7A5A43' }}>YOUR JOB TITLE</label>
+              <label className="section-label" style={{ color: '#7A5A43' }}>{messages.audit.jobTitleSection}</label>
               <div className="audit-title-field" style={{ position: 'relative', marginBottom: '28px' }}>
                 <input
                   className="piq-input"
                   value={jobTitle}
                   onChange={(event) => setJobTitle(event.target.value)}
-                  placeholder="e.g. Marketing Manager, Data Analyst, Accountant..."
+                  placeholder={messages.audit.titleInputPlaceholder}
                   onKeyDown={(event) => event.key === 'Enter' && goStep2()}
                   autoFocus
                 />
@@ -628,7 +632,7 @@ export default function AuditPage() {
                 )}
               </div>
 
-              <label className="section-label" style={{ color: '#7A5A43' }}>INDUSTRY</label>
+              <label className="section-label" style={{ color: '#7A5A43' }}>{messages.audit.industrySection}</label>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '34px' }}>
                 {INDUSTRIES.map((value) => (
                   <button
@@ -728,7 +732,7 @@ export default function AuditPage() {
                     <p style={{ color: palette.text, fontSize: '16px', fontWeight: 800, margin: '0 0 6px', letterSpacing: '-0.02em' }}>{messages.audit.selectedTitle}</p>
                     <p style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7, margin: 0 }}>
                       {selectedTasks.length > 0
-                        ? `${selectedTasks.length} task${selectedTasks.length > 1 ? 's' : ''} selected · ${getTaskSelectionSummary(selectedTasks)}`
+                        ? `${getSelectedTaskCountLabel(selectedTasks.length, messages)} · ${getTaskSelectionSummary(selectedTasks)}`
                         : messages.audit.selectedBodyEmpty}
                     </p>
                   </div>
@@ -774,16 +778,16 @@ export default function AuditPage() {
               </div>
 
               <div style={{ ...panelStyle({ accent: 'rgba(19, 27, 35, 0.08)', background: 'rgba(255,255,255,0.68)', padding: '20px' }), boxShadow: 'none', marginBottom: '24px' }}>
-                <p style={{ color: palette.text, fontSize: '16px', fontWeight: 800, margin: '0 0 6px', letterSpacing: '-0.02em' }}>Add a custom task</p>
+                <p style={{ color: palette.text, fontSize: '16px', fontWeight: 800, margin: '0 0 6px', letterSpacing: '-0.02em' }}>{messages.audit.customTaskTitle}</p>
                 <p style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7, margin: '0 0 14px' }}>
-                  Use this if your real work is missing from the suggestions. Keep it to 3 custom tasks maximum.
+                  {messages.audit.customTaskBody}
                 </p>
                 <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                   <input
                     className="piq-input"
                     value={customTaskInput}
                     onChange={(event) => setCustomTaskInput(event.target.value)}
-                    placeholder="e.g. board prep, vendor audits, pricing analysis"
+                    placeholder={messages.audit.customTaskInput}
                     style={{ flex: '1 1 320px', marginBottom: 0 }}
                     onKeyDown={(event) => {
                       if (event.key === 'Enter') {
@@ -793,21 +797,21 @@ export default function AuditPage() {
                     }}
                   />
                   <button type="button" onClick={handleAddCustomTask} style={{ ...secondaryButtonStyle, width: 'auto' }}>
-                    Add task
+                    {messages.audit.addTask}
                   </button>
                 </div>
               </div>
 
               {selectedTasks.length > 0 && (
                 <div style={{ ...panelStyle({ accent: 'rgba(27, 111, 99, 0.16)', background: 'rgba(255,255,255,0.68)', padding: '20px' }), boxShadow: 'none', marginBottom: '24px' }}>
-                  <p style={{ color: palette.text, fontSize: '16px', fontWeight: 800, margin: '0 0 6px', letterSpacing: '-0.02em' }}>Quick clarifiers</p>
+                  <p style={{ color: palette.text, fontSize: '16px', fontWeight: 800, margin: '0 0 6px', letterSpacing: '-0.02em' }}>{messages.audit.quickClarifiersTitle}</p>
                   <p style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7, margin: '0 0 18px' }}>
-                    These answers help us produce a roadmap that feels more specific, more believable, and more worth paying for.
+                    {messages.audit.quickClarifiersBody}
                   </p>
 
                   <div style={{ marginBottom: '20px' }}>
                     <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>
-                      WHICH TASKS TAKE THE MOST TIME EACH WEEK? PICK UP TO 3.
+                      {messages.audit.primaryPrompt}
                     </label>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
                       {selectedTasks.map((task) => (
@@ -826,7 +830,7 @@ export default function AuditPage() {
 
                   <div style={{ marginBottom: leadershipSignals ? '20px' : 0 }}>
                     <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>
-                      WHICH BEST DESCRIBES YOUR ROLE?
+                      {messages.audit.rolePrompt}
                     </label>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
                       {ROLE_BLEND_OPTIONS.map((option) => (
@@ -846,7 +850,7 @@ export default function AuditPage() {
                   {leadershipSignals && (
                     <div>
                       <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>
-                        DO YOU DIRECTLY MANAGE PEOPLE?
+                        {messages.audit.managementPrompt}
                       </label>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
                         {MANAGEMENT_SCOPE_OPTIONS.map((option) => (
@@ -866,17 +870,17 @@ export default function AuditPage() {
                 </div>
               )}
 
-              <label className="section-label" style={{ color: '#7A5A43' }}>OPTIONAL EMAIL FOR DELIVERY LATER</label>
+              <label className="section-label" style={{ color: '#7A5A43' }}>{messages.audit.optionalEmailLabel}</label>
               <input
                 className="piq-input"
                 type="email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
-                placeholder="you@example.com"
+                placeholder={messages.audit.optionalEmailPlaceholder}
                 style={{ marginBottom: '6px' }}
               />
               <p style={{ color: palette.textSoft, fontSize: '12px', marginBottom: '28px' }}>
-                Leave this blank if you just want the free scan right now. Add it if you want delivery after unlock.
+                {messages.audit.optionalEmailBody}
               </p>
 
               {error && (
@@ -886,17 +890,17 @@ export default function AuditPage() {
               )}
 
               <button onClick={generate} disabled={!step2Ready || loading} style={!step2Ready || loading ? { ...ctaStyle, opacity: 0.45, cursor: 'default', boxShadow: 'none', marginBottom: '12px' } : { ...ctaStyle, marginBottom: '12px' }}>
-                {loading ? <><span className="spinner" />Analyzing your career risk...</> : 'See My Free Risk Scan →'}
+                {loading ? <><span className="spinner" />{messages.audit.generatingButton}</> : messages.audit.generateButton}
               </button>
 
               <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', flexWrap: 'wrap', color: palette.textSoft, fontSize: '12px', marginBottom: '20px' }}>
-                <span>Free scan (~90 sec)</span>
-                <span>No card required</span>
-                <span>No spam</span>
+                {messages.audit.generateMeta.map((item) => (
+                  <span key={item}>{item}</span>
+                ))}
               </div>
 
               <button onClick={() => setStep(1)} style={secondaryButtonStyle}>
-                ← Back to previous step
+                {messages.audit.backButton}
               </button>
             </div>
           )}

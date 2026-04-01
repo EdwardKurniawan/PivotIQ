@@ -15,12 +15,13 @@ function recommendationAccent(type) {
   return { color: '#4F5D68', bg: 'rgba(19, 32, 42, 0.08)', border: 'rgba(19, 32, 42, 0.14)' };
 }
 
-function decisionFrameLabel(frame) {
-  if (frame === 'highest upside') return 'Highest upside';
-  if (frame === 'strongest leverage fit') return 'Strongest leverage fit';
-  if (frame === 'fastest cash recovery') return 'Fastest cash recovery';
-  if (frame === 'long-term platform bet') return 'Long-term platform bet';
-  return 'Safest transition';
+function decisionFrameLabel(frame, messages) {
+  const labels = messages?.report?.decisionFrames || {};
+  if (frame === 'highest upside') return labels.highestUpside || 'Highest upside';
+  if (frame === 'strongest leverage fit') return labels.strongestLeverageFit || 'Strongest leverage fit';
+  if (frame === 'fastest cash recovery') return labels.fastestCashRecovery || 'Fastest cash recovery';
+  if (frame === 'long-term platform bet') return labels.longTermPlatformBet || 'Long-term platform bet';
+  return labels.safest || 'Safest transition';
 }
 
 const pivotColors = ['#FF8F4D', '#41C2AE', '#F4E4C7', '#7DD3FC', '#F9A8D4'];
@@ -49,9 +50,9 @@ function addDays(dateString, days) {
   return date;
 }
 
-function formatDate(dateString) {
+function formatDate(dateString, locale = 'en') {
   if (!dateString) return '';
-  return new Date(dateString).toLocaleDateString('en-US', {
+  return new Date(dateString).toLocaleDateString(locale, {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
@@ -269,7 +270,7 @@ function MonoIcon({ name, tone = 'default', size = 28 }) {
   );
 }
 
-function RiskRing({ score, size = 165 }) {
+function RiskRing({ score, size = 165, label = 'RISK SCORE' }) {
   const r = size * 0.4;
   const circ = 2 * Math.PI * r;
   const cx = size / 2;
@@ -295,13 +296,13 @@ function RiskRing({ score, size = 165 }) {
       </svg>
       <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ color, fontSize: size * 0.23, fontWeight: 900, lineHeight: 1 }}>{score}</div>
-        <div style={{ color: palette.navy, fontSize: '10px', fontWeight: 800, letterSpacing: '1.5px', marginTop: '4px' }}>RISK SCORE</div>
+        <div style={{ color: palette.navy, fontSize: '10px', fontWeight: 800, letterSpacing: '1.5px', marginTop: '4px' }}>{label}</div>
       </div>
     </div>
   );
 }
 
-function SkillGapCard({ skill, color }) {
+function SkillGapCard({ skill, color, messages }) {
   const priorityColors = {
     critical: '#FF8F4D',
     medium: '#F4E4C7',
@@ -332,12 +333,12 @@ function SkillGapCard({ skill, color }) {
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: '10px', alignItems: 'center' }}>
         <div style={{ background: 'rgba(10, 16, 24, 0.9)', border: `1px solid ${palette.border}`, borderRadius: '16px', padding: '13px' }}>
-          <div style={{ color: palette.textSoft, fontSize: '11px', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '6px' }}>Current leverage</div>
+          <div style={{ color: palette.textSoft, fontSize: '11px', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '6px' }}>{messages.report.currentLeverage}</div>
           <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{skill.current_strength}</div>
         </div>
         <MonoIcon name="next-first" tone="orange" size={24} />
         <div style={{ background: `${color}0F`, border: `1px solid ${color}22`, borderRadius: '16px', padding: '13px' }}>
-          <div style={{ color, fontSize: '11px', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '6px' }}>Required level</div>
+          <div style={{ color, fontSize: '11px', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '6px' }}>{messages.report.requiredLevel}</div>
           <div style={{ color: palette.text, fontSize: '13px', lineHeight: 1.6 }}>{skill.required_level}</div>
         </div>
       </div>
@@ -353,15 +354,15 @@ function SkillGapCard({ skill, color }) {
 
       <div style={{ display: 'grid', gap: '10px' }}>
         <div>
-          <div style={{ color: palette.text, fontSize: '12px', fontWeight: 700, marginBottom: '4px' }}>Why this matters</div>
+          <div style={{ color: palette.text, fontSize: '12px', fontWeight: 700, marginBottom: '4px' }}>{messages.report.whyThisMatters}</div>
           <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{skill.why_it_matters}</div>
         </div>
         <div>
-          <div style={{ color: palette.text, fontSize: '12px', fontWeight: 700, marginBottom: '4px' }}>Evidence you already have</div>
+          <div style={{ color: palette.text, fontSize: '12px', fontWeight: 700, marginBottom: '4px' }}>{messages.report.evidenceAlready}</div>
           <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{skill.evidence_you_already_have}</div>
         </div>
         <div>
-          <div style={{ color: palette.text, fontSize: '12px', fontWeight: 700, marginBottom: '4px' }}>How to close the gap</div>
+          <div style={{ color: palette.text, fontSize: '12px', fontWeight: 700, marginBottom: '4px' }}>{messages.report.closeGap}</div>
           <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{skill.how_to_close_gap}</div>
         </div>
       </div>
@@ -384,7 +385,7 @@ function SkillGapCard({ skill, color }) {
           fontWeight: 700,
         }}
       >
-        Learn with {skill.resource_title} →
+        {messages.report.learnWith} {skill.resource_title} →
       </a>
 
       {(skill.resource_provider || skill.resource_access || skill.resource_price_label) && (
@@ -465,7 +466,7 @@ function TeaserView({ payload, onCheckout, loading }) {
 
       <div style={{ position: 'relative', zIndex: 2, background: `linear-gradient(180deg, ${color}10 0%, transparent 100%)`, borderBottom: `1px solid ${palette.border}`, padding: '48px 24px' }}>
         <div className="report-hero" style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', gap: '36px', alignItems: 'center', flexWrap: 'wrap' }}>
-          <RiskRing score={summary.overall_score} />
+          <RiskRing score={summary.overall_score} label={messages.report.riskScore} />
           <div style={{ flex: 1, minWidth: '240px' }}>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: `${color}14`, border: `1px solid ${color}35`, color, borderRadius: '999px', padding: '6px 14px', fontSize: '11px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '14px' }}>
               ● {summary.risk_level} risk
@@ -531,7 +532,7 @@ function TeaserView({ payload, onCheckout, loading }) {
                 <MonoIcon name="best-pivot" tone="orange" />
                 <div>
                   <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: `${pivotColors[0]}10`, border: `1px solid ${pivotColors[0]}26`, color: '#9A5727', borderRadius: '999px', padding: '4px 9px', fontSize: '11px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '8px' }}>
-                    {decisionFrameLabel(bestPivot.decision_frame)}
+                    {decisionFrameLabel(bestPivot.decision_frame, messages)}
                   </div>
                   <div style={{ color: palette.text, fontSize: '15px', fontWeight: 800, marginBottom: '4px' }}>{bestPivot.title}</div>
                   <div style={{ color: 'var(--text-muted)', fontSize: '13px', lineHeight: 1.65 }}>{bestPivot.why_this_path_wins || bestPivot.outcome || bestPivot.fit_summary}</div>
@@ -560,13 +561,13 @@ function TeaserView({ payload, onCheckout, loading }) {
         )}
 
         <div className="hook-stats">
-          <span className="section-label">WHAT UNLOCKS NEXT</span>
+          <span className="section-label">{messages.report.unlocksNext}</span>
           <div className="hook-grid">
             {[
-              { icon: 'task-diagnostics', tone: 'orange', val: `${taskBreakdown.length} task diagnostics`, sub: 'so you can see exactly which parts of the role are getting cheaper first' },
-              { icon: 'pivot-paths', tone: 'default', val: `${pivots.length} adjacent pivots`, sub: 'so the next move feels believable, not like starting your career over' },
-              { icon: 'skill-gaps', tone: 'teal', val: `${bestPivot?.skill_gaps?.length || 0} skill-gap actions`, sub: 'showing what to fix first and how to close the gap without wasting months' },
-              { icon: 'roadmap', tone: 'default', val: `${roadmap.total_weeks}-week roadmap`, sub: 'so you know what to do next week, not just what sounds good in theory' },
+              { icon: 'task-diagnostics', tone: 'orange', val: `${taskBreakdown.length} ${messages.report.unlockItems[0][0]}`, sub: messages.report.unlockItems[0][1] },
+              { icon: 'pivot-paths', tone: 'default', val: `${pivots.length} ${messages.report.unlockItems[1][0]}`, sub: messages.report.unlockItems[1][1] },
+              { icon: 'skill-gaps', tone: 'teal', val: `${bestPivot?.skill_gaps?.length || 0} ${messages.report.unlockItems[2][0]}`, sub: messages.report.unlockItems[2][1] },
+              { icon: 'roadmap', tone: 'default', val: `${roadmap.total_weeks}-${messages.report.unlockItems[3][0]}`, sub: messages.report.unlockItems[3][1] },
             ].map(({ icon, tone, val, sub }) => (
               <div key={val} className="hook-item">
                 <MonoIcon name={icon} tone={tone} />
@@ -581,13 +582,13 @@ function TeaserView({ payload, onCheckout, loading }) {
 
         <div className="locked-section" style={{ marginTop: '18px' }}>
           <div style={{ padding: '24px', background: palette.panelStrong, border: `1px solid ${palette.border}`, borderRadius: '28px', boxShadow: '0 24px 70px rgba(19, 33, 45, 0.14)' }}>
-            <span className="section-label">LOCKED PREVIEW</span>
+            <span className="section-label">{messages.report.lockedPreview}</span>
             <div style={{ display: 'grid', gap: '14px' }}>
               {roadmap.weeks.slice(0, 3).map((week, index) => (
                 <div key={week.week_number} style={{ background: 'rgba(10,16,24,0.9)', border: `1px solid ${palette.border}`, borderRadius: '18px', padding: '18px', filter: 'blur(1px)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', gap: '14px', marginBottom: '10px' }}>
                     <div>
-                      <div style={{ color: '#A7602E', fontSize: '11px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '4px' }}>Week {week.week_number}</div>
+                      <div style={{ color: '#A7602E', fontSize: '11px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '4px' }}>{messages.report.week} {week.week_number}</div>
                       <div style={{ color: '#F4EFE7', fontSize: '15px', fontWeight: 800 }}>{week.title}</div>
                     </div>
                     <div style={{ width: '34px', height: '34px', borderRadius: '10px', background: `${pivotColors[0]}18`, color: pivotColors[0], display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900 }}>{index + 1}</div>
@@ -601,14 +602,14 @@ function TeaserView({ payload, onCheckout, loading }) {
             <div className="lock-gate" style={{ position: 'relative', marginTop: '-120px', background: 'linear-gradient(to bottom, rgba(10,16,24,0.08), rgba(10,16,24,0.98) 25%)', borderRadius: '0 0 28px 28px' }}>
               <div className="lock-icon"><MonoIcon name="lock" tone="dark" size={46} /></div>
               <h3 style={{ color: '#F4EFE7', fontSize: '18px', fontWeight: 800, margin: '0 0 4px' }}>
-                Unlock the plan you would actually follow
+                {messages.report.unlockTitle}
               </h3>
               <p style={{ color: 'var(--text-muted)', fontSize: '13px', lineHeight: 1.6, margin: 0 }}>
-                Get the best-fit pivot, the first skills to shore up, and a week-by-week roadmap that turns this diagnosis into a concrete next move.
+                {messages.report.unlockBody}
               </p>
               <div className="upgrade-btns">
                 <button className="btn-full-upgrade" style={{ background: 'linear-gradient(135deg, #FF8F4D, #FFC66C)', color: '#14181F', boxShadow: '0 18px 40px rgba(255, 143, 77, 0.25)' }} disabled={!!loading} onClick={() => onCheckout('full')}>
-                  {loading === 'full' ? 'Redirecting…' : 'Unlock My Full Plan — $29.99'}
+                  {loading === 'full' ? messages.report.redirectingCheckout : messages.report.unlockButton}
                 </button>
               </div>
             </div>
@@ -784,16 +785,16 @@ export default function ReportExperience({ payload, embedded = false }) {
 
       <div style={{ position: 'relative', zIndex: 2, background: `linear-gradient(180deg, ${color}10 0%, transparent 100%)`, borderBottom: `1px solid ${palette.border}`, padding: '48px 24px' }}>
         <div className="report-hero" style={{ maxWidth: '1100px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'minmax(0, 220px) minmax(0, 1fr)', gap: '32px', alignItems: 'center' }}>
-          <RiskRing score={summary.overall_score || 0} />
+          <RiskRing score={summary.overall_score || 0} label={messages.report.riskScore} />
           <div>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: `${color}20`, border: `1px solid ${color}55`, color: color === '#F4E4C7' ? '#7A5A43' : color, borderRadius: '999px', padding: '5px 14px', fontSize: '11px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '14px' }}>
-              ● {summary.risk_level} risk · {tier === 'full' ? 'Full report' : 'Quick peek'}
+              ● {summary.risk_level} risk · {tier === 'full' ? messages.report.fullReport : messages.report.quickPeek}
             </div>
             <h1 style={{ color: palette.navy, fontSize: 'clamp(30px,5vw,46px)', fontWeight: 900, marginBottom: '10px', letterSpacing: '-0.05em', lineHeight: 0.98, fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif' }}>
-              Your pivot plan, mapped clearly.
+              {messages.report.pivotPlanTitle}
             </h1>
             <p style={{ color: palette.textSoft, fontSize: '14px', marginBottom: '12px' }}>
-              {profile.job_title} · {profile.industry} · {formatDate(reportData.generated_at)}
+              {profile.job_title} · {profile.industry} · {formatDate(reportData.generated_at, payload.locale || reportData.locale || getBrowserLocale())}
             </p>
             <p style={{ color: palette.textMuted, fontSize: '15px', lineHeight: 1.78, marginBottom: '8px' }}>{summary.narrative}</p>
             <p style={{ color: palette.textSoft, fontSize: '14px', lineHeight: 1.7, marginBottom: '10px' }}>{summary.what_this_means}</p>
@@ -814,16 +815,16 @@ export default function ReportExperience({ payload, embedded = false }) {
                   <div className="section-label" style={{ color: recommendationAccent(decision.recommendation_type).color, marginBottom: 0 }}>{messages.report.decisionClarity}</div>
                 </div>
                 <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 12px', borderRadius: '999px', background: 'rgba(255,255,255,0.62)', border: `1px solid ${recommendationAccent(decision.recommendation_type).border}`, color: recommendationAccent(decision.recommendation_type).color, fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '12px' }}>
-                  {decision.urgency || 'Recommended next move'}
+                  {decision.urgency || messages.report.recommendedNextMove}
                 </div>
                 <div style={{ color: palette.text, fontSize: '28px', fontWeight: 900, letterSpacing: '-0.04em', lineHeight: 1.02, marginBottom: '10px', fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif' }}>
-                  {decision.headline || 'Prepare to pivot with more clarity'}
+                  {decision.headline || messages.report.pivotPlanTitle}
                 </div>
                 <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.8, marginBottom: '12px' }}>
                   {decision.rationale}
                 </div>
                 <div style={{ padding: '12px 14px', borderRadius: '16px', background: 'rgba(255,255,255,0.72)', border: `1px solid ${palette.border}` }}>
-                  <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>{decision.confidence_label || 'Moderate confidence'}</div>
+                  <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>{decision.confidence_label || messages.report.moderateConfidence}</div>
                   <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{decision.confidence_reason}</div>
                 </div>
               </div>
@@ -860,16 +861,16 @@ export default function ReportExperience({ payload, embedded = false }) {
                 <div>
                   <div className="section-label" style={{ marginBottom: '4px' }}>{messages.report.first30Days}</div>
                   <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>
-                    The goal is not more content. The goal is visible proof that makes the pivot believable.
+                    {messages.report.first30DaysBody}
                   </div>
                 </div>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '12px', marginBottom: '12px' }} className="two-col">
                 {[
-                  ['Next 7 days', first30Days.next_7_days || [], 'rgba(242, 138, 67, 0.08)', '#8B4A1B'],
-                  ['Next 30 days', first30Days.next_30_days || [], 'rgba(27, 111, 99, 0.08)', '#1B6F63'],
-                  ['Avoid this', first30Days.avoid || [], 'rgba(19, 32, 42, 0.06)', palette.text],
+                  [messages.report.first30DayBuckets[0], first30Days.next_7_days || [], 'rgba(242, 138, 67, 0.08)', '#8B4A1B'],
+                  [messages.report.first30DayBuckets[1], first30Days.next_30_days || [], 'rgba(27, 111, 99, 0.08)', '#1B6F63'],
+                  [messages.report.first30DayBuckets[2], first30Days.avoid || [], 'rgba(19, 32, 42, 0.06)', palette.text],
                 ].map(([label, items, bg, headingColor]) => (
                   <div key={label} style={{ padding: '16px', borderRadius: '18px', background: bg, border: `1px solid ${palette.border}` }}>
                     <div style={{ color: headingColor, fontSize: '12px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>{label}</div>
@@ -883,7 +884,7 @@ export default function ReportExperience({ payload, embedded = false }) {
               </div>
 
               <div style={{ padding: '16px', borderRadius: '18px', background: `${pColor}0F`, border: `1px solid ${pColor}22` }}>
-                <div style={{ color: pColor, fontSize: '12px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '8px' }}>Proof asset to ship</div>
+                <div style={{ color: pColor, fontSize: '12px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '8px' }}>{messages.report.proofAssetToShip}</div>
                 <div style={{ color: palette.text, fontSize: '16px', fontWeight: 800, marginBottom: '6px' }}>{first30Days.proof_asset?.title}</div>
                 <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7, marginBottom: '8px' }}>{first30Days.proof_asset?.description}</div>
                 <div style={{ color: palette.textSoft, fontSize: '12px', lineHeight: 1.6 }}>{first30Days.proof_asset?.why_it_matters}</div>
@@ -896,7 +897,7 @@ export default function ReportExperience({ payload, embedded = false }) {
           <div className="piq-card" style={{ marginBottom: '18px', padding: '24px', background: 'linear-gradient(180deg, rgba(255,255,255,0.92), rgba(249,243,235,0.96))' }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: '14px' }} className="two-col">
               <div>
-                <div className="section-label" style={{ color: pColor, marginBottom: '8px' }}>What This Says About Your Role</div>
+                <div className="section-label" style={{ color: pColor, marginBottom: '8px' }}>{messages.report.whatThisSaysAboutRole}</div>
                 <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.75 }}>
                   {interpretation.role_read || summary.what_this_means}
                 </div>
@@ -904,7 +905,7 @@ export default function ReportExperience({ payload, embedded = false }) {
               <div style={{ display: 'grid', gap: '12px' }}>
                 {Array.isArray(interpretation.durable_advantages) && interpretation.durable_advantages.length > 0 && (
                   <div style={{ padding: '14px 16px', borderRadius: '16px', background: 'rgba(255,255,255,0.58)', border: `1px solid ${palette.border}` }}>
-                    <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '8px' }}>Your durable advantages</div>
+                    <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '8px' }}>{messages.report.durableAdvantages}</div>
                     <div style={{ display: 'grid', gap: '7px' }}>
                       {interpretation.durable_advantages.slice(0, 3).map((item) => (
                         <div key={item} style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{item}</div>
@@ -914,7 +915,7 @@ export default function ReportExperience({ payload, embedded = false }) {
                 )}
                 {interpretation.stop_assuming && (
                   <div style={{ padding: '14px 16px', borderRadius: '16px', background: 'rgba(242, 138, 67, 0.10)', border: '1px solid rgba(242, 138, 67, 0.18)' }}>
-                    <div style={{ color: '#8B4A1B', fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>What to stop assuming</div>
+                    <div style={{ color: '#8B4A1B', fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>{messages.report.stopAssuming}</div>
                     <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{interpretation.stop_assuming}</div>
                   </div>
                 )}
@@ -928,10 +929,10 @@ export default function ReportExperience({ payload, embedded = false }) {
             <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.1fr) repeat(3, minmax(160px, 0.63fr))', gap: '12px' }} className="two-col">
               <div className="piq-card" style={{ padding: '20px', background: `linear-gradient(145deg, ${pColor}12, rgba(255,255,255,0.92) 60%)`, border: `1px solid ${pColor}28` }}>
                 <div style={{ color: pColor, fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>
-                  Best-fit direction
+                  {messages.report.bestFitDirection}
                 </div>
                 <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: `${pColor}14`, border: `1px solid ${pColor}30`, color: pColor, borderRadius: '999px', padding: '4px 9px', fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>
-                  {decisionFrameLabel(pivot.decision_frame)}
+                  {decisionFrameLabel(pivot.decision_frame, messages)}
                 </div>
                 <div style={{ color: palette.text, fontSize: '20px', fontWeight: 900, letterSpacing: '-0.03em', marginBottom: '6px' }}>
                   {pivot.title}
@@ -943,7 +944,7 @@ export default function ReportExperience({ payload, embedded = false }) {
 
               <div className="piq-card" style={{ padding: '20px' }}>
                 <div style={{ color: palette.textSoft, fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>
-                  Salary signal
+                  {messages.report.salarySignal}
                 </div>
                 <div style={{ color: palette.text, fontSize: '20px', fontWeight: 900, marginBottom: '6px' }}>{pivot.salary_delta || pivot.salary_range}</div>
                 <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.6 }}>{pivot.salary_range}</div>
@@ -951,17 +952,17 @@ export default function ReportExperience({ payload, embedded = false }) {
 
               <div className="piq-card" style={{ padding: '20px' }}>
                 <div style={{ color: palette.textSoft, fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>
-                  Transition window
+                  {messages.report.transitionWindow}
                 </div>
                 <div style={{ color: palette.text, fontSize: '20px', fontWeight: 900, marginBottom: '6px' }}>{pivot.transition_time}</div>
-                <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.6 }}>{pivot.difficulty} difficulty</div>
+                <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.6 }}>{pivot.difficulty} {messages.report.difficultySuffix}</div>
               </div>
 
               <div className="piq-card" style={{ padding: '20px' }}>
                 <div style={{ color: palette.textSoft, fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>
-                  Next move
+                  {messages.report.nextMove}
                 </div>
-                <div style={{ color: palette.text, fontSize: '15px', fontWeight: 800, marginBottom: '6px' }}>{reportData.next_move?.title || 'Your move this week'}</div>
+                <div style={{ color: palette.text, fontSize: '15px', fontWeight: 800, marginBottom: '6px' }}>{reportData.next_move?.title || messages.report.yourMoveThisWeek}</div>
                 <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.6 }}>
                   {(reportData.next_move?.explanation || '').slice(0, 150)}{(reportData.next_move?.explanation || '').length > 150 ? '…' : ''}
                 </div>
@@ -1089,14 +1090,14 @@ export default function ReportExperience({ payload, embedded = false }) {
                     </div>
                     <div>
                       <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: `${itemColor}15`, border: `1px solid ${itemColor}30`, color: itemColor, borderRadius: '999px', padding: '5px 10px', fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>
-                        {index === 0 ? `${decisionFrameLabel(item.decision_frame)} · Best fit` : decisionFrameLabel(item.decision_frame)}
+                        {index === 0 ? `${decisionFrameLabel(item.decision_frame, messages)} · ${messages.report.bestFitDirection}` : decisionFrameLabel(item.decision_frame, messages)}
                       </div>
                       <div style={{ color: palette.text, fontSize: '18px', fontWeight: 800, marginBottom: '6px' }}>{item.title}</div>
                       <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.7 }}>{item.fit_summary}</div>
                     </div>
                     <div style={{ textAlign: 'right' }}>
                       <div style={{ color: itemColor, fontSize: '28px', fontWeight: 900 }}>{item.match_score}%</div>
-                      <div style={{ color: palette.textSoft, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px' }}>Match</div>
+                      <div style={{ color: palette.textSoft, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px' }}>{messages.report.match}</div>
                     </div>
                   </div>
 

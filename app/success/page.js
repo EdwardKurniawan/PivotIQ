@@ -107,7 +107,7 @@ function SuccessContent() {
     return () => clearTimeout(timer);
   }, [router, searchParams]);
 
-  const tierLabel = tier === 'full' ? 'Full Career Report' : 'Quick Peek';
+  const tierLabel = tier === 'full' ? messages.success.fullTierLabel : messages.success.quickTierLabel;
 
   return (
     <div style={{ minHeight: '100vh', background: palette.bg, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 24px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
@@ -131,9 +131,9 @@ function SuccessContent() {
             <BrandMarkBadge size={96} />
           </div>
           <h2 style={{ color: palette.text, fontSize: '24px', fontWeight: 900, marginBottom: '8px', letterSpacing: '-0.03em' }}>
-            Unlocking your report…
+            {messages.success.loadingTitle}
           </h2>
-          <p style={{ color: palette.textSoft, fontSize: '14px' }}>Hang on for a second</p>
+          <p style={{ color: palette.textSoft, fontSize: '14px' }}>{messages.success.loadingBody}</p>
         </div>
       ) : (
         <div style={{ position: 'relative', zIndex: 2, width: '100%', maxWidth: '680px', borderRadius: '32px', padding: '34px 30px', background: palette.panel, border: `1px solid ${palette.border}`, boxShadow: '0 24px 70px rgba(19, 33, 45, 0.12)' }}>
@@ -152,13 +152,13 @@ function SuccessContent() {
           </h1>
           <p style={{ color: palette.textMuted, fontSize: '16px', maxWidth: '470px', lineHeight: 1.72, margin: '0 auto 16px' }}>
             {tier === 'full'
-              ? 'Your diagnosis is now connected to a real next move: the best-fit pivot, the first gaps to close, and the roadmap to follow.'
-              : 'Your free diagnosis is ready, along with the first look at where the pressure is building.'}
+              ? messages.success.fullUnlockedBody
+              : messages.success.quickUnlockedBody}
           </p>
 
           {tier === 'full' && (
             <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '18px' }}>
-              {['Best-fit pivot unlocked', 'Skill-gap map ready', '12-week plan ready'].map((item) => (
+              {messages.success.unlockedItems.map((item) => (
                 <span
                   key={item}
                   style={{
@@ -182,31 +182,31 @@ function SuccessContent() {
 
           {emailStatus === 'sent' && (
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(27,111,99,0.10)', border: '1px solid rgba(27,111,99,0.18)', borderRadius: '14px', padding: '11px 16px', color: '#1B6F63', fontSize: '13px', fontWeight: 700, marginBottom: '14px' }}>
-              Report also sent to your email
+              {messages.success.emailSent}
             </div>
           )}
 
           {emailStatus === 'unavailable' && (
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(242,138,67,0.10)', border: '1px solid rgba(242,138,67,0.18)', borderRadius: '14px', padding: '11px 16px', color: '#8B4A1B', fontSize: '13px', fontWeight: 700, marginBottom: '14px' }}>
-              Email delivery is not configured locally yet
+              {messages.success.emailUnavailable}
             </div>
           )}
 
           {emailStatus === 'failed' && (
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(242,138,67,0.10)', border: '1px solid rgba(242,138,67,0.18)', borderRadius: '14px', padding: '11px 16px', color: '#8B4A1B', fontSize: '13px', fontWeight: 700, marginBottom: '14px' }}>
-              The report unlocked, but email delivery could not be confirmed.
+              {messages.success.emailFailed}
             </div>
           )}
 
           {persistStatus === 'saved' && (
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(27,111,99,0.10)', border: '1px solid rgba(27,111,99,0.18)', borderRadius: '14px', padding: '11px 16px', color: '#1B6F63', fontSize: '13px', fontWeight: 700, marginBottom: '14px' }}>
-              Saved report access updated for this account
+              {messages.success.persistSaved}
             </div>
           )}
 
           {persistStatus === 'failed' && (
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(242,138,67,0.10)', border: '1px solid rgba(242,138,67,0.18)', borderRadius: '14px', padding: '11px 16px', color: '#8B4A1B', fontSize: '13px', fontWeight: 700, marginBottom: '14px' }}>
-              Payment succeeded, but saved-report access could not be confirmed for your account.
+              {messages.success.persistFailed}
             </div>
           )}
 
@@ -223,7 +223,7 @@ function SuccessContent() {
           {tier === 'peek' && (
             <div style={{ marginTop: '28px', background: 'rgba(255,255,255,0.03)', border: `1px solid ${palette.border}`, borderRadius: '22px', padding: '22px', textAlign: 'left' }}>
               <p style={{ color: palette.textMuted, fontSize: '13px', margin: '0 0 14px', lineHeight: 1.65 }}>
-                You&apos;re on the Quick Peek plan. The deeper pivot options, skill-gap actions, and full roadmap are still locked.
+                {messages.success.quickPeekLocked}
               </p>
               <Link href={destination}>
                 <button style={{ width: '100%', border: 'none', borderRadius: '18px', background: 'linear-gradient(135deg, #FF8F4D, #FFC66C)', color: '#14181F', padding: '14px 18px', fontSize: '15px', fontWeight: 900, cursor: 'pointer' }}>

@@ -8,19 +8,16 @@ import { getServerLocale } from '../lib/i18n-server';
 const sampleTasks = [
   {
     key: 'task1',
-    label: 'Reporting and recurring updates',
     value: 82,
     color: '#F28A43',
   },
   {
     key: 'task2',
-    label: 'Forecasting and scenario framing',
     value: 61,
     color: '#E8D8C0',
   },
   {
     key: 'task3',
-    label: 'Cross-functional planning',
     value: 24,
     color: '#50B8A6',
   },
@@ -84,14 +81,15 @@ export default function Home() {
   const locale = getServerLocale();
   const messages = getMessages(locale);
   const metrics = [
-    { label: messages.home.metrics[0], value: '2 min', tone: '#F28A43' },
-    { label: messages.home.metrics[1], value: 'Useful', tone: '#15384B' },
-    { label: messages.home.metrics[2], value: 'One-time', tone: '#1B6F63' },
+    { label: messages.home.metrics[0], value: messages.home.metricValues[0], tone: '#F28A43' },
+    { label: messages.home.metrics[1], value: messages.home.metricValues[1], tone: '#15384B' },
+    { label: messages.home.metrics[2], value: messages.home.metricValues[2], tone: '#1B6F63' },
   ];
   const valueCards = messages.home.valueCards.map(([eyebrow, title, body]) => ({ eyebrow, title, body }));
   const pivotLanes = messages.home.pivotLanes.map(([label, title, body]) => ({ label, title, body }));
   const roadmapSteps = messages.home.roadmapSteps.map(([number, title, body]) => ({ number, title, body }));
   const sampleTaskNotes = messages.home.sampleNotes;
+  const sampleTaskLabels = messages.home.sampleTaskLabels;
 
   return (
     <div
@@ -284,9 +282,9 @@ export default function Home() {
               <div className="home-sample-head" style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
                 <div>
                   <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#91A0AA' }}>{messages.home.sampleDiagnosis}</div>
-                  <div style={{ fontSize: '26px', fontWeight: 800, marginTop: '6px', letterSpacing: '-0.03em' }}>Finance Manager</div>
+                  <div style={{ fontSize: '26px', fontWeight: 800, marginTop: '6px', letterSpacing: '-0.03em' }}>{messages.home.sampleRoleTitle}</div>
                   <div style={{ fontSize: '14px', lineHeight: 1.6, color: '#C4D0D6', marginTop: '6px', maxWidth: '420px' }}>
-                    Stable title. Fragile reporting layer. Clear path toward planning, systems, and strategic operations.
+                    {messages.home.sampleRoleBody}
                   </div>
                 </div>
                 <div
@@ -331,10 +329,10 @@ export default function Home() {
               >
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   {sampleTasks.map((task) => (
-                    <div key={task.label}>
+                    <div key={task.key}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', gap: '10px', fontSize: '13px', marginBottom: '6px' }}>
-                        <span style={{ color: '#E9E0D2' }}>{task.label}</span>
-                        <span style={{ color: task.color, fontWeight: 800 }}>{task.value}% exposed</span>
+                        <span style={{ color: '#E9E0D2' }}>{sampleTaskLabels[sampleTasks.findIndex((item) => item.key === task.key)]}</span>
+                        <span style={{ color: task.color, fontWeight: 800 }}>{task.value}% {messages.home.exposedSuffix}</span>
                       </div>
                       <div style={{ height: '7px', borderRadius: '999px', background: 'rgba(255,255,255,0.08)' }}>
                         <div style={{ width: `${task.value}%`, height: '100%', borderRadius: '999px', background: task.color, transition: 'width 0.9s ease' }} />
@@ -359,10 +357,10 @@ export default function Home() {
                   {messages.home.strongestNextMove}
                 </div>
                 <div style={{ fontSize: '20px', fontWeight: 800, letterSpacing: '-0.03em', marginBottom: '8px' }}>
-                  Reposition toward strategic finance, systems, or planning.
+                  {messages.home.strongestNextMoveTitle}
                 </div>
                 <div style={{ fontSize: '14px', lineHeight: 1.6, color: '#C4D0D6' }}>
-                  The point is not panic. It is to show where your leverage still lives, then help you move before the market forces the decision.
+                  {messages.home.strongestNextMoveBody}
                 </div>
               </div>
             </div>
@@ -387,7 +385,7 @@ export default function Home() {
               <div style={{ fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6D7A84', marginBottom: '8px', fontWeight: 800 }}>
                 {messages.home.roadmapPreview}
               </div>
-              <div style={{ fontSize: '18px', fontWeight: 800, letterSpacing: '-0.03em', marginBottom: '10px' }}>Weeks 1-12</div>
+              <div style={{ fontSize: '18px', fontWeight: 800, letterSpacing: '-0.03em', marginBottom: '10px' }}>{messages.home.roadmapWeeks}</div>
               <div style={{ display: 'grid', gap: '8px' }}>
                 {messages.home.roadmapItems.map((item, index) => (
                   <div
@@ -487,10 +485,10 @@ export default function Home() {
               maxWidth: '440px',
             }}
           >
-            A better pivot should still feel close to who you already are.
+            {messages.home.lanesIntroTitle}
           </div>
           <p style={{ fontSize: '18px', lineHeight: 1.72, color: '#495863', maxWidth: '430px' }}>
-            The best moves usually keep your existing context and shift you toward work that gets harder to replace, not just more impressive to describe.
+            {messages.home.lanesIntroBody}
           </p>
         </ScrollReveal>
 

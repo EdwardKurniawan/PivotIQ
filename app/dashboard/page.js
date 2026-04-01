@@ -66,14 +66,14 @@ function addDays(dateString, days) {
   return date;
 }
 
-function formatShortDate(date) {
-  return new Date(date).toLocaleDateString('en-US', {
+function formatShortDate(date, locale = 'en') {
+  return new Date(date).toLocaleDateString(locale, {
     month: 'short',
     day: 'numeric',
   });
 }
 
-function buildCoachingSnapshot(report) {
+function buildCoachingSnapshot(report, messages, locale) {
   const normalized = normalizeReportData(report.report_data, {
     job_title: report.job_title,
     industry: report.industry,
@@ -93,21 +93,21 @@ function buildCoachingSnapshot(report) {
     ? addDays(report.roadmap_start_date, (nextIncompleteWeek.week_number - 1) * 7 + 6)
     : null;
 
-  let currentLabel = 'Set roadmap start date';
-  let dateLabel = 'Start date not set';
+  let currentLabel = messages.dashboard.currentLabelSetup;
+  let dateLabel = messages.dashboard.dateLabelUnset;
   if (report.roadmap_start_date && nextIncompleteWeek) {
     const now = new Date();
-    dateLabel = `${formatShortDate(nextWeekStart)} - ${formatShortDate(nextWeekEnd)}`;
+    dateLabel = `${formatShortDate(nextWeekStart, locale)} - ${formatShortDate(nextWeekEnd, locale)}`;
     if (now > nextWeekEnd) {
-      currentLabel = `Week ${nextIncompleteWeek.week_number} is overdue`;
+      currentLabel = messages.dashboard.weekOverdue.replace('{week}', nextIncompleteWeek.week_number);
     } else if (now >= nextWeekStart) {
-      currentLabel = `Current focus: Week ${nextIncompleteWeek.week_number}`;
+      currentLabel = messages.dashboard.currentFocusWeek.replace('{week}', nextIncompleteWeek.week_number);
     } else {
-      currentLabel = `Upcoming: Week ${nextIncompleteWeek.week_number}`;
+      currentLabel = messages.dashboard.upcomingWeek.replace('{week}', nextIncompleteWeek.week_number);
     }
   } else if (nextIncompleteWeek) {
-    currentLabel = `Next milestone: Week ${nextIncompleteWeek.week_number}`;
-    dateLabel = 'Set a roadmap start date to activate timing';
+    currentLabel = messages.dashboard.nextMilestoneWeek.replace('{week}', nextIncompleteWeek.week_number);
+    dateLabel = messages.dashboard.activateTiming;
   }
 
   return {
@@ -132,7 +132,7 @@ export default async function DashboardPage() {
   const messages = getMessages(locale);
   const data = await loadDashboardData();
   const configured = isSupabaseConfigured();
-  const latestSnapshot = data.mode === 'ready' && data.reports[0] ? buildCoachingSnapshot(data.reports[0]) : null;
+  const latestSnapshot = data.mode === 'ready' && data.reports[0] ? buildCoachingSnapshot(data.reports[0], messages, locale) : null;
 
   return (
     <div style={{ minHeight: '100vh', background: palette.bg, padding: '24px', position: 'relative', overflow: 'hidden' }}>
@@ -173,27 +173,27 @@ export default async function DashboardPage() {
 
           {data.mode === 'unconfigured' && (
             <div style={{ borderRadius: '24px', padding: '22px', background: palette.panel, border: `1px solid ${palette.border}` }}>
-              <div style={{ color: '#8B4A1B', fontSize: '12px', fontWeight: 800, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Supabase setup required</div>
+              <div style={{ color: '#8B4A1B', fontSize: '12px', fontWeight: 800, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{messages.dashboard.setupRequired}</div>
               <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.72, marginBottom: '12px' }}>
-                Add `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` to enable saved reports, magic-link accounts, and progress tracking.
+                {messages.dashboard.setupBody}
               </p>
-              <Link href="/login" style={{ color: palette.cream, fontWeight: 800 }}>Open login page →</Link>
+              <Link href="/login" style={{ color: palette.cream, fontWeight: 800 }}>{messages.dashboard.openLogin}</Link>
             </div>
           )}
 
           {data.mode === 'anonymous' && configured && (
             <div style={{ borderRadius: '24px', padding: '22px', background: palette.panel, border: `1px solid ${palette.border}` }}>
-              <div style={{ color: palette.teal, fontSize: '12px', fontWeight: 800, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Sign in to save progress</div>
+              <div style={{ color: palette.teal, fontSize: '12px', fontWeight: 800, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{messages.dashboard.saveProgressTitle}</div>
               <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.72, marginBottom: '12px' }}>
-                Your local report still works, but signing in lets you keep the diagnosis, the roadmap, and milestone progress across sessions.
+                {messages.dashboard.saveProgressBody}
               </p>
-              <Link href="/login" style={{ color: palette.cream, fontWeight: 800 }}>Send magic link →</Link>
+              <Link href="/login" style={{ color: palette.cream, fontWeight: 800 }}>{messages.dashboard.sendMagicLink}</Link>
             </div>
           )}
 
           {data.mode === 'error' && (
             <div style={{ borderRadius: '24px', padding: '22px', background: palette.panel, border: `1px solid ${palette.border}` }}>
-              <div style={{ color: '#8B4A1B', fontSize: '12px', fontWeight: 800, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Dashboard query failed</div>
+              <div style={{ color: '#8B4A1B', fontSize: '12px', fontWeight: 800, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{messages.dashboard.queryFailed}</div>
               <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.72, margin: 0 }}>{data.message}</p>
             </div>
           )}
@@ -216,30 +216,30 @@ export default async function DashboardPage() {
                 <div className="dashboard-card-head" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', gap: '16px', alignItems: 'center' }}>
                   <div>
                     <div style={{ color: '#A7602E', fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '8px' }}>
-                      Continue from here
+                      {messages.dashboard.continueFromHere}
                     </div>
                     <div style={{ color: palette.text, fontSize: '24px', fontWeight: 900, letterSpacing: '-0.04em', marginBottom: '8px' }}>
                       {latestSnapshot.activePivot?.title || data.reports[0].job_title}
                     </div>
                     <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.72, marginBottom: '14px', maxWidth: '720px' }}>
-                      {latestSnapshot.nextIncompleteWeek?.goal || 'Your latest report is ready to reopen, review, and move forward.'}
+                      {latestSnapshot.nextIncompleteWeek?.goal || messages.dashboard.latestReportFallback}
                     </div>
                     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                       <span style={{ background: 'rgba(27,111,99,0.12)', border: '1px solid rgba(27,111,99,0.18)', color: '#1B6F63', borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 800 }}>
                         {latestSnapshot.currentLabel}
                       </span>
                       <span style={{ background: 'rgba(255,255,255,0.58)', border: `1px solid ${palette.border}`, color: palette.text, borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 700 }}>
-                        {latestSnapshot.completedCount} of {latestSnapshot.totalWeeks} milestones complete
+                        {latestSnapshot.completedCount} of {latestSnapshot.totalWeeks} {messages.dashboard.milestonesComplete}
                       </span>
                       <span style={{ background: 'rgba(255,255,255,0.58)', border: `1px solid ${palette.border}`, color: palette.text, borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 700 }}>
-                        {latestSnapshot.progressPercent}% progress
+                        {latestSnapshot.progressPercent}% {messages.dashboard.progressSuffix}
                       </span>
                       <span style={{ background: 'rgba(255,255,255,0.58)', border: `1px solid ${palette.border}`, color: palette.text, borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 700 }}>
                         {latestSnapshot.dateLabel}
                       </span>
                     </div>
                   </div>
-                  <div style={{ color: palette.navy, fontWeight: 800 }}>Resume →</div>
+                  <div style={{ color: palette.navy, fontWeight: 800 }}>{messages.dashboard.resume}</div>
                 </div>
               </Link>
             )}
@@ -247,13 +247,13 @@ export default async function DashboardPage() {
             {data.reports.length === 0 ? (
               <div style={{ borderRadius: '24px', padding: '24px', background: palette.panel, border: `1px solid ${palette.border}` }}>
                 <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.72, margin: 0 }}>
-                  No saved reports yet. Run a new audit while signed in and your scan will show up here automatically.
+                  {messages.dashboard.noSavedReports}
                 </p>
               </div>
             ) : (
               data.reports.map((report, index) => {
                 const tone = riskTone(report.risk_level);
-                const snapshot = buildCoachingSnapshot(report);
+                const snapshot = buildCoachingSnapshot(report, messages, locale);
                 return (
                   <Link
                     key={report.id}
@@ -276,29 +276,29 @@ export default async function DashboardPage() {
                         <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65, marginBottom: '12px', maxWidth: '700px' }}>
                           {snapshot.nextIncompleteWeek?.title
                             ? `${snapshot.currentLabel}. ${snapshot.nextIncompleteWeek.title}`
-                            : 'Reopen the report to continue your roadmap and track progress.'}
+                            : messages.dashboard.latestReportFallback}
                         </div>
                         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                           {index === 0 && (
                               <span style={{ background: 'rgba(27,111,99,0.12)', border: '1px solid rgba(27,111,99,0.18)', color: '#1B6F63', borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 800 }}>
-                                Continue latest
+                                {messages.dashboard.continueLatest}
                               </span>
                           )}
                           <span style={{ background: 'rgba(255,255,255,0.58)', border: `1px solid ${palette.border}`, color: palette.text, borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 700 }}>
-                            {snapshot.progressPercent}% progress
+                            {snapshot.progressPercent}% {messages.dashboard.progressSuffix}
                           </span>
                           <span style={{ background: 'rgba(255,255,255,0.58)', border: `1px solid ${palette.border}`, color: palette.text, borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 700 }}>
                             {snapshot.dateLabel}
                           </span>
                           <span style={{ background: tone.bg, border: `1px solid ${tone.border}`, color: tone.fg, borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 800 }}>
-                            {report.risk_score} risk score
+                            {report.risk_score} {messages.dashboard.riskScoreSuffix}
                           </span>
                           <span style={{ background: 'rgba(255,255,255,0.58)', border: `1px solid ${palette.border}`, color: palette.text, borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 700 }}>
                             {report.risk_level}
                           </span>
                         </div>
                       </div>
-                      <div style={{ color: palette.navy, fontWeight: 800 }}>Open →</div>
+                      <div style={{ color: palette.navy, fontWeight: 800 }}>{messages.dashboard.open}</div>
                     </div>
                   </Link>
                 );
