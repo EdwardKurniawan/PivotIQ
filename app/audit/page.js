@@ -668,11 +668,6 @@ export default function AuditPage() {
                     <p style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7, margin: 0 }}>
                       Suggested from your matched title family, title wording, and industry. Start here, then search or add what is missing.
                     </p>
-                    {titleProfile && (
-                      <p style={{ color: palette.textSoft, fontSize: '12px', lineHeight: 1.7, margin: '8px 0 0' }}>
-                        Using O*NET title family: {titleRecommendationContext.titleFamily}
-                      </p>
-                    )}
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '12px' }}>
