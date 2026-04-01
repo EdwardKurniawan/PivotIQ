@@ -1,0 +1,6 @@
+.DS_Store
+.env.local
+.next
+node_modules
+*.log
+SESSION_STATE.md

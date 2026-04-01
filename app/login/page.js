@@ -1,0 +1,206 @@
+'use client';
+
+import { useMemo, useState } from 'react';
+import Link from 'next/link';
+import { createSupabaseBrowserClient } from '../../lib/supabase/browser';
+
+const palette = {
+  bg: '#F4EFE7',
+  panel: 'rgba(255, 255, 255, 0.78)',
+  panelStrong: '#13202A',
+  border: 'rgba(19, 27, 35, 0.08)',
+  text: '#131B23',
+  textMuted: '#50606B',
+  textSoft: '#6D7A84',
+  cream: '#FFF9F2',
+  orange: '#F28A43',
+  teal: '#1B6F63',
+  navy: '#13202A',
+};
+
+export default function LoginPage() {
+  const supabase = useMemo(() => createSupabaseBrowserClient(), []);
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState('idle');
+  const [message, setMessage] = useState('');
+  const authConfigured = Boolean(supabase);
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    if (!supabase) {
+      setStatus('error');
+      setMessage('Supabase auth is not configured yet. Add Supabase env vars before testing magic-link login.');
+      return;
+    }
+
+    setStatus('loading');
+    setMessage('');
+
+    const redirectTo = `${window.location.origin}/auth/callback?next=/dashboard`;
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: redirectTo },
+    });
+
+    if (error) {
+      setStatus('error');
+      setMessage(error.message);
+      return;
+    }
+
+    setStatus('success');
+    setMessage('Magic link sent. Open your email and use the sign-in link to reach your dashboard.');
+  };
+
+  return (
+    <div style={{ minHeight: '100vh', background: palette.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', position: 'relative', overflow: 'hidden' }}>
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          pointerEvents: 'none',
+          background:
+            'radial-gradient(circle at 18% 0%, rgba(242, 138, 67, 0.16), transparent 26%), radial-gradient(circle at 82% 12%, rgba(27, 111, 99, 0.14), transparent 28%)',
+        }}
+      />
+
+      <div style={{ width: '100%', maxWidth: '1040px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px', alignItems: 'stretch', position: 'relative', zIndex: 2 }}>
+        <div
+          style={{
+            borderRadius: '30px',
+            padding: '30px',
+            background: palette.panelStrong,
+            border: `1px solid ${palette.border}`,
+            boxShadow: '0 28px 80px rgba(19, 32, 42, 0.16)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            gap: '22px',
+          }}
+        >
+          <div>
+            <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', marginBottom: '28px' }}>
+              <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: 'linear-gradient(135deg, #F28A43, #1B6F63)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#071015', fontWeight: 900 }}>
+                P
+              </div>
+              <div>
+                <div style={{ color: 'white', fontSize: '17px', fontWeight: 800, letterSpacing: '-0.03em' }}>PivotIQ</div>
+                <div style={{ color: palette.textSoft, fontSize: '12px' }}>Account access</div>
+              </div>
+            </Link>
+
+            <div style={{ color: '#9FD6CE', fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '14px' }}>
+              Save your momentum
+            </div>
+            <h1 style={{ color: 'white', fontSize: 'clamp(34px, 6vw, 56px)', fontWeight: 900, letterSpacing: '-0.05em', lineHeight: 0.96, margin: '0 0 14px', fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif' }}>
+              Come back to your reports, not just your browser tab.
+            </h1>
+            <p style={{ color: palette.textMuted, fontSize: '16px', lineHeight: 1.76, margin: 0 }}>
+              A magic link lets users save audit history, revisit structured reports, and keep milestone progress synced across sessions.
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gap: '12px' }}>
+            {[
+              'Saved report history',
+              'Persistent roadmap progress',
+              'Reminder-ready account state',
+            ].map((item) => (
+              <div
+                key={item}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  borderRadius: '18px',
+                  padding: '14px 16px',
+                  background: 'rgba(255,255,255,0.06)',
+                  border: `1px solid ${palette.border}`,
+                  color: '#E7EDF0',
+                  fontSize: '14px',
+                  fontWeight: 700,
+                }}
+              >
+                <span style={{ width: '24px', height: '24px', borderRadius: '10px', background: 'rgba(27, 111, 99, 0.14)', color: '#1B6F63', border: '1px solid rgba(27, 111, 99, 0.16)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1B6F63" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M6.5 12.5L10.2 16L17.5 8.7" />
+                  </svg>
+                </span>
+                {item}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div
+          style={{
+            borderRadius: '30px',
+            padding: '30px',
+            background: palette.panel,
+            border: `1px solid ${palette.border}`,
+            boxShadow: '0 24px 70px rgba(19, 33, 45, 0.12)',
+          }}
+        >
+          <div style={{ color: '#A7602E', fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '12px' }}>
+            Magic-link sign in
+          </div>
+          <h2 style={{ color: palette.text, fontSize: '28px', fontWeight: 900, letterSpacing: '-0.04em', margin: '0 0 10px' }}>
+            Send the link
+          </h2>
+          <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.72, marginBottom: '24px' }}>
+            No password, no setup friction. We email a secure sign-in link and drop you into the dashboard.
+          </p>
+
+          {!authConfigured && (
+            <div style={{ marginBottom: '18px', padding: '14px 16px', borderRadius: '18px', border: '1px solid rgba(242, 138, 67, 0.22)', background: 'rgba(242, 138, 67, 0.10)', color: '#8B4A1B', fontSize: '14px', lineHeight: 1.65 }}>
+              Supabase is not configured yet. Add `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` to enable accounts.
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit}>
+            <label className="section-label" style={{ color: '#7A5A43' }}>Email address</label>
+            <input
+              className="piq-input"
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              placeholder="you@example.com"
+              style={{ marginBottom: '18px' }}
+            />
+            <button
+              disabled={!email || status === 'loading'}
+              style={!email || status === 'loading'
+                ? { width: '100%', border: 'none', borderRadius: '20px', background: palette.navy, color: '#FFF7F1', padding: '17px 22px', fontSize: '16px', fontWeight: 900, opacity: 0.45, cursor: 'default', boxShadow: 'none' }
+                : { width: '100%', border: 'none', borderRadius: '20px', background: palette.navy, color: '#FFF7F1', padding: '17px 22px', fontSize: '16px', fontWeight: 900, cursor: 'pointer', boxShadow: '0 18px 40px rgba(19, 32, 42, 0.18)' }}
+            >
+              {status === 'loading' ? 'Sending magic link…' : 'Send Magic Link →'}
+            </button>
+          </form>
+
+          {message && (
+            <div
+              style={{
+                marginTop: '16px',
+                borderRadius: '18px',
+                padding: '14px 16px',
+                background: status === 'success' ? 'rgba(65,194,174,0.10)' : 'rgba(255,143,77,0.09)',
+                border: `1px solid ${status === 'success' ? 'rgba(65,194,174,0.22)' : 'rgba(255,143,77,0.22)'}`,
+                color: status === 'success' ? '#1B6F63' : '#A7602E',
+                fontSize: '13px',
+                lineHeight: 1.65,
+              }}
+            >
+              {message}
+            </div>
+          )}
+
+          <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
+            <Link href="/report" style={{ color: palette.textMuted, fontSize: '13px', fontWeight: 700 }}>Continue without account</Link>
+            <Link href="/dashboard" style={{ color: palette.navy, fontSize: '13px', fontWeight: 800 }}>Go to dashboard →</Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
