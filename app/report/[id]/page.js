@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import ReportExperience from '../../../components/report-experience';
 import { normalizeReportData } from '../../../lib/report-data';
 import { createSupabaseServerClient } from '../../../lib/supabase/server';
+import { getServerLocale } from '../../../lib/i18n-server';
 
 async function loadPersistedReport(id) {
   const supabase = createSupabaseServerClient();
@@ -65,5 +66,5 @@ export default async function PersistedReportPage({ params }) {
   const payload = await loadPersistedReport(params.id);
   if (!payload?.reportData) notFound();
 
-  return <ReportExperience payload={payload} embedded={false} />;
+  return <ReportExperience payload={{ ...payload, uiLocale: getServerLocale() }} embedded={false} />;
 }

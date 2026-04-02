@@ -452,7 +452,7 @@ function TeaserView({ payload, onCheckout, loading }) {
   const color = riskColor(summary.overall_score);
   const bestPivot = pivots[0];
   const interpretation = reportData.interpretation || {};
-  const messages = getMessages(payload.locale || reportData.locale || getBrowserLocale());
+  const messages = getMessages(payload.uiLocale || payload.locale || getBrowserLocale() || reportData.locale);
 
   return (
     <div style={{ minHeight: '100vh', background: palette.bg, paddingBottom: '90px', position: 'relative', overflow: 'hidden' }}>
@@ -642,7 +642,7 @@ export default function ReportExperience({ payload, embedded = false }) {
   const careerRoi = reportData.career_roi || {};
   const first30Days = reportData.first_30_days || {};
   const storageScope = useMemo(() => getStorageScope(reportData, payload.reportId), [reportData, payload.reportId]);
-  const messages = getMessages(payload.locale || reportData.locale || getBrowserLocale());
+  const messages = getMessages(payload.uiLocale || payload.locale || getBrowserLocale() || reportData.locale);
 
   useEffect(() => {
     const storedTier = payload.tier || localStorage.getItem('pivotiq_tier') || 'free';
@@ -1238,7 +1238,7 @@ export default function ReportExperience({ payload, embedded = false }) {
               </div>
               <div style={{ display: 'grid', gap: '14px' }}>
                 {(pivot.skill_gaps || []).map((skill) => (
-                  <SkillGapCard key={`${pivot.id}-${skill.skill_name}`} skill={skill} color={pColor} />
+                  <SkillGapCard key={`${pivot.id}-${skill.skill_name}`} skill={skill} color={pColor} messages={messages} />
                 ))}
               </div>
             </div>

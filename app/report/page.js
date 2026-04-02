@@ -35,7 +35,8 @@ export default function ReportPage() {
 
       setPayload({
         ...stored,
-        locale: stored.locale || stored.reportData?.locale || getBrowserLocale(),
+        locale: stored.reportData?.locale || stored.locale || 'en',
+        uiLocale: getBrowserLocale(),
         reportData,
         tier: localStorage.getItem('pivotiq_tier') || 'free',
       });
