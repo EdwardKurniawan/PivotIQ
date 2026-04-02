@@ -5,24 +5,15 @@ import LanguageSwitcher from '../components/language-switcher';
 import MobileStickyCta from '../components/mobile-sticky-cta';
 import { getMessages } from '../lib/i18n';
 import { getServerLocale } from '../lib/i18n-server';
+import { buildPageMetadata } from '../lib/seo';
 
-export const metadata = {
-  title: 'AI Career Risk Scanner for White-Collar Professionals',
-  description: 'Run a free AI career risk scan to see which parts of your role are exposed, which strengths still compound, and which adjacent pivots make sense next.',
-  alternates: {
-    canonical: '/',
-  },
-  openGraph: {
-    title: 'AI Career Risk Scanner for White-Collar Professionals',
-    description: 'See AI risk by task, identify believable adjacent pivots, and get a practical transition roadmap.',
-    url: '/',
-    type: 'website',
-  },
-  twitter: {
-    title: 'AI Career Risk Scanner for White-Collar Professionals',
-    description: 'See AI risk by task, identify believable adjacent pivots, and get a practical transition roadmap.',
-  },
-};
+export function generateMetadata() {
+  return buildPageMetadata({
+    locale: getServerLocale(),
+    key: 'home',
+    path: '/',
+  });
+}
 
 const sampleTasks = [
   {
@@ -109,6 +100,7 @@ export default function Home() {
   const valueCards = messages.home.valueCards.map(([eyebrow, title, body]) => ({ eyebrow, title, body }));
   const pivotLanes = messages.home.pivotLanes.map(([label, title, body]) => ({ label, title, body }));
   const roadmapSteps = messages.home.roadmapSteps.map(([number, title, body]) => ({ number, title, body }));
+  const searchIntentItems = messages.home.searchIntentItems.map(([title, body]) => ({ title, body }));
   const sampleTaskNotes = messages.home.sampleNotes;
   const sampleTaskLabels = messages.home.sampleTaskLabels;
   const softwareSchema = {
@@ -455,6 +447,86 @@ export default function Home() {
 
       <ScrollReveal
         as="section"
+        className="home-search-intent-section"
+        style={{
+          position: 'relative',
+          zIndex: 2,
+          maxWidth: '1220px',
+          margin: '0 auto',
+          padding: '0 28px 52px',
+          display: 'grid',
+          gridTemplateColumns: 'minmax(0, 0.92fr) minmax(320px, 1.08fr)',
+          gap: '22px',
+          alignItems: 'start',
+        }}
+      >
+        <ScrollReveal
+          delay={40}
+          style={{
+            ...shellCardStyle(),
+            borderRadius: '34px',
+            padding: '30px',
+          }}
+        >
+          <div style={{ fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6A7882', marginBottom: '12px', fontWeight: 800 }}>
+            {messages.home.searchIntentEyebrow}
+          </div>
+          <div
+            style={{
+              fontSize: 'clamp(34px, 5vw, 58px)',
+              lineHeight: 0.98,
+              letterSpacing: '-0.055em',
+              fontWeight: 700,
+              fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif',
+              marginBottom: '14px',
+              maxWidth: '560px',
+            }}
+          >
+            {messages.home.searchIntentTitle}
+          </div>
+          <p style={{ fontSize: '17px', lineHeight: 1.76, color: '#495863', maxWidth: '600px', margin: 0 }}>
+            {messages.home.searchIntentBody}
+          </p>
+        </ScrollReveal>
+
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: '16px',
+          }}
+        >
+          {searchIntentItems.map((item, index) => (
+            <ScrollReveal
+              key={item.title}
+              className="home-hover-lift"
+              delay={index * 80}
+              style={{
+                ...shellCardStyle(),
+                borderRadius: '26px',
+                padding: '22px',
+              }}
+            >
+              <div
+                style={{
+                  fontSize: '22px',
+                  lineHeight: 1.05,
+                  letterSpacing: '-0.04em',
+                  fontWeight: 700,
+                  fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif',
+                  marginBottom: '10px',
+                }}
+              >
+                {item.title}
+              </div>
+              <div style={{ fontSize: '14px', lineHeight: 1.72, color: '#50606B' }}>{item.body}</div>
+            </ScrollReveal>
+          ))}
+        </div>
+      </ScrollReveal>
+
+      <ScrollReveal
+        as="section"
         className="home-value-section"
         style={{
           position: 'relative',
@@ -605,7 +677,7 @@ export default function Home() {
         >
           <div>
             <div style={{ fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9DADB7', marginBottom: '10px', fontWeight: 800 }}>
-              How it works
+              {messages.home.closingEyebrow}
             </div>
             <div
               style={{
@@ -618,10 +690,10 @@ export default function Home() {
                 maxWidth: '620px',
               }}
             >
-              Start with the free scan. Unlock the roadmap only if the diagnosis earns your trust.
+              {messages.home.closingTitle}
             </div>
             <p style={{ fontSize: '17px', lineHeight: 1.72, color: '#C3CFD5', maxWidth: '600px' }}>
-              The free layer should already feel useful. The paid layer exists to turn that clarity into a concrete pivot plan with milestones and skill priorities.
+              {messages.home.closingBody}
             </p>
           </div>
 
@@ -667,7 +739,7 @@ export default function Home() {
                 boxShadow: '0 18px 40px rgba(242, 138, 67, 0.24)',
               }}
             >
-              Start the scan
+              {messages.home.closingCta}
             </Link>
           </div>
         </div>

@@ -584,6 +584,7 @@ input, textarea, select { font-family: var(--font); }
   .hide-mobile { display: none !important; }
   .home-hero,
   .home-hero-long,
+  .home-search-intent-section,
   .home-lanes-section,
   .home-lanes-section-long,
   .home-closing-shell {
@@ -672,8 +673,10 @@ input, textarea, select { font-family: var(--font); }
   .home-roadmap-card > div { padding: 14px !important; border-radius: 18px !important; }
   .home-metrics-grid { grid-template-columns: 1fr !important; }
   .home-value-section,
+  .home-search-intent-section,
   .home-lanes-section,
   .home-closing-section { padding-left: 16px !important; padding-right: 16px !important; }
+  .home-search-intent-section { padding-bottom: 56px !important; gap: 18px !important; }
   .home-value-section { padding-bottom: 56px !important; }
   .home-lanes-section { padding-bottom: 64px !important; gap: 18px !important; }
   .home-lanes-intro-long > div:first-child { font-size: 34px !important; max-width: 100% !important; }
