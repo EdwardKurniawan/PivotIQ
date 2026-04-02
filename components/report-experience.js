@@ -991,13 +991,13 @@ export default function ReportExperience({ payload, embedded = false }) {
               <div style={{ position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: 'minmax(0, 0.9fr) minmax(0, 1.1fr)', gap: '20px' }} className="two-col">
                 <div>
                   <div style={{ color: pColor, fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '10px' }}>
-                    Strategic read
+                    {messages.report.strategicRead}
                   </div>
                   <div style={{ color: palette.text, fontSize: '28px', fontWeight: 900, lineHeight: 1.02, letterSpacing: '-0.04em', marginBottom: '10px', fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif' }}>
-                    The role is not collapsing evenly. The leverage is moving.
+                    {messages.report.strategicReadTitle}
                   </div>
                   <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.8 }}>
-                    This report is strongest when it helps you separate the work that is getting compressed from the work that becomes more valuable when AI enters the workflow.
+                    {messages.report.strategicReadBody}
                   </div>
                 </div>
 
@@ -1006,7 +1006,7 @@ export default function ReportExperience({ payload, embedded = false }) {
                     [messages.report.whatWeakensFirst, summary.narrative],
                     [messages.report.whatStillCompounds, interpretation.durable_advantages?.[0] || summary.what_this_means],
                     [messages.report.whyThisPathWinsNow, pivot.why_this_path_wins || pivot.outcome || pivot.fit_summary],
-                    [messages.report.whatToDoThisWeek, reportData.next_move?.explanation || 'Set a start date, pick the first milestone, and turn the roadmap into visible motion.'],
+                    [messages.report.whatToDoThisWeek, reportData.next_move?.explanation || messages.report.defaultWeeklyMove],
                   ].map(([label, value]) => (
                     <div key={label} style={{ padding: '14px 16px', borderRadius: '16px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
                       <div style={{ color: palette.textSoft, fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px' }}>
