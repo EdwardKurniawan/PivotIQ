@@ -101,6 +101,7 @@ export default function Home() {
   const pivotLanes = messages.home.pivotLanes.map(([label, title, body]) => ({ label, title, body }));
   const roadmapSteps = messages.home.roadmapSteps.map(([number, title, body]) => ({ number, title, body }));
   const searchIntentItems = messages.home.searchIntentItems.map(([title, body]) => ({ title, body }));
+  const faqItems = messages.home.faqItems.map(([question, answer]) => ({ question, answer }));
   const sampleTaskNotes = messages.home.sampleNotes;
   const sampleTaskLabels = messages.home.sampleTaskLabels;
   const softwareSchema = {
@@ -117,6 +118,18 @@ export default function Home() {
     description:
       'PivotIQ helps white-collar professionals understand AI career risk at the task level, discover believable adjacent pivots, and follow a transition roadmap.',
     url: siteUrl,
+  };
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqItems.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
   };
 
   return (
@@ -141,6 +154,10 @@ export default function Home() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
 
       <nav
@@ -645,6 +662,83 @@ export default function Home() {
                 </div>
                 <div style={{ fontSize: '15px', lineHeight: 1.72, color: '#50606B' }}>{lane.body}</div>
               </div>
+            </ScrollReveal>
+          ))}
+        </div>
+      </ScrollReveal>
+
+      <ScrollReveal
+        as="section"
+        className="home-faq-section"
+        style={{
+          position: 'relative',
+          zIndex: 2,
+          maxWidth: '1220px',
+          margin: '0 auto',
+          padding: '0 28px 88px',
+          display: 'grid',
+          gridTemplateColumns: 'minmax(280px, 0.72fr) minmax(0, 1.28fr)',
+          gap: '22px',
+          alignItems: 'start',
+        }}
+      >
+        <ScrollReveal
+          delay={40}
+          style={{
+            ...shellCardStyle(),
+            borderRadius: '34px',
+            padding: '30px',
+          }}
+        >
+          <div style={{ fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6A7882', marginBottom: '12px', fontWeight: 800 }}>
+            {messages.home.faqEyebrow}
+          </div>
+          <div
+            style={{
+              fontSize: 'clamp(34px, 5vw, 58px)',
+              lineHeight: 0.98,
+              letterSpacing: '-0.055em',
+              fontWeight: 700,
+              fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif',
+              marginBottom: '14px',
+              maxWidth: '520px',
+            }}
+          >
+            {messages.home.faqTitle}
+          </div>
+          <p style={{ fontSize: '17px', lineHeight: 1.76, color: '#495863', maxWidth: '520px', margin: 0 }}>
+            {messages.home.faqBody}
+          </p>
+        </ScrollReveal>
+
+        <div style={{ display: 'grid', gap: '14px' }}>
+          {faqItems.map((item, index) => (
+            <ScrollReveal
+              key={item.question}
+              as="article"
+              delay={index * 70}
+              className="home-hover-lift"
+              style={{
+                ...shellCardStyle(),
+                borderRadius: '26px',
+                padding: '22px 24px',
+              }}
+            >
+              <h2
+                style={{
+                  margin: '0 0 10px',
+                  fontSize: '24px',
+                  lineHeight: 1.08,
+                  letterSpacing: '-0.04em',
+                  fontWeight: 700,
+                  fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif',
+                }}
+              >
+                {item.question}
+              </h2>
+              <p style={{ margin: 0, fontSize: '15px', lineHeight: 1.75, color: '#50606B' }}>
+                {item.answer}
+              </p>
             </ScrollReveal>
           ))}
         </div>
