@@ -1,6 +1,15 @@
 import { LegalPage } from '../../components/legal-page';
 import { getMessages } from '../../lib/i18n';
 import { getServerLocale } from '../../lib/i18n-server';
+import { buildPageMetadata } from '../../lib/seo';
+
+export function generateMetadata() {
+  return buildPageMetadata({
+    locale: getServerLocale(),
+    key: 'privacy',
+    path: '/privacy',
+  });
+}
 
 export default function PrivacyPage() {
   const locale = getServerLocale();
