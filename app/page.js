@@ -69,11 +69,12 @@ function primaryLinkStyle() {
     justifyContent: 'center',
     padding: '18px 24px',
     borderRadius: '999px',
-    background: palette.navy,
-    color: '#FFF7F1',
+    background: 'linear-gradient(135deg, #F28A43, #F6C06D)',
+    color: '#13202A',
     fontSize: '16px',
     fontWeight: 800,
-    boxShadow: '0 24px 54px rgba(19, 32, 42, 0.18)',
+    border: '1px solid rgba(242, 138, 67, 0.34)',
+    boxShadow: '0 22px 48px rgba(242, 138, 67, 0.24)',
   };
 }
 
@@ -213,7 +214,7 @@ export default function Home() {
           </p>
 
           <div className="home-reveal-4 home-hero-actions" style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', marginBottom: '26px' }}>
-            <Link href="/audit" style={primaryLinkStyle()}>
+            <Link className="home-primary-cta" href="/audit" style={primaryLinkStyle()}>
               {messages.common.runFreeScan}
             </Link>
             <div
@@ -407,6 +408,10 @@ export default function Home() {
           </div>
         </div>
       </ScrollReveal>
+
+      <Link className="home-mobile-sticky-cta" href="/audit">
+        {messages.common.runFreeScan}
+      </Link>
 
       <ScrollReveal
         as="section"

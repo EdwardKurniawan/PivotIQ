@@ -244,6 +244,20 @@ input, textarea, select { font-family: var(--font); }
   border-color: rgba(19, 27, 35, 0.14);
 }
 
+.home-primary-cta {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.home-primary-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 28px 56px rgba(242, 138, 67, 0.3) !important;
+  filter: saturate(1.02);
+}
+
+.home-mobile-sticky-cta {
+  display: none;
+}
+
 .home-hero-long {
   grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr) !important;
   gap: 22px !important;
@@ -638,6 +652,7 @@ input, textarea, select { font-family: var(--font); }
   .home-hero-copy p { font-size: 16px !important; line-height: 1.62 !important; margin-bottom: 22px !important; }
   .home-hero-actions { flex-direction: column !important; align-items: stretch !important; }
   .home-hero-actions > * { width: 100% !important; text-align: center !important; justify-content: center !important; }
+  .home-primary-cta { display: none !important; }
   .home-hero-note { font-size: 14px !important; line-height: 1.45 !important; }
   .home-hero-art { min-height: auto !important; gap: 12px !important; }
   .home-hero-long .home-roadmap-card { width: 100% !important; right: auto !important; }
@@ -683,6 +698,28 @@ input, textarea, select { font-family: var(--font); }
   .dashboard-shell { padding: 0 16px 56px !important; }
   .dashboard-nav { padding: 18px 16px !important; border-radius: 22px !important; }
   .dashboard-card-head { grid-template-columns: 1fr !important; }
+  .home-mobile-sticky-cta {
+    display: inline-flex !important;
+    position: fixed;
+    left: 16px;
+    right: 16px;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 14px);
+    z-index: 30;
+    align-items: center;
+    justify-content: center;
+    min-height: 56px;
+    padding: 16px 20px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #F28A43, #F6C06D);
+    color: #13202A;
+    font-size: 15px;
+    font-weight: 900;
+    letter-spacing: -0.01em;
+    border: 1px solid rgba(242, 138, 67, 0.34);
+    box-shadow: 0 20px 44px rgba(242, 138, 67, 0.28);
+    backdrop-filter: blur(14px);
+  }
+  body { padding-bottom: 92px; }
   .home-reveal-0,
   .home-reveal-1,
   .home-reveal-2,
