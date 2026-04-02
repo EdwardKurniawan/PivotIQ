@@ -166,7 +166,7 @@ export default function Home() {
 
       <ScrollReveal
         as="section"
-        className="home-hero"
+        className={`home-hero ${locale !== 'en' ? 'home-hero-long' : ''}`}
         style={{
           position: 'relative',
           zIndex: 2,
@@ -179,7 +179,7 @@ export default function Home() {
           alignItems: 'end',
         }}
       >
-        <div className="home-hero-copy">
+        <div className={`home-hero-copy ${locale !== 'en' ? 'home-hero-copy-long' : ''}`}>
           <div className="home-badge home-reveal-1" style={{ ...badgeStyle(), marginBottom: '18px' }}>{messages.home.badge}</div>
 
           <h1
@@ -460,7 +460,7 @@ export default function Home() {
 
       <ScrollReveal
         as="section"
-        className="home-lanes-section"
+        className={`home-lanes-section ${locale !== 'en' ? 'home-lanes-section-long' : ''}`}
         style={{
           position: 'relative',
           zIndex: 2,
@@ -473,7 +473,7 @@ export default function Home() {
           alignItems: 'start',
         }}
       >
-        <ScrollReveal delay={40} style={{ paddingTop: '10px' }}>
+        <ScrollReveal delay={40} className={locale !== 'en' ? 'home-lanes-intro-long' : ''} style={{ paddingTop: '10px' }}>
           <div
             style={{
               fontSize: 'clamp(42px, 6vw, 72px)',

@@ -243,6 +243,42 @@ input, textarea, select { font-family: var(--font); }
   box-shadow: 0 30px 80px rgba(19, 33, 45, 0.16);
   border-color: rgba(19, 27, 35, 0.14);
 }
+
+.home-hero-long {
+  grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr) !important;
+  gap: 22px !important;
+}
+
+.home-hero-copy-long h1 {
+  font-size: clamp(54px, 7.2vw, 96px) !important;
+  max-width: 720px !important;
+}
+
+.home-hero-copy-long p {
+  max-width: 620px !important;
+}
+
+.home-hero-long .home-hero-art {
+  min-height: 580px !important;
+}
+
+.home-hero-long .home-roadmap-card {
+  width: 40% !important;
+  right: 4px !important;
+}
+
+.home-lanes-intro-long {
+  max-width: 520px;
+}
+
+.home-lanes-intro-long > div:first-child {
+  font-size: clamp(36px, 5vw, 62px) !important;
+  max-width: 520px !important;
+}
+
+.home-lanes-intro-long > p {
+  max-width: 500px !important;
+}
 .home-badge {
   position: relative;
   overflow: hidden;
@@ -533,7 +569,9 @@ input, textarea, select { font-family: var(--font); }
   .piq-nav { padding: 16px 24px; }
   .hide-mobile { display: none !important; }
   .home-hero,
+  .home-hero-long,
   .home-lanes-section,
+  .home-lanes-section-long,
   .home-closing-shell {
     grid-template-columns: 1fr !important;
   }
@@ -593,13 +631,16 @@ input, textarea, select { font-family: var(--font); }
   .home-nav-cta { display: none !important; }
   .home-badge { margin-bottom: 14px !important; }
   .home-hero { padding: 20px 16px 28px !important; gap: 16px !important; }
+  .home-hero-long { gap: 16px !important; }
   .home-hero-copy { max-width: 100% !important; }
   .home-hero-copy h1 { font-size: 38px !important; line-height: 0.96 !important; letter-spacing: -0.055em !important; }
+  .home-hero-copy-long h1 { font-size: 34px !important; max-width: 100% !important; }
   .home-hero-copy p { font-size: 16px !important; line-height: 1.62 !important; margin-bottom: 22px !important; }
   .home-hero-actions { flex-direction: column !important; align-items: stretch !important; }
   .home-hero-actions > * { width: 100% !important; text-align: center !important; justify-content: center !important; }
   .home-hero-note { font-size: 14px !important; line-height: 1.45 !important; }
   .home-hero-art { min-height: auto !important; gap: 12px !important; }
+  .home-hero-long .home-roadmap-card { width: 100% !important; right: auto !important; }
   .home-glow { inset: 8px 0 0 0 !important; filter: blur(12px) !important; }
   .home-float-slow { transform: none !important; padding: 12px !important; border-radius: 24px !important; animation: fadeUp 0.8s 0.2s ease both !important; }
   .home-sample-card { width: 100% !important; }
@@ -617,6 +658,8 @@ input, textarea, select { font-family: var(--font); }
   .home-closing-section { padding-left: 16px !important; padding-right: 16px !important; }
   .home-value-section { padding-bottom: 56px !important; }
   .home-lanes-section { padding-bottom: 64px !important; gap: 18px !important; }
+  .home-lanes-intro-long > div:first-child { font-size: 34px !important; max-width: 100% !important; }
+  .home-lanes-intro-long > p { max-width: 100% !important; }
   .home-lanes-list { gap: 12px !important; }
   .home-closing-shell { padding: 24px !important; border-radius: 30px !important; }
   .home-lane-card { padding: 18px !important; }
