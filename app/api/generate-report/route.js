@@ -4,9 +4,14 @@ import { createSupabaseServerClient } from '../../../lib/supabase/server';
 import { appendFile } from 'node:fs/promises';
 
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
-const OPENROUTER_MODEL = process.env.OPENROUTER_MODEL || 'qwen/qwen3.6-plus-preview:free';
-const OPENROUTER_MAX_TOKENS = Number(process.env.OPENROUTER_MAX_TOKENS || 7000);
-const OPENROUTER_TIMEOUT_MS = Number(process.env.OPENROUTER_TIMEOUT_MS || 35000);
+const OPENROUTER_MODEL = process.env.OPENROUTER_MODEL || 'anthropic/claude-sonnet-4.6';
+const IS_CLAUDE_SONNET_46 = OPENROUTER_MODEL.includes('anthropic/claude-sonnet-4.6');
+const OPENROUTER_MAX_TOKENS = IS_CLAUDE_SONNET_46
+  ? Math.min(Number(process.env.OPENROUTER_MAX_TOKENS || 16000), 16000)
+  : Number(process.env.OPENROUTER_MAX_TOKENS || 7000);
+const OPENROUTER_TIMEOUT_MS = IS_CLAUDE_SONNET_46
+  ? Math.max(Number(process.env.OPENROUTER_TIMEOUT_MS || 240000), 240000)
+  : Number(process.env.OPENROUTER_TIMEOUT_MS || 35000);
 const PERSIST_TIMEOUT_MS = Number(process.env.PERSIST_TIMEOUT_MS || 15000);
 const DEBUG_LOG_PATH = '/tmp/pivotiq-generate-report.log';
 
