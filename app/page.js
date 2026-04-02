@@ -6,6 +6,24 @@ import MobileStickyCta from '../components/mobile-sticky-cta';
 import { getMessages } from '../lib/i18n';
 import { getServerLocale } from '../lib/i18n-server';
 
+export const metadata = {
+  title: 'AI Career Risk Scanner for White-Collar Professionals',
+  description: 'Run a free AI career risk scan to see which parts of your role are exposed, which strengths still compound, and which adjacent pivots make sense next.',
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title: 'AI Career Risk Scanner for White-Collar Professionals',
+    description: 'See AI risk by task, identify believable adjacent pivots, and get a practical transition roadmap.',
+    url: '/',
+    type: 'website',
+  },
+  twitter: {
+    title: 'AI Career Risk Scanner for White-Collar Professionals',
+    description: 'See AI risk by task, identify believable adjacent pivots, and get a practical transition roadmap.',
+  },
+};
+
 const sampleTasks = [
   {
     key: 'task1',
@@ -82,6 +100,7 @@ function primaryLinkStyle() {
 export default function Home() {
   const locale = getServerLocale();
   const messages = getMessages(locale);
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.pivotiq.app';
   const metrics = [
     { label: messages.home.metrics[0], value: messages.home.metricValues[0], tone: '#F28A43' },
     { label: messages.home.metrics[1], value: messages.home.metricValues[1], tone: '#15384B' },
@@ -92,6 +111,21 @@ export default function Home() {
   const roadmapSteps = messages.home.roadmapSteps.map(([number, title, body]) => ({ number, title, body }));
   const sampleTaskNotes = messages.home.sampleNotes;
   const sampleTaskLabels = messages.home.sampleTaskLabels;
+  const softwareSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'PivotIQ',
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'Web',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD',
+    },
+    description:
+      'PivotIQ helps white-collar professionals understand AI career risk at the task level, discover believable adjacent pivots, and follow a transition roadmap.',
+    url: siteUrl,
+  };
 
   return (
     <div
@@ -111,6 +145,10 @@ export default function Home() {
           background:
             'radial-gradient(circle at 14% 8%, rgba(242, 138, 67, 0.16), transparent 28%), radial-gradient(circle at 84% 14%, rgba(27, 111, 99, 0.14), transparent 28%), linear-gradient(180deg, rgba(255,255,255,0.28) 0%, rgba(244,239,231,0) 36%)',
         }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareSchema) }}
       />
 
       <nav

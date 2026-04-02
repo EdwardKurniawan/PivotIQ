@@ -3,31 +3,95 @@ import './globals.css';
 import { getMessages } from '../lib/i18n';
 import { getServerLocale } from '../lib/i18n-server';
 
+const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.pivotiq.app';
+const metadataBase = new URL(siteUrl);
+
 export const metadata = {
-  metadataBase: new URL('http://localhost:3002'),
-  title: 'PivotIQ — See Which Parts of Your Job Are Next',
-  description: 'A premium task-level career scan that shows where AI pressure is building, what still compounds, and where to pivot next.',
+  metadataBase,
+  title: {
+    default: 'PivotIQ | AI Career Risk Scanner and Pivot Planner',
+    template: '%s | PivotIQ',
+  },
+  description: 'PivotIQ helps white-collar professionals see which parts of their job are most exposed to AI, identify believable adjacent pivots, and follow a practical career transition plan.',
+  keywords: [
+    'AI career risk',
+    'job automation risk',
+    'career pivot',
+    'career planning',
+    'white collar jobs',
+    'AI job displacement',
+    'career transition roadmap',
+    'future of work',
+  ],
   authors: [{ name: 'Jened', url: 'https://pivotiq.app' }],
+  alternates: {
+    canonical: '/',
+  },
+  category: 'career development',
+  applicationName: 'PivotIQ',
+  referrer: 'origin-when-cross-origin',
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+      'max-video-preview': -1,
+    },
+  },
   openGraph: {
-    title: 'PivotIQ — See Which Parts of Your Job Are Next',
-    description: 'Start with a free scan. See risk by task, not by title, then decide if the full pivot roadmap earns your trust.',
+    title: 'PivotIQ | AI Career Risk Scanner and Pivot Planner',
+    description: 'Start with a free scan. See AI risk by task, not just by title, then decide where to pivot next.',
     type: 'website',
     siteName: 'PivotIQ',
+    url: siteUrl,
+    locale: 'en_US',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'PivotIQ — See Which Parts of Your Job Are Next',
-    description: 'See what is exposed, what still matters, and what to do next.',
+    title: 'PivotIQ | AI Career Risk Scanner and Pivot Planner',
+    description: 'See what is exposed, what still compounds, and what to do next before the market decides for you.',
   },
 };
 
 export default function RootLayout({ children }) {
   const locale = getServerLocale();
   const messages = getMessages(locale);
+  const organizationSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'PivotIQ',
+    legalName: 'Jened',
+    email: 'contact@pivotiq.app',
+    url: siteUrl,
+    identifier: 'KvK 90948211',
+  };
+  const websiteSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'PivotIQ',
+    url: siteUrl,
+    inLanguage: locale,
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: `${siteUrl}/audit`,
+      'query-input': 'required name=career-risk-scan',
+    },
+  };
 
   return (
     <html lang={locale}>
       <body style={{ margin: 0 }}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        />
         {children}
         <footer
           style={{
