@@ -17,6 +17,24 @@ export default function sitemap() {
       priority: 0.9,
     },
     {
+      url: `${siteUrl}/ai-career-risk`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.85,
+    },
+    {
+      url: `${siteUrl}/career-pivot-planner`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.85,
+    },
+    {
+      url: `${siteUrl}/white-collar-jobs-at-risk-from-ai`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.85,
+    },
+    {
       url: `${siteUrl}/login`,
       lastModified: now,
       changeFrequency: 'monthly',
