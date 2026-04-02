@@ -154,11 +154,12 @@ export default function Home() {
             style={{
               padding: '13px 18px',
               borderRadius: '999px',
-              color: '#FFF7F1',
-              background: palette.navy,
+              color: '#13202A',
+              background: 'linear-gradient(135deg, #F28A43, #F6C06D)',
+              border: '1px solid rgba(242, 138, 67, 0.34)',
               fontSize: '14px',
               fontWeight: 800,
-              boxShadow: '0 18px 40px rgba(18, 31, 41, 0.16)',
+              boxShadow: '0 18px 40px rgba(242, 138, 67, 0.24)',
             }}
           >
             {messages.common.startFreeScan}
@@ -621,9 +622,11 @@ export default function Home() {
                 width: '100%',
                 padding: '16px 18px',
                 borderRadius: '999px',
-                background: '#F4EFE7',
-                color: palette.navy,
+                background: 'linear-gradient(135deg, #F28A43, #F6C06D)',
+                color: '#13202A',
+                border: '1px solid rgba(242, 138, 67, 0.34)',
                 fontWeight: 800,
+                boxShadow: '0 18px 40px rgba(242, 138, 67, 0.24)',
               }}
             >
               Start the scan
