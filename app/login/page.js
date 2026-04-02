@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { createSupabaseBrowserClient } from '../../lib/supabase/browser';
 import { BrandLogo } from '../../components/brand-logo';
 import LanguageSwitcher from '../../components/language-switcher';
@@ -25,10 +25,11 @@ const palette = {
 export default function LoginPage() {
   const [locale, setLocale] = useState(getBrowserLocale());
   const router = useRouter();
+  const searchParams = useSearchParams();
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [authMethod, setAuthMethod] = useState('magic');
+  const [authMethod, setAuthMethod] = useState(searchParams.get('mode') === 'recovery' ? 'password' : 'magic');
   const [status, setStatus] = useState('idle');
   const [message, setMessage] = useState('');
   const authConfigured = Boolean(supabase);
@@ -118,6 +119,31 @@ export default function LoginPage() {
 
     setStatus('success');
     setMessage(messages.login.signupSuccess);
+  };
+
+  const handlePasswordReset = async () => {
+    if (!supabase) {
+      setStatus('error');
+      setMessage(messages.login.supabaseWarning);
+      return;
+    }
+
+    setStatus('loading');
+    setMessage('');
+
+    const redirectTo = `${window.location.origin}/login?mode=recovery`;
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo,
+    });
+
+    if (error) {
+      setStatus('error');
+      setMessage(error.message);
+      return;
+    }
+
+    setStatus('success');
+    setMessage(messages.login.resetSuccess);
   };
 
   return (
@@ -302,6 +328,19 @@ export default function LoginPage() {
               </button>
               <p style={{ margin: 0, color: palette.textSoft, fontSize: '13px', lineHeight: 1.65 }}>
                 {messages.login.passwordCreateHint}
+              </p>
+              <button
+                type="button"
+                onClick={handlePasswordReset}
+                disabled={!email || status === 'loading'}
+                style={!email || status === 'loading'
+                  ? { width: '100%', borderRadius: '18px', background: 'transparent', border: `1px solid ${palette.border}`, color: palette.textMuted, padding: '14px 18px', fontSize: '14px', fontWeight: 800, opacity: 0.6, cursor: 'default' }
+                  : { width: '100%', borderRadius: '18px', background: 'transparent', border: `1px solid ${palette.border}`, color: palette.text, padding: '14px 18px', fontSize: '14px', fontWeight: 800, cursor: 'pointer' }}
+              >
+                {status === 'loading' ? messages.login.resettingPassword : messages.login.resetPassword}
+              </button>
+              <p style={{ margin: 0, color: palette.textSoft, fontSize: '13px', lineHeight: 1.65 }}>
+                {messages.login.resetHint}
               </p>
             </div>
           )}
