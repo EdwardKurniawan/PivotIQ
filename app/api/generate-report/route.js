@@ -141,20 +141,25 @@ Critical quality rules:
 11. Learning resources must be direct, trustworthy destination pages, not articles, opinion pieces, or newsroom links.
 12. Add a decisive recommendation layer so the user knows whether to stay, run a hybrid transition, or start an active pivot now.
 13. Add a proof-based first-30-days plan centered on visible proof, not vague learning.
+14. Do not use lazy pivot titles like "AI-Enabled [current role]" or minor rewrites of the user's current title.
+15. Do not default to generic gaps like prompt engineering or prompt design unless the pivot itself is explicitly an AI-builder, automation, or LLM-operator role.
 
 Pivot differentiation rules:
 - Each pivot must target a materially different destination job family, not 5 variants of the same role.
 - The safest transition should stay closest to the user's current context and existing credibility.
+- The safest transition must still be a real adjacent destination role, not the user's current title with "AI-enabled" added to it.
 - The strongest leverage fit should convert the user's most transferable strengths into a clearly adjacent role with a different hiring logic than the safest option.
 - The fastest cash recovery path should emphasize quickest credible monetization, employability, or consulting-style income recovery.
 - The highest upside path should be a more ambitious strategic bet with a meaningfully different compensation and scope profile.
 - The long-term platform bet should point to a role family likely to compound as AI adoption deepens over the next few years, even if it takes more setup.
 - The titles, fit summaries, tradeoffs, why-this-wins logic, and what-you-are-betting-on sections must clearly differentiate the pivots.
+- Avoid placeholder or label-like titles. Every pivot title must name a real destination role.
 - Do not reuse the same core destination nouns across multiple pivot titles unless the job family is genuinely different.
 - Each pivot must have distinct failure risks and distinct reasons it could plausibly win.
 - Only use learning resource URLs from trusted learning providers or official product docs.
 - Good examples: Coursera course pages, Udemy course pages, DataCamp course pages, edX course/program pages, DeepLearning.AI course pages, official docs, or official books.
 - Bad examples: HBR articles, Medium posts, newsletters, generic blogs, or pages that are not the actual learning destination.
+- Prefer role-specific capability gaps over generic AI-literacy gaps. The skill gap should explain what changes employability in that pivot.
 - The decision section must make a clear recommendation: stay-and-redesign, hybrid-transition, or active-pivot.
 - The career_roi section should express the economic tradeoff clearly enough that the user can judge whether the move is worth it.
 - The first_30_days section should be practical, specific, and biased toward proof assets over passive study.
@@ -363,6 +368,38 @@ function compactPivotDescriptor(pivot) {
     .join(' ');
 }
 
+function hasMeaningfulPivotTitle(title) {
+  const normalized = normalizeText(title);
+  if (!normalized) return false;
+  return !PIVOT_DECISION_FRAMES.includes(normalized);
+}
+
+function isTitleTooCloseToCurrentRole(title, currentJobTitle) {
+  const normalizedTitle = normalizeText(title);
+  const normalizedCurrent = normalizeText(currentJobTitle);
+
+  if (!normalizedTitle || !normalizedCurrent) return false;
+  if (normalizedTitle === normalizedCurrent) return true;
+  if (normalizedTitle === `ai enabled ${normalizedCurrent}`) return true;
+  if (normalizedTitle.endsWith(normalizedCurrent) && normalizedTitle.includes('ai enabled')) return true;
+
+  const titleTokens = uniqueTokens(normalizedTitle);
+  const currentTokens = uniqueTokens(normalizedCurrent);
+  const overlap = jaccardSimilarity(titleTokens, currentTokens);
+
+  return overlap >= 0.8;
+}
+
+function pivotAllowsGenericAIGaps(pivot) {
+  const normalized = normalizeText([pivot?.title, pivot?.decision_frame, pivot?.fit_summary].join(' '));
+  return /(ai program manager|automation consultant|llm|prompt|agent|workflow automation|ai builder|automation engineer)/.test(normalized);
+}
+
+function isGenericAIGap(skillGap) {
+  const normalized = normalizeText([skillGap?.skill_name, skillGap?.how_to_close_gap].join(' '));
+  return /(prompt design|prompt engineering|prompting|learn prompting|ai literacy|generative ai basics)/.test(normalized);
+}
+
 function analyzePivotSimilarity(pivots) {
   const diagnostics = [];
 
@@ -404,7 +441,7 @@ function analyzePivotSimilarity(pivots) {
   return diagnostics;
 }
 
-function validatePivotDifferentiation(reportData) {
+function validatePivotDifferentiation(reportData, currentJobTitle) {
   const pivots = Array.isArray(reportData?.pivots) ? reportData.pivots : [];
   const issues = [];
 
@@ -425,6 +462,23 @@ function validatePivotDifferentiation(reportData) {
     issues.push(`duplicate decision frame(s): ${[...new Set(duplicateFrames)].join(', ')}`);
   }
 
+  pivots.forEach((pivot) => {
+    if (!hasMeaningfulPivotTitle(pivot?.title)) {
+      issues.push(`pivot title must name a real destination role, received "${pivot?.title || 'Untitled'}"`);
+    }
+
+    if (isTitleTooCloseToCurrentRole(pivot?.title, currentJobTitle)) {
+      issues.push(`pivot title stays too close to current role: "${pivot?.title}" vs "${currentJobTitle}"`);
+    }
+
+    const skillGaps = Array.isArray(pivot?.skill_gaps) ? pivot.skill_gaps : [];
+    skillGaps.forEach((skillGap) => {
+      if (isGenericAIGap(skillGap) && !pivotAllowsGenericAIGaps(pivot)) {
+        issues.push(`generic AI skill gap "${skillGap?.skill_name}" is too weak for pivot "${pivot?.title}"`);
+      }
+    });
+  });
+
   const diagnostics = analyzePivotSimilarity(pivots);
   diagnostics.forEach((diagnostic) => {
     if (diagnostic.reasons.length) {
@@ -438,7 +492,7 @@ function validatePivotDifferentiation(reportData) {
   };
 }
 
-function buildRetryInstruction(validationIssues) {
+function buildRetryInstruction(validationIssues, currentJobTitle) {
   return `Your previous draft did not differentiate the pivots enough.
 
 Fix these issues and regenerate the full JSON report from scratch:
@@ -447,6 +501,8 @@ Fix these issues and regenerate the full JSON report from scratch:
 Regeneration rules:
 - Keep exactly 5 pivots.
 - Keep the required decision frames: safest transition, strongest leverage fit, fastest cash recovery, highest upside, long-term platform bet.
+- Do not reuse or lightly restate the user's current title (${currentJobTitle || 'current role'}) as a pivot title.
+- Do not use generic gaps like prompt design unless the pivot is explicitly an AI-builder or automation role.
 - Change any overlapping pivot titles so each points to a materially different destination job family.
 - Make each pivot's hiring logic, tradeoffs, and bet clearly distinct.
 - Return the complete JSON object again, not a patch or explanation.`;
@@ -721,7 +777,7 @@ export async function POST(request) {
           linkedin_profile_url: intakeProfile.linkedin_profile_url,
         });
 
-        validation = validatePivotDifferentiation(reportData);
+        validation = validatePivotDifferentiation(reportData, jobTitle);
         await logGenerateReportDebug('route_validation_complete', {
           valid: validation.valid,
           issues: validation.issues,
@@ -733,7 +789,7 @@ export async function POST(request) {
           try {
             const retryAttempt = await requestStructuredReport(
               userMessage,
-              buildRetryInstruction(validation.issues)
+              buildRetryInstruction(validation.issues, jobTitle)
             );
             rawModelOutput = retryAttempt.rawModelOutput;
             await logGenerateReportDebug('route_retry_attempt_complete', {
@@ -751,7 +807,7 @@ export async function POST(request) {
                 clarifiers: intakeProfile.clarifiers,
                 linkedin_profile_url: intakeProfile.linkedin_profile_url,
               });
-              const retryValidation = validatePivotDifferentiation(retriedReportData);
+              const retryValidation = validatePivotDifferentiation(retriedReportData, jobTitle);
 
               if (retryValidation.valid) {
                 reportData = retriedReportData;
