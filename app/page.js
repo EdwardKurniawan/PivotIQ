@@ -2,6 +2,7 @@ import Link from 'next/link';
 import ScrollReveal from '../components/scroll-reveal';
 import { BrandLogo } from '../components/brand-logo';
 import LanguageSwitcher from '../components/language-switcher';
+import MobileStickyCta from '../components/mobile-sticky-cta';
 import { getMessages } from '../lib/i18n';
 import { getServerLocale } from '../lib/i18n-server';
 
@@ -409,9 +410,9 @@ export default function Home() {
         </div>
       </ScrollReveal>
 
-      <Link className="home-mobile-sticky-cta" href="/audit">
+      <MobileStickyCta href="/audit">
         {messages.common.runFreeScan}
-      </Link>
+      </MobileStickyCta>
 
       <ScrollReveal
         as="section"

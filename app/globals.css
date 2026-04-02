@@ -254,7 +254,7 @@ input, textarea, select { font-family: var(--font); }
   filter: saturate(1.02);
 }
 
-.home-mobile-sticky-cta {
+.home-mobile-top-cta {
   display: none;
 }
 
@@ -652,7 +652,10 @@ input, textarea, select { font-family: var(--font); }
   .home-hero-copy p { font-size: 16px !important; line-height: 1.62 !important; margin-bottom: 22px !important; }
   .home-hero-actions { flex-direction: column !important; align-items: stretch !important; }
   .home-hero-actions > * { width: 100% !important; text-align: center !important; justify-content: center !important; }
-  .home-primary-cta { display: none !important; }
+  .home-primary-cta {
+    display: inline-flex !important;
+    position: relative;
+  }
   .home-hero-note { font-size: 14px !important; line-height: 1.45 !important; }
   .home-hero-art { min-height: auto !important; gap: 12px !important; }
   .home-hero-long .home-roadmap-card { width: 100% !important; right: auto !important; }
@@ -698,12 +701,12 @@ input, textarea, select { font-family: var(--font); }
   .dashboard-shell { padding: 0 16px 56px !important; }
   .dashboard-nav { padding: 18px 16px !important; border-radius: 22px !important; }
   .dashboard-card-head { grid-template-columns: 1fr !important; }
-  .home-mobile-sticky-cta {
+  .home-mobile-top-cta {
     display: inline-flex !important;
     position: fixed;
     left: 16px;
     right: 16px;
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 14px);
+    top: calc(env(safe-area-inset-top, 0px) + 12px);
     z-index: 30;
     align-items: center;
     justify-content: center;
@@ -718,8 +721,16 @@ input, textarea, select { font-family: var(--font); }
     border: 1px solid rgba(242, 138, 67, 0.34);
     box-shadow: 0 20px 44px rgba(242, 138, 67, 0.28);
     backdrop-filter: blur(14px);
+    opacity: 0;
+    transform: translateY(-12px);
+    pointer-events: none;
+    transition: opacity 0.18s ease, transform 0.18s ease;
   }
-  body { padding-bottom: 92px; }
+  .home-mobile-top-cta.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
   .home-reveal-0,
   .home-reveal-1,
   .home-reveal-2,
