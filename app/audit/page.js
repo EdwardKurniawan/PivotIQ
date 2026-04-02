@@ -454,13 +454,14 @@ export default function AuditPage() {
     width: '100%',
     border: 'none',
     borderRadius: '20px',
-    background: palette.navy,
-    color: '#FFF7F1',
+    background: 'linear-gradient(135deg, #F28A43, #F6C06D)',
+    color: '#13202A',
+    border: '1px solid rgba(242, 138, 67, 0.34)',
     padding: '17px 22px',
     fontSize: '16px',
     fontWeight: 900,
     cursor: 'pointer',
-    boxShadow: '0 18px 40px rgba(19, 32, 42, 0.18)',
+    boxShadow: '0 22px 48px rgba(242, 138, 67, 0.24)',
   };
   const secondaryButtonStyle = {
     width: '100%',
