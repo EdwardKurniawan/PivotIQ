@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { createSupabaseBrowserClient } from '../../lib/supabase/browser';
 import { BrandLogo } from '../../components/brand-logo';
 import LanguageSwitcher from '../../components/language-switcher';
@@ -23,8 +24,11 @@ const palette = {
 
 export default function LoginPage() {
   const [locale, setLocale] = useState(getBrowserLocale());
+  const router = useRouter();
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [authMethod, setAuthMethod] = useState('magic');
   const [status, setStatus] = useState('idle');
   const [message, setMessage] = useState('');
   const authConfigured = Boolean(supabase);
@@ -56,6 +60,64 @@ export default function LoginPage() {
 
     setStatus('success');
     setMessage(messages.login.sentMessage);
+  };
+
+  const handlePasswordSignIn = async (event) => {
+    event.preventDefault();
+
+    if (!supabase) {
+      setStatus('error');
+      setMessage(messages.login.supabaseWarning);
+      return;
+    }
+
+    setStatus('loading');
+    setMessage('');
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      setStatus('error');
+      setMessage(error.message);
+      return;
+    }
+
+    setStatus('success');
+    setMessage(messages.login.passwordSuccess);
+    router.push('/dashboard');
+    router.refresh();
+  };
+
+  const handlePasswordSignup = async () => {
+    if (!supabase) {
+      setStatus('error');
+      setMessage(messages.login.supabaseWarning);
+      return;
+    }
+
+    setStatus('loading');
+    setMessage('');
+
+    const redirectTo = `${window.location.origin}/auth/callback?next=/dashboard`;
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: redirectTo,
+      },
+    });
+
+    if (error) {
+      setStatus('error');
+      setMessage(error.message);
+      return;
+    }
+
+    setStatus('success');
+    setMessage(messages.login.signupSuccess);
   };
 
   return (
@@ -143,14 +205,43 @@ export default function LoginPage() {
             <LanguageSwitcher locale={locale} onChange={setLocale} />
           </div>
           <div style={{ color: '#A7602E', fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '12px' }}>
-            {messages.login.sendLabel}
+            {authMethod === 'magic' ? messages.login.sendLabel : messages.login.passwordLabel}
           </div>
           <h2 style={{ color: palette.text, fontSize: '28px', fontWeight: 900, letterSpacing: '-0.04em', margin: '0 0 10px' }}>
-            {messages.login.sendTitle}
+            {authMethod === 'magic' ? messages.login.sendTitle : messages.login.passwordTitle}
           </h2>
           <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.72, marginBottom: '24px' }}>
-            {messages.login.sendBody}
+            {authMethod === 'magic' ? messages.login.sendBody : messages.login.passwordBody}
           </p>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '10px', marginBottom: '18px' }}>
+            <button
+              type="button"
+              onClick={() => {
+                setAuthMethod('magic');
+                setStatus('idle');
+                setMessage('');
+              }}
+              style={authMethod === 'magic'
+                ? { border: 'none', borderRadius: '16px', background: palette.navy, color: '#FFF7F1', padding: '12px 14px', fontSize: '14px', fontWeight: 800, cursor: 'pointer' }
+                : { borderRadius: '16px', background: 'rgba(255,255,255,0.62)', border: `1px solid ${palette.border}`, color: palette.text, padding: '12px 14px', fontSize: '14px', fontWeight: 800, cursor: 'pointer' }}
+            >
+              {messages.login.methodMagic}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setAuthMethod('password');
+                setStatus('idle');
+                setMessage('');
+              }}
+              style={authMethod === 'password'
+                ? { border: 'none', borderRadius: '16px', background: palette.navy, color: '#FFF7F1', padding: '12px 14px', fontSize: '14px', fontWeight: 800, cursor: 'pointer' }
+                : { borderRadius: '16px', background: 'rgba(255,255,255,0.62)', border: `1px solid ${palette.border}`, color: palette.text, padding: '12px 14px', fontSize: '14px', fontWeight: 800, cursor: 'pointer' }}
+            >
+              {messages.login.methodPassword}
+            </button>
+          </div>
 
           {!authConfigured && (
             <div style={{ marginBottom: '18px', padding: '14px 16px', borderRadius: '18px', border: '1px solid rgba(242, 138, 67, 0.22)', background: 'rgba(242, 138, 67, 0.10)', color: '#8B4A1B', fontSize: '14px', lineHeight: 1.65 }}>
@@ -158,7 +249,7 @@ export default function LoginPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={authMethod === 'magic' ? handleSubmit : handlePasswordSignIn}>
             <label className="section-label" style={{ color: '#7A5A43' }}>{messages.login.emailLabel}</label>
             <input
               className="piq-input"
@@ -168,15 +259,52 @@ export default function LoginPage() {
               placeholder={messages.login.emailPlaceholder}
               style={{ marginBottom: '18px' }}
             />
+            {authMethod === 'password' && (
+              <>
+                <label className="section-label" style={{ color: '#7A5A43' }}>{messages.login.passwordField}</label>
+                <input
+                  className="piq-input"
+                  type="password"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  placeholder={messages.login.passwordPlaceholder}
+                  style={{ marginBottom: '18px' }}
+                />
+              </>
+            )}
             <button
-              disabled={!email || status === 'loading'}
-              style={!email || status === 'loading'
+              disabled={!email || status === 'loading' || (authMethod === 'password' && !password)}
+              style={!email || status === 'loading' || (authMethod === 'password' && !password)
                 ? { width: '100%', border: 'none', borderRadius: '20px', background: palette.navy, color: '#FFF7F1', padding: '17px 22px', fontSize: '16px', fontWeight: 900, opacity: 0.45, cursor: 'default', boxShadow: 'none' }
                 : { width: '100%', border: 'none', borderRadius: '20px', background: palette.navy, color: '#FFF7F1', padding: '17px 22px', fontSize: '16px', fontWeight: 900, cursor: 'pointer', boxShadow: '0 18px 40px rgba(19, 32, 42, 0.18)' }}
             >
-              {status === 'loading' ? messages.login.sendingButton : messages.login.sendButton}
+              {status === 'loading'
+                ? authMethod === 'magic'
+                  ? messages.login.sendingButton
+                  : messages.login.signingIn
+                : authMethod === 'magic'
+                  ? messages.login.sendButton
+                  : messages.login.passwordSignIn}
             </button>
           </form>
+
+          {authMethod === 'password' && (
+            <div style={{ marginTop: '14px', display: 'grid', gap: '12px' }}>
+              <button
+                type="button"
+                onClick={handlePasswordSignup}
+                disabled={!email || !password || status === 'loading'}
+                style={!email || !password || status === 'loading'
+                  ? { width: '100%', borderRadius: '18px', background: 'rgba(255,255,255,0.62)', border: `1px solid ${palette.border}`, color: palette.textMuted, padding: '14px 18px', fontSize: '14px', fontWeight: 800, opacity: 0.6, cursor: 'default' }
+                  : { width: '100%', borderRadius: '18px', background: 'rgba(255,255,255,0.62)', border: `1px solid ${palette.border}`, color: palette.text, padding: '14px 18px', fontSize: '14px', fontWeight: 800, cursor: 'pointer' }}
+              >
+                {status === 'loading' ? messages.login.creatingAccount : messages.login.createAccount}
+              </button>
+              <p style={{ margin: 0, color: palette.textSoft, fontSize: '13px', lineHeight: 1.65 }}>
+                {messages.login.passwordCreateHint}
+              </p>
+            </div>
+          )}
 
           {message && (
             <div
