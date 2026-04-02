@@ -66,9 +66,6 @@ export default function RootLayout({ children }) {
               <Link href="/terms" style={{ color: '#5D6A74', textDecoration: 'none' }}>
                 {messages.common.terms}
               </Link>
-              <Link href="/refunds" style={{ color: '#5D6A74', textDecoration: 'none' }}>
-                {messages.common.refunds}
-              </Link>
               <Link href="/contact" style={{ color: '#5D6A74', textDecoration: 'none' }}>
                 {messages.common.contact}
               </Link>
