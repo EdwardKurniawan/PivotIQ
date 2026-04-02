@@ -1,5 +1,6 @@
 import { Resend } from 'resend';
 import { createClient } from '@supabase/supabase-js';
+import { getSupabaseUrl } from '../../../../lib/supabase/config';
 
 function buildReminderEmail(type, report) {
   const jobTitle = report.job_title;
@@ -34,7 +35,9 @@ export async function POST(request) {
       return Response.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
-    if (!process.env.SUPABASE_SERVICE_ROLE_KEY || !process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    const supabaseUrl = getSupabaseUrl();
+
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY || !supabaseUrl) {
       return Response.json({ success: false, error: 'Supabase service credentials not configured.' }, { status: 400 });
     }
 
@@ -43,7 +46,7 @@ export async function POST(request) {
     }
 
     const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      supabaseUrl,
       process.env.SUPABASE_SERVICE_ROLE_KEY
     );
     const resend = new Resend(process.env.RESEND_API_KEY);
@@ -87,4 +90,3 @@ export async function POST(request) {
     return Response.json({ success: false, error: 'Failed to run reminder worker.' }, { status: 500 });
   }
 }
-
