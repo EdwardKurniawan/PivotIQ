@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import './globals.css';
 import { getMessages } from '../lib/i18n';
 import { getServerLocale } from '../lib/i18n-server';
@@ -41,7 +42,8 @@ export default function RootLayout({ children }) {
               margin: '0 auto',
               display: 'flex',
               justifyContent: 'space-between',
-              gap: '12px',
+              alignItems: 'center',
+              gap: '14px',
               flexWrap: 'wrap',
               color: '#5D6A74',
               fontSize: '13px',
@@ -49,12 +51,34 @@ export default function RootLayout({ children }) {
             }}
           >
             <span>{messages.common.footerCompany}</span>
-            <a
-              href="mailto:contact@pivotiq.app"
-              style={{ color: '#13202A', textDecoration: 'none', fontWeight: 600 }}
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '10px 18px',
+                alignItems: 'center',
+                justifyContent: 'flex-end',
+              }}
             >
-              {messages.common.footerContact}
-            </a>
+              <Link href="/privacy" style={{ color: '#5D6A74', textDecoration: 'none' }}>
+                {messages.common.privacy}
+              </Link>
+              <Link href="/terms" style={{ color: '#5D6A74', textDecoration: 'none' }}>
+                {messages.common.terms}
+              </Link>
+              <Link href="/refunds" style={{ color: '#5D6A74', textDecoration: 'none' }}>
+                {messages.common.refunds}
+              </Link>
+              <Link href="/contact" style={{ color: '#5D6A74', textDecoration: 'none' }}>
+                {messages.common.contact}
+              </Link>
+              <a
+                href="mailto:contact@pivotiq.app"
+                style={{ color: '#13202A', textDecoration: 'none', fontWeight: 600 }}
+              >
+                {messages.common.footerContact}
+              </a>
+            </div>
           </div>
         </footer>
       </body>
