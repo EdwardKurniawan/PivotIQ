@@ -17,6 +17,7 @@ function recommendationAccent(type) {
 
 function decisionFrameLabel(frame, messages) {
   const labels = messages?.report?.decisionFrames || {};
+  if (frame === 'stay and advance') return messages?.report?.stayAndAdvance || 'Stay and advance with AI';
   if (frame === 'highest upside') return labels.highestUpside || 'Highest upside';
   if (frame === 'strongest leverage fit') return labels.strongestLeverageFit || 'Strongest leverage fit';
   if (frame === 'fastest cash recovery') return labels.fastestCashRecovery || 'Fastest cash recovery';
@@ -658,7 +659,7 @@ export default function ReportExperience({ payload, embedded = false }) {
   const [loading, setLoading] = useState(null);
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState('breakdown');
-  const [activePivot, setActivePivot] = useState(0);
+  const [selectedPlanPath, setSelectedPlanPath] = useState(0);
   const [expandedWeeks, setExpandedWeeks] = useState([1]);
   const [startDate, setStartDate] = useState(payload.startDate || '');
   const [completedWeeks, setCompletedWeeks] = useState(payload.completedWeeks || []);
@@ -670,16 +671,21 @@ export default function ReportExperience({ payload, embedded = false }) {
   const profile = reportData.profile || {};
   const summary = reportData.summary || {};
   const pivots = reportData.pivots || [];
-  const pivot = pivots[activePivot] || pivots[0] || {};
+  const pivot = pivots[0] || {};
   const color = riskColor(summary.overall_score || 0);
-  const pColor = getPivotColor(activePivot) || '#6366F1';
+  const pColor = getPivotColor(0) || '#6366F1';
   const interpretation = reportData.interpretation || {};
   const decision = reportData.decision || {};
   const careerRoi = reportData.career_roi || {};
   const stayAndAdvance = reportData.stay_and_advance || {};
+  const stayPath = reportData.stay_path || null;
   const first30Days = reportData.first_30_days || {};
   const storageScope = useMemo(() => getStorageScope(reportData, payload.reportId), [reportData, payload.reportId]);
   const messages = getMessages(payload.uiLocale || payload.locale || getBrowserLocale() || reportData.locale);
+  const reportPaths = useMemo(() => (tier === 'full' && stayPath ? [stayPath, ...pivots] : pivots), [tier, stayPath, pivots]);
+  const activePath = reportPaths[selectedPlanPath] || reportPaths[0] || pivot || {};
+  const isStayPlan = tier === 'full' && Boolean(stayPath) && selectedPlanPath === 0;
+  const planColor = isStayPlan ? palette.teal : getPivotColor(Math.max(selectedPlanPath - (stayPath ? 1 : 0), 0)) || pColor;
 
   useEffect(() => {
     setReportData(payload.reportData);
@@ -689,6 +695,13 @@ export default function ReportExperience({ payload, embedded = false }) {
       setGenerationStatus('idle');
     }
   }, [payload.reportData, payload.tier]);
+
+  useEffect(() => {
+    if (!reportPaths.length) return;
+    if (selectedPlanPath > reportPaths.length - 1) {
+      setSelectedPlanPath(0);
+    }
+  }, [reportPaths, selectedPlanPath]);
 
   useEffect(() => {
     const storedTier = payload.tier || localStorage.getItem('pivotiq_tier') || 'free';
@@ -796,11 +809,11 @@ export default function ReportExperience({ payload, embedded = false }) {
   ]);
 
   const milestoneStatuses = useMemo(() => {
-    return (pivot.roadmap?.weeks || []).map((week, index) => ({
+    return (activePath.roadmap?.weeks || []).map((week, index) => ({
       week,
       status: getMilestoneStatus({ week, index, startDate, completedWeeks }),
     }));
-  }, [pivot, startDate, completedWeeks]);
+  }, [activePath, startDate, completedWeeks]);
 
   const currentFocus = milestoneStatuses.find((item) => item.status === 'current')
     || milestoneStatuses.find((item) => item.status === 'at_risk')
@@ -808,11 +821,11 @@ export default function ReportExperience({ payload, embedded = false }) {
     || milestoneStatuses[milestoneStatuses.length - 1];
 
   const skillGapCounts = useMemo(() => {
-    return (pivot.skill_gaps || []).reduce((acc, skill) => {
+    return (activePath.skill_gaps || []).reduce((acc, skill) => {
       acc[skill.gap_priority] = (acc[skill.gap_priority] || 0) + 1;
       return acc;
     }, { critical: 0, medium: 0, low: 0 });
-  }, [pivot]);
+  }, [activePath]);
 
   if (tier === 'full' && reportData?.generation_stage !== 'full_complete') {
     return (
@@ -843,8 +856,8 @@ export default function ReportExperience({ payload, embedded = false }) {
     );
   }
 
-  const completedCount = completedWeeks.filter((weekNumber) => (pivot.roadmap?.weeks || []).some((week) => week.week_number === weekNumber)).length;
-  const progressPercent = Math.round((completedCount / Math.max(pivot.roadmap?.weeks?.length || 1, 1)) * 100);
+  const completedCount = completedWeeks.filter((weekNumber) => (activePath.roadmap?.weeks || []).some((week) => week.week_number === weekNumber)).length;
+  const progressPercent = Math.round((completedCount / Math.max(activePath.roadmap?.weeks?.length || 1, 1)) * 100);
 
   const toggleExpandedWeek = (weekNumber) => {
     setExpandedWeeks((prev) => (
@@ -1013,150 +1026,6 @@ export default function ReportExperience({ payload, embedded = false }) {
                   <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7 }}>
                     {careerRoi.roi_read}
                   </div>
-                </div>
-              </div>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.15fr) minmax(280px, 0.85fr)', gap: '16px', marginBottom: '16px' }} className="two-col">
-              <div style={{ padding: '20px', borderRadius: '22px', background: 'rgba(27, 111, 99, 0.08)', border: '1px solid rgba(27, 111, 99, 0.16)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-                  <MonoIcon name="decision" tone="teal" />
-                  <div className="section-label" style={{ color: '#1B6F63', marginBottom: 0 }}>{messages.report.stayAndAdvance}</div>
-                </div>
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 12px', borderRadius: '999px', background: 'rgba(255,255,255,0.62)', border: '1px solid rgba(27, 111, 99, 0.16)', color: '#1B6F63', fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '12px' }}>
-                  {stayAndAdvance.urgency_label || messages.report.stayAndAdvanceUrgency}
-                </div>
-                <div style={{ color: palette.text, fontSize: '28px', fontWeight: 900, letterSpacing: '-0.04em', lineHeight: 1.02, marginBottom: '10px', fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif' }}>
-                  {stayAndAdvance.headline || messages.report.stayAndAdvanceFallbackTitle}
-                </div>
-                <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.8, marginBottom: '10px' }}>
-                  {stayAndAdvance.recommendation}
-                </div>
-                <div style={{ color: palette.textSoft, fontSize: '13px', lineHeight: 1.75 }}>
-                  {stayAndAdvance.rationale || messages.report.stayAndAdvanceBody}
-                </div>
-              </div>
-
-              <div style={{ padding: '18px', borderRadius: '22px', background: 'rgba(255,255,255,0.74)', border: `1px solid ${palette.border}` }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
-                  <MonoIcon name="roi" tone="default" />
-                  <div className="section-label" style={{ marginBottom: 0 }}>{messages.report.promotionPath}</div>
-                </div>
-                <div style={{ color: palette.text, fontSize: '20px', fontWeight: 900, letterSpacing: '-0.03em', marginBottom: '6px' }}>
-                  {stayAndAdvance.promotion_path?.next_title}
-                </div>
-                <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7, marginBottom: '12px' }}>
-                  {stayAndAdvance.promotion_path?.why_it_opens}
-                </div>
-                <div style={{ display: 'grid', gap: '10px' }}>
-                  <div style={{ padding: '12px 13px', borderRadius: '16px', background: 'rgba(244,239,231,0.9)', border: `1px solid ${palette.border}` }}>
-                    <div style={{ color: palette.textSoft, fontSize: '11px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '5px' }}>{messages.report.promotionPathLabels[0]}</div>
-                    <div style={{ color: palette.text, fontSize: '14px', fontWeight: 800, lineHeight: 1.35 }}>{stayAndAdvance.promotion_path?.timeline}</div>
-                  </div>
-                  <div style={{ padding: '12px 13px', borderRadius: '16px', background: 'rgba(244,239,231,0.9)', border: `1px solid ${palette.border}` }}>
-                    <div style={{ color: palette.textSoft, fontSize: '11px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '5px' }}>{messages.report.promotionPathLabels[1]}</div>
-                    <div style={{ display: 'grid', gap: '6px' }}>
-                      {(stayAndAdvance.promotion_path?.signals_to_build || []).map((item) => (
-                        <div key={item} style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{item}</div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div style={{ padding: '20px', borderRadius: '22px', background: 'rgba(255,255,255,0.7)', border: `1px solid ${palette.border}`, marginBottom: '16px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
-                <MonoIcon name="skill-gaps" tone="teal" />
-                <div>
-                  <div className="section-label" style={{ marginBottom: '4px' }}>{messages.report.leverageOpportunities}</div>
-                  <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>
-                    {messages.report.leverageOpportunitiesBody}
-                  </div>
-                </div>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '12px' }} className="two-col">
-                {(stayAndAdvance.leverage_opportunities || []).slice(0, 3).map((item) => (
-                  <div key={item.title} style={{ padding: '16px', borderRadius: '18px', background: 'rgba(27, 111, 99, 0.06)', border: '1px solid rgba(27, 111, 99, 0.14)' }}>
-                    <div style={{ color: '#1B6F63', fontSize: '12px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '8px' }}>{item.title}</div>
-                    <div style={{ color: palette.text, fontSize: '14px', fontWeight: 800, marginBottom: '6px' }}>{item.current_work}</div>
-                    <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65, marginBottom: '8px' }}>{item.ai_shift}</div>
-                    <div style={{ color: palette.textSoft, fontSize: '12px', lineHeight: 1.6 }}>{item.advantage_if_you_lead}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(280px, 0.85fr) minmax(0, 1.15fr)', gap: '16px', marginBottom: '16px' }} className="two-col">
-              <div style={{ padding: '20px', borderRadius: '22px', background: 'rgba(255,255,255,0.7)', border: `1px solid ${palette.border}` }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
-                  <MonoIcon name="task-diagnostics" tone="orange" />
-                  <div>
-                    <div className="section-label" style={{ marginBottom: '4px' }}>{messages.report.workRedesign}</div>
-                    <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>
-                      {messages.report.workRedesignBody}
-                    </div>
-                  </div>
-                </div>
-                <div style={{ display: 'grid', gap: '10px' }}>
-                  {[
-                    [messages.report.workRedesignBuckets[0], stayAndAdvance.work_redesign?.automate || [], 'rgba(242, 138, 67, 0.08)', '#8B4A1B'],
-                    [messages.report.workRedesignBuckets[1], stayAndAdvance.work_redesign?.augment || [], 'rgba(27, 111, 99, 0.08)', '#1B6F63'],
-                    [messages.report.workRedesignBuckets[2], stayAndAdvance.work_redesign?.protect || [], 'rgba(19, 32, 42, 0.06)', palette.text],
-                    [messages.report.workRedesignBuckets[3], stayAndAdvance.work_redesign?.lead || [], 'rgba(125, 211, 252, 0.12)', '#1E6586'],
-                  ].map(([label, items, bg, headingColor]) => (
-                    <div key={label} style={{ padding: '14px 16px', borderRadius: '18px', background: bg, border: `1px solid ${palette.border}` }}>
-                      <div style={{ color: headingColor, fontSize: '12px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '8px' }}>{label}</div>
-                      <div style={{ display: 'grid', gap: '6px' }}>
-                        {items.map((item) => (
-                          <div key={item} style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{item}</div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div style={{ padding: '20px', borderRadius: '22px', background: 'rgba(255,255,255,0.7)', border: `1px solid ${palette.border}` }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
-                  <MonoIcon name="proof" tone="default" />
-                  <div>
-                    <div className="section-label" style={{ marginBottom: '4px' }}>{messages.report.advance30Days}</div>
-                    <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>
-                      {messages.report.advance30DaysBody}
-                    </div>
-                  </div>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '12px', marginBottom: '12px' }} className="two-col">
-                  {[
-                    [messages.report.advance30DayLabels[0], stayAndAdvance.thirty_day_plan?.this_week || []],
-                    [messages.report.advance30DayLabels[1], stayAndAdvance.thirty_day_plan?.this_month || []],
-                  ].map(([label, items]) => (
-                    <div key={label} style={{ padding: '16px', borderRadius: '18px', background: 'rgba(244,239,231,0.9)', border: `1px solid ${palette.border}` }}>
-                      <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>{label}</div>
-                      <div style={{ display: 'grid', gap: '8px' }}>
-                        {items.map((item) => (
-                          <div key={item} style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{item}</div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div style={{ display: 'grid', gap: '10px', marginBottom: '12px' }}>
-                  <div style={{ padding: '14px 16px', borderRadius: '18px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
-                    <div style={{ color: palette.textSoft, fontSize: '11px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '6px' }}>{messages.report.advance30DayLabels[2]}</div>
-                    <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{stayAndAdvance.thirty_day_plan?.metric_to_move}</div>
-                  </div>
-                  <div style={{ padding: '14px 16px', borderRadius: '18px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
-                    <div style={{ color: palette.textSoft, fontSize: '11px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '6px' }}>{messages.report.advance30DayLabels[3]}</div>
-                    <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{stayAndAdvance.thirty_day_plan?.leadership_narrative}</div>
-                  </div>
-                </div>
-                <div style={{ padding: '16px', borderRadius: '18px', background: `${pColor}0F`, border: `1px solid ${pColor}22` }}>
-                  <div style={{ color: pColor, fontSize: '12px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '8px' }}>{messages.report.advance30DayLabels[4]}</div>
-                  <div style={{ color: palette.text, fontSize: '16px', fontWeight: 800, marginBottom: '6px' }}>{stayAndAdvance.thirty_day_plan?.proof_asset?.title}</div>
-                  <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7, marginBottom: '8px' }}>{stayAndAdvance.thirty_day_plan?.proof_asset?.description}</div>
-                  <div style={{ color: palette.textSoft, fontSize: '12px', lineHeight: 1.6 }}>{stayAndAdvance.thirty_day_plan?.proof_asset?.why_it_matters}</div>
                 </div>
               </div>
             </div>
@@ -1377,6 +1246,72 @@ export default function ReportExperience({ payload, embedded = false }) {
 
         {activeTab === 'pivots' && (
           <div style={{ display: 'grid', gap: '16px' }}>
+            {tier === 'full' && stayPath && (
+              <div
+                className="piq-card piq-card-clickable"
+                onClick={() => {
+                  setSelectedPlanPath(0);
+                  setActiveTab('plan');
+                }}
+                style={{ padding: '24px', border: `1px solid ${palette.teal}33`, background: 'linear-gradient(180deg, rgba(27,111,99,0.08), rgba(255,255,255,0.92))' }}
+              >
+                <div style={{ display: 'grid', gridTemplateColumns: 'auto minmax(0, 1fr) auto', gap: '16px', alignItems: 'center', marginBottom: '18px' }}>
+                  <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: 'rgba(27,111,99,0.14)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <MonoIcon name="decision" tone="teal" size={40} />
+                  </div>
+                  <div>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(27,111,99,0.12)', border: '1px solid rgba(27,111,99,0.24)', color: palette.teal, borderRadius: '999px', padding: '5px 10px', fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>
+                      {messages.report.stayAndAdvance}
+                    </div>
+                    <div style={{ color: palette.text, fontSize: '18px', fontWeight: 800, marginBottom: '6px' }}>{stayPath.title}</div>
+                    <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.7 }}>{stayAndAdvance.recommendation || stayPath.fit_summary}</div>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ color: palette.teal, fontSize: '28px', fontWeight: 900 }}>{stayPath.match_score}%</div>
+                    <div style={{ color: palette.textSoft, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px' }}>{messages.report.match}</div>
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '10px', marginBottom: '18px' }}>
+                  {[
+                    [messages.report.promotionPath, stayAndAdvance.promotion_path?.next_title || stayPath.title],
+                    [messages.report.pivotStats[2], stayPath.transition_time],
+                    [messages.report.advance30DayLabels[2], stayAndAdvance.thirty_day_plan?.metric_to_move],
+                    [messages.report.proofAssetToShip, stayAndAdvance.thirty_day_plan?.proof_asset?.title],
+                  ].map(([label, value]) => (
+                    <div key={label} style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '14px', padding: '12px 14px' }}>
+                      <div style={{ color: palette.textSoft, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px', fontWeight: 700 }}>{label}</div>
+                      <div style={{ color: palette.text, fontSize: '14px', fontWeight: 700 }}>{value}</div>
+                    </div>
+                  ))}
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }} className="two-col">
+                  <div style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '14px', padding: '14px' }}>
+                    <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>{messages.report.leverageOpportunities}</div>
+                    <div style={{ display: 'grid', gap: '8px' }}>
+                      {(stayAndAdvance.leverage_opportunities || []).slice(0, 3).map((item) => (
+                        <div key={item.title} style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>
+                          <strong style={{ color: palette.text }}>{item.title}:</strong> {item.ai_shift}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div style={{ background: 'rgba(27,111,99,0.08)', border: '1px solid rgba(27,111,99,0.18)', borderRadius: '14px', padding: '14px' }}>
+                    <div style={{ color: palette.teal, fontSize: '11px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '8px' }}>{messages.report.workRedesign}</div>
+                    <div style={{ display: 'grid', gap: '6px' }}>
+                      {[
+                        ...(stayAndAdvance.work_redesign?.automate || []),
+                        ...(stayAndAdvance.work_redesign?.augment || []),
+                        ...(stayAndAdvance.work_redesign?.lead || []),
+                      ].slice(0, 4).map((item) => (
+                        <div key={item} style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{item}</div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
             {pivots.map((item, index) => {
               const itemColor = getPivotColor(index) || '#6366F1';
               const criticalCount = item.skill_gaps?.filter((skill) => skill.gap_priority === 'critical').length || 0;
@@ -1385,7 +1320,7 @@ export default function ReportExperience({ payload, embedded = false }) {
                   key={item.id}
                   className="piq-card piq-card-clickable"
                   onClick={() => {
-                    setActivePivot(index);
+                    setSelectedPlanPath(stayPath && tier === 'full' ? index + 1 : index);
                     if (tier === 'full') setActiveTab('plan');
                   }}
                   style={{ padding: '24px', border: `1px solid ${itemColor}33` }}
@@ -1466,27 +1401,27 @@ export default function ReportExperience({ payload, embedded = false }) {
         {activeTab === 'plan' && tier === 'full' && (
           <>
             <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '18px' }}>
-              {pivots.map((item, index) => (
+              {reportPaths.map((item, index) => (
                 <button
                   key={item.id}
-                  onClick={() => setActivePivot(index)}
+                  onClick={() => setSelectedPlanPath(index)}
                   className="chip"
                   style={{
-                    background: activePivot === index ? `${getPivotColor(index)}20` : 'var(--bg-card)',
-                    color: activePivot === index ? getPivotColor(index) : 'var(--text-muted)',
-                    outline: activePivot === index ? `1.5px solid ${getPivotColor(index)}` : '1.5px solid var(--border)',
+                    background: selectedPlanPath === index ? `${index === 0 && stayPath ? palette.teal : getPivotColor(Math.max(index - (stayPath ? 1 : 0), 0))}20` : 'var(--bg-card)',
+                    color: selectedPlanPath === index ? (index === 0 && stayPath ? palette.teal : getPivotColor(Math.max(index - (stayPath ? 1 : 0), 0))) : 'var(--text-muted)',
+                    outline: selectedPlanPath === index ? `1.5px solid ${index === 0 && stayPath ? palette.teal : getPivotColor(Math.max(index - (stayPath ? 1 : 0), 0))}` : '1.5px solid var(--border)',
                   }}
                 >
-                  {getPivotIcon(index)} {item.title}
+                  {index === 0 && stayPath ? 'AI' : getPivotIcon(Math.max(index - (stayPath ? 1 : 0), 0))} {item.title}
                 </button>
               ))}
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.2fr) minmax(300px, 0.8fr)', gap: '18px', marginBottom: '24px' }} className="two-col">
-              <div className="piq-card" style={{ padding: '24px', background: `linear-gradient(160deg, ${pColor}12 0%, rgba(255, 255, 255, 0.94) 62%)`, border: `1px solid ${pColor}24`, boxShadow: '0 24px 50px rgba(19, 32, 42, 0.08)' }}>
-                <div style={{ color: pColor, fontSize: '11px', fontWeight: 800, letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '10px' }}>{messages.report.currentFocus}</div>
-                <h2 style={{ color: palette.text, fontSize: '24px', fontWeight: 900, marginBottom: '8px' }}>{currentFocus?.week?.title || pivot.title}</h2>
-                <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.75, marginBottom: '14px' }}>{currentFocus?.week?.goal || pivot.fit_summary}</p>
+              <div className="piq-card" style={{ padding: '24px', background: `linear-gradient(160deg, ${planColor}12 0%, rgba(255, 255, 255, 0.94) 62%)`, border: `1px solid ${planColor}24`, boxShadow: '0 24px 50px rgba(19, 32, 42, 0.08)' }}>
+                <div style={{ color: planColor, fontSize: '11px', fontWeight: 800, letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '10px' }}>{messages.report.currentFocus}</div>
+                <h2 style={{ color: palette.text, fontSize: '24px', fontWeight: 900, marginBottom: '8px' }}>{currentFocus?.week?.title || activePath.title}</h2>
+                <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.75, marginBottom: '14px' }}>{currentFocus?.week?.goal || activePath.fit_summary}</p>
                 {currentFocus?.week && (
                   <>
                     <div style={{ display: 'grid', gap: '10px', marginBottom: '14px' }}>
@@ -1500,7 +1435,7 @@ export default function ReportExperience({ payload, embedded = false }) {
                       </div>
                     </div>
                     <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                      <span style={{ padding: '8px 12px', borderRadius: '999px', background: `${statusStyles(currentFocus.status, pColor).bg}`, border: `1px solid ${statusStyles(currentFocus.status, pColor).border}`, color: statusStyles(currentFocus.status, pColor).fg, fontSize: '12px', fontWeight: 800, textTransform: 'uppercase' }}>
+                      <span style={{ padding: '8px 12px', borderRadius: '999px', background: `${statusStyles(currentFocus.status, planColor).bg}`, border: `1px solid ${statusStyles(currentFocus.status, planColor).border}`, color: statusStyles(currentFocus.status, planColor).fg, fontSize: '12px', fontWeight: 800, textTransform: 'uppercase' }}>
                         {currentFocus.status.replace('_', ' ')}
                       </span>
                       <span style={{ padding: '8px 12px', borderRadius: '999px', background: 'rgba(255,255,255,0.72)', border: `1px solid ${palette.border}`, color: palette.textMuted, fontSize: '12px', fontWeight: 700 }}>
@@ -1514,9 +1449,9 @@ export default function ReportExperience({ payload, embedded = false }) {
               <div className="piq-card" style={{ padding: '24px' }}>
                 <div style={{ color: '#10B981', fontSize: '11px', fontWeight: 800, letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '10px' }}>{messages.report.progressCockpit}</div>
                 <div style={{ color: palette.text, fontSize: '28px', fontWeight: 900, marginBottom: '4px' }}>{progressPercent}%</div>
-                <div style={{ color: palette.textSoft, fontSize: '13px', marginBottom: '14px' }}>{completedCount} of {pivot.roadmap?.weeks?.length || 0} milestones completed</div>
+                <div style={{ color: palette.textSoft, fontSize: '13px', marginBottom: '14px' }}>{completedCount} of {activePath.roadmap?.weeks?.length || 0} milestones completed</div>
                 <div style={{ height: '10px', background: 'var(--bg)', borderRadius: '999px', overflow: 'hidden', marginBottom: '18px' }}>
-                  <div style={{ width: `${progressPercent}%`, height: '100%', background: `linear-gradient(90deg, ${pColor}, ${pColor}AA)` }} />
+                  <div style={{ width: `${progressPercent}%`, height: '100%', background: `linear-gradient(90deg, ${planColor}, ${planColor}AA)` }} />
                 </div>
 
                 <label className="section-label" style={{ marginBottom: '8px' }}>{messages.report.roadmapStartDate}</label>
@@ -1538,13 +1473,13 @@ export default function ReportExperience({ payload, embedded = false }) {
                 <div>
                   <div className="section-label" style={{ marginBottom: '4px' }}>{messages.report.skillGapMap}</div>
                   <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.7 }}>
-                    {skillGapCounts.critical} critical gaps, {skillGapCounts.medium} medium gaps, {skillGapCounts.low} lower-priority gaps. Build order is designed to get the user employable fastest.
+                    {skillGapCounts.critical} critical gaps, {skillGapCounts.medium} medium gaps, {skillGapCounts.low} lower-priority gaps. Build order is designed to make this path credible as fast as possible.
                   </div>
                 </div>
               </div>
               <div style={{ display: 'grid', gap: '14px' }}>
-                {(pivot.skill_gaps || []).map((skill) => (
-                  <SkillGapCard key={`${pivot.id}-${skill.skill_name}`} skill={skill} color={pColor} messages={messages} />
+                {(activePath.skill_gaps || []).map((skill) => (
+                  <SkillGapCard key={`${activePath.id}-${skill.skill_name}`} skill={skill} color={planColor} messages={messages} />
                 ))}
               </div>
             </div>
@@ -1559,11 +1494,11 @@ export default function ReportExperience({ payload, embedded = false }) {
             <div style={{ display: 'grid', gap: '14px' }}>
               {milestoneStatuses.map(({ week, status }, index) => {
                 const isExpanded = expandedWeeks.includes(week.week_number);
-                const styles = statusStyles(status, pColor);
+                const styles = statusStyles(status, planColor);
                 const note = weekNotes[week.week_number] || '';
 
                 return (
-                  <div key={`${pivot.id}-week-${week.week_number}`} className="piq-card" style={{ padding: '20px', border: `1px solid ${styles.border}` }}>
+                  <div key={`${activePath.id}-week-${week.week_number}`} className="piq-card" style={{ padding: '20px', border: `1px solid ${styles.border}` }}>
                     <div style={{ display: 'grid', gridTemplateColumns: 'auto minmax(0, 1fr) auto', gap: '16px', alignItems: 'start' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', paddingTop: '2px' }}>
                         <div style={{ width: '40px', height: '40px', borderRadius: '14px', background: styles.bg, color: styles.fg, border: `1px solid ${styles.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900 }}>
@@ -1623,7 +1558,7 @@ export default function ReportExperience({ payload, embedded = false }) {
                               <div style={{ display: 'grid', gap: '8px' }}>
                                 {(week.actions || []).map((action, actionIndex) => (
                                   <div key={actionIndex} style={{ display: 'grid', gridTemplateColumns: '22px minmax(0, 1fr)', gap: '10px', alignItems: 'start' }}>
-                                    <div style={{ width: '22px', height: '22px', borderRadius: '8px', background: `${pColor}18`, color: pColor, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 800 }}>{actionIndex + 1}</div>
+                                    <div style={{ width: '22px', height: '22px', borderRadius: '8px', background: `${planColor}18`, color: planColor, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 800 }}>{actionIndex + 1}</div>
                                     <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7 }}>{action}</div>
                                   </div>
                                 ))}
@@ -1631,8 +1566,8 @@ export default function ReportExperience({ payload, embedded = false }) {
                             </div>
 
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }} className="two-col">
-                              <div style={{ background: `${pColor}10`, border: `1px solid ${pColor}22`, borderRadius: '14px', padding: '14px' }}>
-                                <div style={{ color: pColor, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>{messages.report.successSignal}</div>
+                              <div style={{ background: `${planColor}10`, border: `1px solid ${planColor}22`, borderRadius: '14px', padding: '14px' }}>
+                                <div style={{ color: planColor, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>{messages.report.successSignal}</div>
                                 <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7 }}>{week.success_signal}</div>
                               </div>
                               <div style={{ background: 'rgba(16,185,129,0.10)', border: '1px solid rgba(16,185,129,0.22)', borderRadius: '14px', padding: '14px' }}>
