@@ -1,3 +1,5 @@
+import { ROLE_PAGE_SLUGS } from '../lib/role-pages';
+
 const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.pivotiq.app';
 
 export default function sitemap() {
@@ -34,6 +36,12 @@ export default function sitemap() {
       changeFrequency: 'weekly',
       priority: 0.85,
     },
+    ...ROLE_PAGE_SLUGS.map((slug) => ({
+      url: `${siteUrl}/roles/${slug}`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.76,
+    })),
     {
       url: `${siteUrl}/login`,
       lastModified: now,

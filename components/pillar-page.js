@@ -63,6 +63,7 @@ export function PillarPage({ locale, page, relatedPages, path }) {
       />
 
       <nav
+        className="pillar-nav"
         style={{
           maxWidth: '1220px',
           margin: '0 auto',
@@ -84,6 +85,7 @@ export function PillarPage({ locale, page, relatedPages, path }) {
       </nav>
 
       <section
+        className="pillar-hero"
         style={{
           maxWidth: '1220px',
           margin: '0 auto',
@@ -94,7 +96,7 @@ export function PillarPage({ locale, page, relatedPages, path }) {
           alignItems: 'start',
         }}
       >
-        <div>
+        <div className="pillar-hero-copy">
           <div
             style={{
               display: 'inline-flex',
@@ -163,7 +165,7 @@ export function PillarPage({ locale, page, relatedPages, path }) {
           </div>
         </div>
 
-        <div style={{ ...shellCardStyle(), borderRadius: '34px', padding: '26px' }}>
+        <div className="pillar-hero-side" style={{ ...shellCardStyle(), borderRadius: '34px', padding: '26px' }}>
           <div style={{ fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6A7882', marginBottom: '10px', fontWeight: 800 }}>
             {page.takeawaysEyebrow}
           </div>
@@ -201,6 +203,7 @@ export function PillarPage({ locale, page, relatedPages, path }) {
       </section>
 
       <section
+        className="pillar-card-grid"
         style={{
           maxWidth: '1220px',
           margin: '0 auto',
@@ -240,6 +243,7 @@ export function PillarPage({ locale, page, relatedPages, path }) {
       </section>
 
       <section
+        className="pillar-sections"
         style={{
           maxWidth: '1220px',
           margin: '0 auto',
@@ -302,6 +306,7 @@ export function PillarPage({ locale, page, relatedPages, path }) {
       </section>
 
       <section
+        className="pillar-cta-section"
         style={{
           maxWidth: '1220px',
           margin: '0 auto',
@@ -309,6 +314,7 @@ export function PillarPage({ locale, page, relatedPages, path }) {
         }}
       >
         <div
+          className="pillar-cta-shell"
           style={{
             borderRadius: '38px',
             background: palette.navy,
@@ -380,4 +386,3 @@ export function PillarPage({ locale, page, relatedPages, path }) {
     </main>
   );
 }
-

@@ -582,6 +582,11 @@ input, textarea, select { font-family: var(--font); }
 @media (max-width: 900px) {
   .piq-nav { padding: 16px 24px; }
   .hide-mobile { display: none !important; }
+  .pillar-hero,
+  .pillar-sections,
+  .pillar-cta-shell {
+    grid-template-columns: 1fr !important;
+  }
   .home-hero,
   .home-hero-long,
   .home-search-intent-section,
@@ -707,6 +712,18 @@ input, textarea, select { font-family: var(--font); }
   .dashboard-shell { padding: 0 16px 56px !important; }
   .dashboard-nav { padding: 18px 16px !important; border-radius: 22px !important; }
   .dashboard-card-head { grid-template-columns: 1fr !important; }
+  .pillar-nav { padding: 18px 16px !important; }
+  .pillar-hero,
+  .pillar-card-grid,
+  .pillar-sections,
+  .pillar-cta-section { padding-left: 16px !important; padding-right: 16px !important; }
+  .pillar-hero { padding-top: 18px !important; padding-bottom: 40px !important; gap: 18px !important; }
+  .pillar-hero-copy h1 { font-size: 40px !important; line-height: 0.96 !important; }
+  .pillar-hero-copy p { font-size: 16px !important; line-height: 1.65 !important; }
+  .pillar-card-grid { padding-bottom: 36px !important; }
+  .pillar-sections { padding-bottom: 40px !important; gap: 18px !important; }
+  .pillar-cta-section { padding-bottom: 64px !important; }
+  .pillar-cta-shell { padding: 24px !important; border-radius: 30px !important; }
   .home-mobile-top-cta {
     display: inline-flex !important;
     position: fixed;
