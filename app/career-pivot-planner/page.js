@@ -1,6 +1,7 @@
 import { PillarPage } from '../../components/pillar-page';
 import { getMessages } from '../../lib/i18n';
 import { getServerLocale } from '../../lib/i18n-server';
+import { getRoleGuideLinks } from '../../lib/role-pages';
 import { buildPageMetadata } from '../../lib/seo';
 
 const PATH = '/career-pivot-planner';
@@ -21,7 +22,11 @@ export default function CareerPivotPlannerPage() {
     { href: '/ai-career-risk', label: messages.pillars.aiCareerRisk.linkLabel },
     { href: '/white-collar-jobs-at-risk-from-ai', label: messages.pillars.whiteCollarJobsAtRisk.linkLabel },
   ];
+  const rolePages = getRoleGuideLinks(locale, [
+    'customer-success-manager-ai-risk',
+    'recruiter-ai-risk',
+    'office-manager-ai-risk',
+  ]);
 
-  return <PillarPage locale={locale} page={page} relatedPages={relatedPages} path={PATH} />;
+  return <PillarPage locale={locale} page={page} relatedPages={relatedPages} rolePages={rolePages} path={PATH} />;
 }
-

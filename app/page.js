@@ -5,6 +5,7 @@ import LanguageSwitcher from '../components/language-switcher';
 import MobileStickyCta from '../components/mobile-sticky-cta';
 import { getMessages } from '../lib/i18n';
 import { getServerLocale } from '../lib/i18n-server';
+import { getRoleGuideLinks } from '../lib/role-pages';
 import { buildPageMetadata } from '../lib/seo';
 
 export function generateMetadata() {
@@ -102,6 +103,14 @@ export default function Home() {
   const roadmapSteps = messages.home.roadmapSteps.map(([number, title, body]) => ({ number, title, body }));
   const searchIntentItems = messages.home.searchIntentItems.map(([title, body]) => ({ title, body }));
   const faqItems = messages.home.faqItems.map(([question, answer]) => ({ question, answer }));
+  const featuredRoleGuides = getRoleGuideLinks(locale, [
+    'marketing-manager-ai-risk',
+    'fpa-analyst-ai-risk',
+    'hr-business-partner-ai-risk',
+    'customer-success-manager-ai-risk',
+    'recruiter-ai-risk',
+    'office-manager-ai-risk',
+  ]);
   const sampleTaskNotes = messages.home.sampleNotes;
   const sampleTaskLabels = messages.home.sampleTaskLabels;
   const softwareSchema = {
@@ -757,6 +766,93 @@ export default function Home() {
               <p style={{ margin: 0, fontSize: '15px', lineHeight: 1.75, color: '#50606B' }}>
                 {item.answer}
               </p>
+            </ScrollReveal>
+          ))}
+        </div>
+      </ScrollReveal>
+
+      <ScrollReveal
+        as="section"
+        className="home-role-guides-section"
+        style={{
+          position: 'relative',
+          zIndex: 2,
+          maxWidth: '1220px',
+          margin: '0 auto',
+          padding: '0 28px 88px',
+          display: 'grid',
+          gridTemplateColumns: 'minmax(280px, 0.72fr) minmax(0, 1.28fr)',
+          gap: '22px',
+          alignItems: 'start',
+        }}
+      >
+        <ScrollReveal
+          delay={40}
+          style={{
+            ...shellCardStyle(),
+            borderRadius: '34px',
+            padding: '30px',
+          }}
+        >
+          <div style={{ fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6A7882', marginBottom: '12px', fontWeight: 800 }}>
+            {messages.home.roleGuidesEyebrow}
+          </div>
+          <div
+            style={{
+              fontSize: 'clamp(34px, 5vw, 56px)',
+              lineHeight: 0.98,
+              letterSpacing: '-0.055em',
+              fontWeight: 700,
+              fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif',
+              marginBottom: '14px',
+            }}
+          >
+            {messages.home.roleGuidesTitle}
+          </div>
+          <p style={{ fontSize: '17px', lineHeight: 1.76, color: '#495863', margin: 0 }}>
+            {messages.home.roleGuidesBody}
+          </p>
+        </ScrollReveal>
+
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: '14px',
+          }}
+        >
+          {featuredRoleGuides.map((item, index) => (
+            <ScrollReveal
+              key={item.href}
+              delay={index * 60}
+              as="article"
+              className="home-hover-lift"
+              style={{
+                ...shellCardStyle(),
+                borderRadius: '24px',
+                padding: '20px 22px',
+              }}
+            >
+              <Link href={item.href} style={{ textDecoration: 'none', color: '#13202A' }}>
+                <div style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#6A7882', fontWeight: 800, marginBottom: '10px' }}>
+                  {item.label}
+                </div>
+                <div
+                  style={{
+                    fontSize: '22px',
+                    lineHeight: 1.1,
+                    letterSpacing: '-0.035em',
+                    fontWeight: 700,
+                    fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif',
+                    marginBottom: '10px',
+                  }}
+                >
+                  {item.title}
+                </div>
+                <div style={{ fontSize: '14px', lineHeight: 1.65, color: '#50606B' }}>
+                  {messages.home.roleGuidesPrompt}
+                </div>
+              </Link>
             </ScrollReveal>
           ))}
         </div>

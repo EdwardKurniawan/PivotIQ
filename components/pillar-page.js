@@ -37,7 +37,7 @@ function primaryLinkStyle(fullWidth = false) {
   };
 }
 
-export function PillarPage({ locale, page, relatedPages, path }) {
+export function PillarPage({ locale, page, relatedPages, rolePages = [], path }) {
   const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.pivotiq.app';
   const schema = {
     '@context': 'https://schema.org',
@@ -322,6 +322,83 @@ export function PillarPage({ locale, page, relatedPages, path }) {
           ))}
         </div>
       </section>
+
+      {rolePages.length > 0 && (
+        <section
+          className="pillar-card-grid"
+          style={{
+            maxWidth: '1220px',
+            margin: '0 auto',
+            padding: '0 28px 52px',
+            display: 'grid',
+            gridTemplateColumns: 'minmax(280px, 0.72fr) minmax(0, 1.28fr)',
+            gap: '22px',
+            alignItems: 'start',
+          }}
+        >
+          <div style={{ ...shellCardStyle(), borderRadius: '34px', padding: '30px' }}>
+            <div style={{ fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6A7882', marginBottom: '12px', fontWeight: 800 }}>
+              {page.roleGuidesEyebrow}
+            </div>
+            <div
+              style={{
+                fontSize: 'clamp(34px, 5vw, 56px)',
+                lineHeight: 0.98,
+                letterSpacing: '-0.055em',
+                fontWeight: 700,
+                fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif',
+                marginBottom: '14px',
+              }}
+            >
+              {page.roleGuidesTitle}
+            </div>
+            <p style={{ fontSize: '17px', lineHeight: 1.76, color: '#495863', margin: 0 }}>
+              {page.roleGuidesBody}
+            </p>
+          </div>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+              gap: '14px',
+            }}
+          >
+            {rolePages.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                style={{
+                  ...shellCardStyle(),
+                  borderRadius: '24px',
+                  padding: '20px 22px',
+                  textDecoration: 'none',
+                  color: '#13202A',
+                }}
+              >
+                <div style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#6A7882', fontWeight: 800, marginBottom: '10px' }}>
+                  {item.label}
+                </div>
+                <div
+                  style={{
+                    fontSize: '22px',
+                    lineHeight: 1.1,
+                    letterSpacing: '-0.035em',
+                    fontWeight: 700,
+                    fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif',
+                    marginBottom: '10px',
+                  }}
+                >
+                  {item.title}
+                </div>
+                <div style={{ fontSize: '14px', lineHeight: 1.65, color: '#50606B' }}>
+                  {page.roleGuideLinkPrompt}
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section
         className="pillar-cta-section"
