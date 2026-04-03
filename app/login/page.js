@@ -34,6 +34,7 @@ export default function LoginPage() {
   const [message, setMessage] = useState('');
   const authConfigured = Boolean(supabase);
   const messages = getMessages(locale);
+  const appUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://pivotiq.app').replace(/\/$/, '');
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -47,7 +48,7 @@ export default function LoginPage() {
     setStatus('loading');
     setMessage('');
 
-    const redirectTo = `${window.location.origin}/auth/callback?next=/dashboard`;
+    const redirectTo = `${appUrl}/auth/callback?next=/dashboard`;
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: { emailRedirectTo: redirectTo },
@@ -102,7 +103,7 @@ export default function LoginPage() {
     setStatus('loading');
     setMessage('');
 
-    const redirectTo = `${window.location.origin}/auth/callback?next=/dashboard`;
+    const redirectTo = `${appUrl}/auth/callback?next=/dashboard`;
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -131,7 +132,7 @@ export default function LoginPage() {
     setStatus('loading');
     setMessage('');
 
-    const redirectTo = `${window.location.origin}/login?mode=recovery`;
+    const redirectTo = `${appUrl}/login?mode=recovery`;
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo,
     });
