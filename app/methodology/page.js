@@ -1,13 +1,15 @@
 import Link from 'next/link';
-import { BrandLogo } from './brand-logo';
-import LanguageSwitcher from './language-switcher';
+import { BrandLogo } from '../../components/brand-logo';
+import LanguageSwitcher from '../../components/language-switcher';
+import { getServerLocale } from '../../lib/i18n-server';
+import { getMethodologyContent } from '../../lib/methodology-content';
+import { buildPageMetadata } from '../../lib/seo';
 
 const palette = {
-  bg: '#F4EFE7',
   text: '#131B23',
   textMuted: '#50606B',
-  navy: '#13202A',
   border: 'rgba(19, 27, 35, 0.08)',
+  navy: '#13202A',
 };
 
 function shellCardStyle() {
@@ -19,12 +21,11 @@ function shellCardStyle() {
   };
 }
 
-function primaryLinkStyle(fullWidth = false) {
+function primaryLinkStyle() {
   return {
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
-    width: fullWidth ? '100%' : undefined,
     padding: '16px 22px',
     borderRadius: '999px',
     background: 'linear-gradient(135deg, #F28A43, #F6C06D)',
@@ -37,14 +38,24 @@ function primaryLinkStyle(fullWidth = false) {
   };
 }
 
-export function PillarPage({ locale, page, relatedPages, path }) {
+export function generateMetadata() {
+  return buildPageMetadata({
+    locale: getServerLocale(),
+    key: 'methodology',
+    path: '/methodology',
+  });
+}
+
+export default function MethodologyPage() {
+  const locale = getServerLocale();
+  const content = getMethodologyContent(locale);
   const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.pivotiq.app';
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
-    name: page.title,
-    description: page.intro,
-    url: `${siteUrl}${path}`,
+    name: content.title,
+    description: content.intro,
+    url: `${siteUrl}/methodology`,
     inLanguage: locale,
   };
 
@@ -75,11 +86,11 @@ export function PillarPage({ locale, page, relatedPages, path }) {
           flexWrap: 'wrap',
         }}
       >
-        <BrandLogo subtitle={page.navSubtitle} />
+        <BrandLogo subtitle={content.navSubtitle} />
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
           <LanguageSwitcher locale={locale} />
           <Link href="/audit" style={primaryLinkStyle()}>
-            {page.ctaButton}
+            {content.ctaButton}
           </Link>
         </div>
       </nav>
@@ -113,7 +124,7 @@ export function PillarPage({ locale, page, relatedPages, path }) {
               marginBottom: '18px',
             }}
           >
-            {page.eyebrow}
+            {content.eyebrow}
           </div>
           <h1
             style={{
@@ -127,7 +138,7 @@ export function PillarPage({ locale, page, relatedPages, path }) {
               textWrap: 'balance',
             }}
           >
-            {page.title}
+            {content.title}
           </h1>
           <p
             style={{
@@ -138,29 +149,11 @@ export function PillarPage({ locale, page, relatedPages, path }) {
               margin: '0 0 26px',
             }}
           >
-            {page.intro}
+            {content.intro}
           </p>
           <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
             <Link href="/audit" style={primaryLinkStyle()}>
-              {page.ctaButton}
-            </Link>
-            <Link
-              href="/methodology"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '16px 22px',
-                borderRadius: '999px',
-                background: 'rgba(255,255,255,0.66)',
-                color: '#4A5762',
-                border: `1px solid ${palette.border}`,
-                fontSize: '15px',
-                fontWeight: 700,
-                textDecoration: 'none',
-              }}
-            >
-              {page.methodologyButton}
+              {content.ctaButton}
             </Link>
             <Link
               href="/"
@@ -178,14 +171,14 @@ export function PillarPage({ locale, page, relatedPages, path }) {
                 textDecoration: 'none',
               }}
             >
-              {page.homeButton}
+              {content.homeButton}
             </Link>
           </div>
         </div>
 
         <div className="pillar-hero-side" style={{ ...shellCardStyle(), borderRadius: '34px', padding: '26px' }}>
           <div style={{ fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6A7882', marginBottom: '10px', fontWeight: 800 }}>
-            {page.takeawaysEyebrow}
+            {content.principlesEyebrow}
           </div>
           <div
             style={{
@@ -197,10 +190,10 @@ export function PillarPage({ locale, page, relatedPages, path }) {
               marginBottom: '14px',
             }}
           >
-            {page.takeawaysTitle}
+            {content.principlesTitle}
           </div>
           <div style={{ display: 'grid', gap: '10px' }}>
-            {page.takeaways.map((item) => (
+            {content.principles.map((item) => (
               <div
                 key={item}
                 style={{
@@ -221,46 +214,6 @@ export function PillarPage({ locale, page, relatedPages, path }) {
       </section>
 
       <section
-        className="pillar-card-grid"
-        style={{
-          maxWidth: '1220px',
-          margin: '0 auto',
-          padding: '0 28px 44px',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-          gap: '18px',
-        }}
-      >
-        {page.blocks.map(([eyebrow, title, body]) => (
-          <article
-            key={title}
-            style={{
-              ...shellCardStyle(),
-              borderRadius: '30px',
-              padding: '24px',
-            }}
-          >
-            <div style={{ fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6A7882', marginBottom: '10px', fontWeight: 800 }}>
-              {eyebrow}
-            </div>
-            <div
-              style={{
-                fontSize: '28px',
-                lineHeight: 1.04,
-                letterSpacing: '-0.045em',
-                fontWeight: 700,
-                fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif',
-                marginBottom: '12px',
-              }}
-            >
-              {title}
-            </div>
-            <div style={{ fontSize: '15px', lineHeight: 1.72, color: '#50606B' }}>{body}</div>
-          </article>
-        ))}
-      </section>
-
-      <section
         className="pillar-sections"
         style={{
           maxWidth: '1220px',
@@ -274,7 +227,7 @@ export function PillarPage({ locale, page, relatedPages, path }) {
       >
         <div style={{ ...shellCardStyle(), borderRadius: '34px', padding: '30px' }}>
           <div style={{ fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6A7882', marginBottom: '12px', fontWeight: 800 }}>
-            {page.sectionsEyebrow}
+            {content.eyebrow}
           </div>
           <div
             style={{
@@ -286,15 +239,15 @@ export function PillarPage({ locale, page, relatedPages, path }) {
               marginBottom: '14px',
             }}
           >
-            {page.sectionsTitle}
+            {content.title}
           </div>
           <p style={{ fontSize: '17px', lineHeight: 1.76, color: '#495863', margin: 0 }}>
-            {page.sectionsBody}
+            {content.intro}
           </p>
         </div>
 
         <div style={{ display: 'grid', gap: '14px' }}>
-          {page.sections.map(([title, body]) => (
+          {content.sections.map(([title, body]) => (
             <article
               key={title}
               style={{
@@ -347,7 +300,7 @@ export function PillarPage({ locale, page, relatedPages, path }) {
         >
           <div>
             <div style={{ fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9DADB7', marginBottom: '10px', fontWeight: 800 }}>
-              {page.ctaEyebrow}
+              {content.ctaEyebrow}
             </div>
             <div
               style={{
@@ -360,10 +313,10 @@ export function PillarPage({ locale, page, relatedPages, path }) {
                 maxWidth: '620px',
               }}
             >
-              {page.ctaTitle}
+              {content.ctaTitle}
             </div>
             <p style={{ fontSize: '17px', lineHeight: 1.72, color: '#C3CFD5', maxWidth: '600px' }}>
-              {page.ctaBody}
+              {content.ctaBody}
             </p>
           </div>
 
@@ -375,43 +328,8 @@ export function PillarPage({ locale, page, relatedPages, path }) {
               border: '1px solid rgba(255,255,255,0.08)',
             }}
           >
-            <div style={{ display: 'grid', gap: '10px', marginBottom: '18px' }}>
-              <Link
-                href="/methodology"
-                style={{
-                  padding: '12px 14px',
-                  borderRadius: '18px',
-                  background: 'rgba(255,255,255,0.04)',
-                  color: '#E6EEF2',
-                  textDecoration: 'none',
-                  fontSize: '14px',
-                  fontWeight: 700,
-                  lineHeight: 1.5,
-                }}
-              >
-                {page.methodologyLinkLabel}
-              </Link>
-              {relatedPages.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  style={{
-                    padding: '12px 14px',
-                    borderRadius: '18px',
-                    background: 'rgba(255,255,255,0.04)',
-                    color: '#E6EEF2',
-                    textDecoration: 'none',
-                    fontSize: '14px',
-                    fontWeight: 700,
-                    lineHeight: 1.5,
-                  }}
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-            <Link href="/audit" style={primaryLinkStyle(true)}>
-              {page.ctaButton}
+            <Link href="/audit" style={{ ...primaryLinkStyle(), width: '100%' }}>
+              {content.ctaButton}
             </Link>
           </div>
         </div>
@@ -419,3 +337,4 @@ export function PillarPage({ locale, page, relatedPages, path }) {
     </main>
   );
 }
+

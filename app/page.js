@@ -266,6 +266,24 @@ export default function Home() {
             <Link className="home-primary-cta" href="/audit" style={primaryLinkStyle()}>
               {messages.common.runFreeScan}
             </Link>
+            <Link
+              href="/methodology"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '18px 24px',
+                borderRadius: '999px',
+                background: 'rgba(255,255,255,0.66)',
+                color: '#4A5762',
+                border: `1px solid ${palette.border}`,
+                fontSize: '15px',
+                fontWeight: 700,
+                textDecoration: 'none',
+              }}
+            >
+              {messages.home.methodologyButton}
+            </Link>
             <div
               className="home-hero-note"
               style={{
@@ -789,6 +807,19 @@ export default function Home() {
             <p style={{ fontSize: '17px', lineHeight: 1.72, color: '#C3CFD5', maxWidth: '600px' }}>
               {messages.home.closingBody}
             </p>
+            <div style={{ marginTop: '16px' }}>
+              <Link
+                href="/methodology"
+                style={{
+                  color: '#F3D4B5',
+                  textDecoration: 'none',
+                  fontSize: '14px',
+                  fontWeight: 700,
+                }}
+              >
+                {messages.home.methodologyLinkLabel}
+              </Link>
+            </div>
           </div>
 
           <div

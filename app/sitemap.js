@@ -36,6 +36,12 @@ export default function sitemap() {
       changeFrequency: 'weekly',
       priority: 0.85,
     },
+    {
+      url: `${siteUrl}/methodology`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.72,
+    },
     ...ROLE_PAGE_SLUGS.map((slug) => ({
       url: `${siteUrl}/roles/${slug}`,
       lastModified: now,
