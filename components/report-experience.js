@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { BrandLogo } from './brand-logo';
+import { BrandLogo, BrandMarkBadge } from './brand-logo';
 import { getBrowserLocale, getMessages } from '../lib/i18n';
 
 function riskColor(score) {
@@ -663,7 +663,10 @@ export default function ReportExperience({ payload, embedded = false }) {
   const [startDate, setStartDate] = useState(payload.startDate || '');
   const [completedWeeks, setCompletedWeeks] = useState(payload.completedWeeks || []);
   const [weekNotes, setWeekNotes] = useState(payload.weekNotes || {});
-  const reportData = payload.reportData;
+  const [reportData, setReportData] = useState(payload.reportData);
+  const [generationStatus, setGenerationStatus] = useState(
+    payload.tier === 'full' && payload.reportData?.generation_stage !== 'full_complete' ? 'loading' : 'idle'
+  );
   const profile = reportData.profile || {};
   const summary = reportData.summary || {};
   const pivots = reportData.pivots || [];
@@ -676,6 +679,15 @@ export default function ReportExperience({ payload, embedded = false }) {
   const first30Days = reportData.first_30_days || {};
   const storageScope = useMemo(() => getStorageScope(reportData, payload.reportId), [reportData, payload.reportId]);
   const messages = getMessages(payload.uiLocale || payload.locale || getBrowserLocale() || reportData.locale);
+
+  useEffect(() => {
+    setReportData(payload.reportData);
+    if (payload.tier === 'full' && payload.reportData?.generation_stage !== 'full_complete') {
+      setGenerationStatus('loading');
+    } else {
+      setGenerationStatus('idle');
+    }
+  }, [payload.reportData, payload.tier]);
 
   useEffect(() => {
     const storedTier = payload.tier || localStorage.getItem('pivotiq_tier') || 'free';
@@ -700,6 +712,88 @@ export default function ReportExperience({ payload, embedded = false }) {
     }));
   }, [storageScope, startDate, completedWeeks, weekNotes]);
 
+  useEffect(() => {
+    if (embedded || tier !== 'full' || reportData?.generation_stage === 'full_complete') return;
+
+    let cancelled = false;
+
+    async function upgradeToFullReport() {
+      setGenerationStatus('loading');
+
+      try {
+        let response;
+
+        if (payload.reportId) {
+          response = await fetch(`/api/reports/${payload.reportId}/generate-full`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+          });
+        } else {
+          response = await fetch('/api/generate-report', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              stage: 'full',
+              locale: payload.locale || reportData.locale || 'en',
+              jobTitle: payload.jobTitle || profile.job_title,
+              industry: payload.industry || profile.industry,
+              tasks: payload.tasks || profile.tasks || [],
+              email: payload.email || '',
+              intakeProfile: payload.intakeProfile || reportData.profile || {},
+            }),
+          });
+        }
+
+        const json = await response.json();
+        if (!response.ok || !json.reportData) {
+          throw new Error(json.error || 'Failed to generate the full report.');
+        }
+
+        if (cancelled) return;
+
+        setReportData(json.reportData);
+        setGenerationStatus('done');
+
+        const raw = sessionStorage.getItem('pivotiq_report') || localStorage.getItem('pivotiq_report');
+        if (raw) {
+          try {
+            const stored = JSON.parse(raw);
+            const next = JSON.stringify({
+              ...stored,
+              reportData: json.reportData,
+              reportId: json.reportId || stored.reportId || payload.reportId || null,
+            });
+            sessionStorage.setItem('pivotiq_report', next);
+            localStorage.setItem('pivotiq_report', next);
+          } catch {}
+        }
+      } catch (error) {
+        console.error('Full report upgrade failed:', error);
+        if (!cancelled) setGenerationStatus('failed');
+      }
+    }
+
+    upgradeToFullReport();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    embedded,
+    payload.email,
+    payload.industry,
+    payload.intakeProfile,
+    payload.jobTitle,
+    payload.locale,
+    payload.reportId,
+    payload.tasks,
+    profile.industry,
+    profile.job_title,
+    profile.tasks,
+    reportData?.generation_stage,
+    tier,
+  ]);
+
   const milestoneStatuses = useMemo(() => {
     return (pivot.roadmap?.weeks || []).map((week, index) => ({
       week,
@@ -718,6 +812,35 @@ export default function ReportExperience({ payload, embedded = false }) {
       return acc;
     }, { critical: 0, medium: 0, low: 0 });
   }, [pivot]);
+
+  if (tier === 'full' && reportData?.generation_stage !== 'full_complete') {
+    return (
+      <div style={{ minHeight: '100vh', background: palette.bg, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 24px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            pointerEvents: 'none',
+            background:
+              'radial-gradient(circle at 18% 0%, rgba(242, 138, 67, 0.16), transparent 26%), radial-gradient(circle at 82% 10%, rgba(27, 111, 99, 0.14), transparent 28%)',
+          }}
+        />
+        <div style={{ position: 'relative', zIndex: 2, width: '100%', maxWidth: '560px', borderRadius: '32px', padding: '34px 30px', background: 'rgba(255, 255, 255, 0.82)', border: `1px solid ${palette.border}`, boxShadow: '0 24px 70px rgba(19, 33, 45, 0.12)' }}>
+          <div style={{ width: '96px', height: '96px', margin: '0 auto 28px', animation: 'pulse-ring 1.5s ease-in-out infinite', display: 'grid', placeItems: 'center' }}>
+            <BrandMarkBadge size={96} />
+          </div>
+          <h2 style={{ color: palette.text, fontSize: 'clamp(28px, 5vw, 40px)', fontWeight: 900, letterSpacing: '-0.05em', lineHeight: 0.98, margin: '0 0 10px', fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif' }}>
+            {generationStatus === 'failed' ? 'Your full report hit a snag.' : 'Building your full pivot map'}
+          </h2>
+          <p style={{ color: palette.textMuted, fontSize: '15px', lineHeight: 1.72, margin: 0 }}>
+            {generationStatus === 'failed'
+              ? 'We unlocked your report, but the deeper generation did not finish cleanly. Refresh this page to retry.'
+              : 'You already paid. We are now generating the full 5-path report, detailed skill gaps, ROI logic, and milestone plan.'}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   const completedCount = completedWeeks.filter((weekNumber) => (pivot.roadmap?.weeks || []).some((week) => week.week_number === weekNumber)).length;
   const progressPercent = Math.round((completedCount / Math.max(pivot.roadmap?.weeks?.length || 1, 1)) * 100);
