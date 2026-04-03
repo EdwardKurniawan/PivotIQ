@@ -113,6 +113,23 @@ export default function Home() {
   ]).slice(0, 3);
   const sampleTaskNotes = messages.home.sampleNotes;
   const sampleTaskLabels = messages.home.sampleTaskLabels;
+  const searchIntentVisuals = [
+    { width: '78%', tone: '#F28A43', label: '01' },
+    { width: '62%', tone: '#13202A', label: '02' },
+    { width: '71%', tone: '#1B6F63', label: '03' },
+    { width: '56%', tone: '#D0B792', label: '04' },
+  ];
+  const editorialSignals = [
+    { label: 'Pressure', value: '82', tone: '#F28A43' },
+    { label: 'Leverage', value: '61', tone: '#13202A' },
+    { label: 'Pivot fit', value: '74', tone: '#1B6F63' },
+  ];
+  const faqSignalRows = [
+    { label: 'Task pressure', width: '74%', tone: '#F28A43' },
+    { label: 'Human edge', width: '58%', tone: '#1B6F63' },
+    { label: 'Pivot distance', width: '46%', tone: '#13202A' },
+  ];
+  const roleGuideVisuals = ['#F28A43', '#13202A', '#1B6F63'];
   const softwareSchema = {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
@@ -554,6 +571,44 @@ export default function Home() {
               >
                 <div
                   style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginBottom: '14px',
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: '11px',
+                      letterSpacing: '0.08em',
+                      textTransform: 'uppercase',
+                      color: '#7B8892',
+                      fontWeight: 800,
+                    }}
+                  >
+                    {searchIntentVisuals[index]?.label || '01'}
+                  </div>
+                  <div
+                    style={{
+                      width: '64%',
+                      height: '8px',
+                      borderRadius: '999px',
+                      background: 'rgba(19, 27, 35, 0.08)',
+                      overflow: 'hidden',
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: searchIntentVisuals[index]?.width || '60%',
+                        height: '100%',
+                        borderRadius: '999px',
+                        background: searchIntentVisuals[index]?.tone || '#F28A43',
+                      }}
+                    />
+                  </div>
+                </div>
+                <div
+                  style={{
                     fontSize: '22px',
                     lineHeight: 1.05,
                     letterSpacing: '-0.04em',
@@ -588,6 +643,9 @@ export default function Home() {
             ...shellCardStyle(),
             borderRadius: '36px',
             padding: '32px',
+            position: 'relative',
+            background:
+              'radial-gradient(circle at 0% 0%, rgba(242, 138, 67, 0.08), transparent 26%), rgba(255,255,255,0.78)',
           }}
         >
           <div
@@ -660,6 +718,47 @@ export default function Home() {
             </div>
           </div>
 
+        <div
+          className="home-editorial-signal-row"
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+            gap: '14px',
+            marginBottom: '18px',
+          }}
+        >
+          {editorialSignals.map((item) => (
+            <div
+              key={item.label}
+              style={{
+                borderRadius: '20px',
+                padding: '16px 18px',
+                background: 'rgba(255,255,255,0.5)',
+                border: `1px solid ${palette.border}`,
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '10px', marginBottom: '10px' }}>
+                <div style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#6A7882', fontWeight: 800 }}>
+                  {item.label}
+                </div>
+                <div style={{ fontSize: '22px', fontWeight: 800, color: item.tone, letterSpacing: '-0.04em' }}>
+                  {item.value}
+                </div>
+              </div>
+              <div style={{ height: '8px', borderRadius: '999px', background: 'rgba(19, 27, 35, 0.08)', overflow: 'hidden' }}>
+                <div
+                  style={{
+                    width: `${item.value}%`,
+                    height: '100%',
+                    borderRadius: '999px',
+                    background: item.tone,
+                  }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+
         <div className="home-lanes-list" style={{ display: 'grid', gap: '14px' }}>
           {pivotLanes.map((lane, index) => (
             <ScrollReveal
@@ -726,6 +825,25 @@ export default function Home() {
             padding: '30px',
           }}
         >
+          <div
+            style={{
+              display: 'grid',
+              gap: '10px',
+              marginBottom: '18px',
+            }}
+          >
+            {faqSignalRows.map((row) => (
+              <div key={row.label}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '10px', marginBottom: '6px', fontSize: '12px', color: '#6A7882', fontWeight: 700 }}>
+                  <span>{row.label}</span>
+                  <span>{row.width}</span>
+                </div>
+                <div style={{ height: '8px', borderRadius: '999px', background: 'rgba(19, 27, 35, 0.08)', overflow: 'hidden' }}>
+                  <div style={{ width: row.width, height: '100%', borderRadius: '999px', background: row.tone }} />
+                </div>
+              </div>
+            ))}
+          </div>
           <div style={{ fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6A7882', marginBottom: '12px', fontWeight: 800 }}>
             {messages.home.faqEyebrow}
           </div>
@@ -843,6 +961,19 @@ export default function Home() {
               }}
             >
               <Link href={item.href} style={{ textDecoration: 'none', color: '#13202A' }}>
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}>
+                  {[0, 1, 2].map((dotIndex) => (
+                    <div
+                      key={dotIndex}
+                      style={{
+                        width: dotIndex === 2 ? '34px' : '10px',
+                        height: '10px',
+                        borderRadius: '999px',
+                        background: dotIndex === 2 ? roleGuideVisuals[index] || '#F28A43' : 'rgba(19, 27, 35, 0.1)',
+                      }}
+                    />
+                  ))}
+                </div>
                 <div style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#6A7882', fontWeight: 800, marginBottom: '10px' }}>
                   {item.label}
                 </div>
