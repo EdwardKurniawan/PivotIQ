@@ -303,6 +303,9 @@ input, textarea, select { font-family: var(--font); }
 .home-search-shell {
   overflow: hidden;
 }
+.home-editorial-shell {
+  overflow: hidden;
+}
 .home-badge::after {
   content: "";
   position: absolute;
@@ -597,10 +600,14 @@ input, textarea, select { font-family: var(--font); }
   .home-hero-long,
   .home-search-intent-section,
   .home-faq-section,
+  .home-editorial-top,
   .home-lanes-section,
   .home-lanes-section-long,
   .home-closing-shell {
     grid-template-columns: 1fr !important;
+  }
+  .home-value-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
   .home-hero-art {
     min-height: auto !important;
@@ -688,13 +695,15 @@ input, textarea, select { font-family: var(--font); }
   .home-search-intent-section,
   .home-faq-section,
   .home-role-guides-section,
-  .home-lanes-section,
+  .home-editorial-section,
   .home-closing-section { padding-left: 16px !important; padding-right: 16px !important; }
   .home-search-intent-section { padding-bottom: 56px !important; gap: 18px !important; }
   .home-faq-section { padding-bottom: 56px !important; gap: 18px !important; }
   .home-role-guides-section { padding-bottom: 56px !important; gap: 18px !important; }
-  .home-value-section { padding-bottom: 56px !important; }
-  .home-lanes-section { padding-bottom: 64px !important; gap: 18px !important; }
+  .home-editorial-section { padding-bottom: 64px !important; }
+  .home-editorial-shell { padding: 22px !important; border-radius: 30px !important; }
+  .home-editorial-top { grid-template-columns: 1fr !important; gap: 18px !important; margin-bottom: 18px !important; }
+  .home-value-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
   .home-search-shell { padding: 22px !important; grid-template-columns: 1fr !important; gap: 18px !important; }
   .home-search-grid { grid-template-columns: 1fr !important; }
   .home-hero-note-inline { font-size: 13px !important; line-height: 1.6 !important; max-width: 100% !important; }

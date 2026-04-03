@@ -244,8 +244,8 @@ export default function Home() {
           <h1
             className="home-reveal-2"
             style={{
-              fontSize: 'clamp(62px, 9vw, 118px)',
-              lineHeight: 0.9,
+              fontSize: 'clamp(56px, 8vw, 104px)',
+              lineHeight: 0.92,
               letterSpacing: '-0.07em',
               margin: '0 0 20px',
               maxWidth: '840px',
@@ -313,7 +313,7 @@ export default function Home() {
           className="home-hero-art"
           style={{
             position: 'relative',
-            minHeight: '620px',
+            minHeight: '560px',
             display: 'grid',
             alignItems: 'stretch',
           }}
@@ -322,10 +322,10 @@ export default function Home() {
             className="home-glow"
             style={{
               position: 'absolute',
-              inset: '22px 0 0 36px',
+              inset: '30px 18px 10px 42px',
               borderRadius: '40px',
-              background: 'linear-gradient(180deg, rgba(242, 138, 67, 0.14), rgba(27, 111, 99, 0.1))',
-              filter: 'blur(16px)',
+              background: 'linear-gradient(180deg, rgba(242, 138, 67, 0.1), rgba(27, 111, 99, 0.08))',
+              filter: 'blur(18px)',
             }}
           />
 
@@ -336,8 +336,8 @@ export default function Home() {
               position: 'relative',
               borderRadius: '36px',
               padding: '24px',
-              '--float-rotate': '-3deg',
-              transform: 'rotate(-3deg)',
+              '--float-rotate': '-1.5deg',
+              transform: 'rotate(-1.5deg)',
               transformOrigin: 'center',
             }}
           >
@@ -446,13 +446,13 @@ export default function Home() {
             style={{
               ...shellCardStyle(),
               position: 'absolute',
-              right: '-6px',
-              bottom: '24px',
-              width: '44%',
+              right: '8px',
+              bottom: '20px',
+              width: '42%',
               borderRadius: '30px',
               padding: '18px',
-              '--float-rotate': '5deg',
-              transform: 'rotate(5deg)',
+              '--float-rotate': '2.5deg',
+              transform: 'rotate(2.5deg)',
               transformOrigin: 'center',
             }}
           >
@@ -573,108 +573,114 @@ export default function Home() {
 
       <ScrollReveal
         as="section"
-        className="home-value-section"
+        className={`home-editorial-section ${locale !== 'en' ? 'home-lanes-section-long' : ''}`}
         style={{
           position: 'relative',
           zIndex: 2,
           maxWidth: '1220px',
           margin: '0 auto',
-          padding: '12px 28px 72px',
+          padding: '6px 28px 72px',
         }}
       >
         <div
+          className="home-editorial-shell"
           style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-            gap: '18px',
+            ...shellCardStyle(),
+            borderRadius: '36px',
+            padding: '32px',
           }}
         >
-          {valueCards.map((card, index) => (
-            <ScrollReveal
-              key={card.title}
-              className="home-hover-lift"
-              delay={index * 90}
-              style={{
-                ...shellCardStyle(),
-                borderRadius: '30px',
-                padding: '24px',
-              }}
-            >
-              <div style={{ fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6A7882', marginBottom: '10px', fontWeight: 800 }}>
-                {card.eyebrow}
-              </div>
-              <div
-                style={{
-                  fontSize: '28px',
-                  lineHeight: 1.02,
-                  letterSpacing: '-0.04em',
-                  fontWeight: 700,
-                  fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif',
-                  marginBottom: '12px',
-                }}
-              >
-                {card.title}
-              </div>
-              <div style={{ fontSize: '15px', lineHeight: 1.7, color: '#50606B' }}>{card.body}</div>
-            </ScrollReveal>
-          ))}
-        </div>
-      </ScrollReveal>
-
-      <ScrollReveal
-        as="section"
-        className={`home-lanes-section ${locale !== 'en' ? 'home-lanes-section-long' : ''}`}
-        style={{
-          position: 'relative',
-          zIndex: 2,
-          maxWidth: '1220px',
-          margin: '0 auto',
-          padding: '0 28px 72px',
-          display: 'grid',
-          gridTemplateColumns: 'minmax(0, 0.85fr) minmax(320px, 1.15fr)',
-          gap: '24px',
-          alignItems: 'start',
-        }}
-      >
-        <ScrollReveal delay={40} className={locale !== 'en' ? 'home-lanes-intro-long' : ''} style={{ paddingTop: '10px' }}>
           <div
+            className="home-editorial-top"
             style={{
-              fontSize: 'clamp(42px, 6vw, 72px)',
-              lineHeight: 0.95,
-              letterSpacing: '-0.06em',
-              fontWeight: 700,
-              fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif',
-              marginBottom: '18px',
-              maxWidth: '440px',
+              display: 'grid',
+              gridTemplateColumns: 'minmax(0, 0.82fr) minmax(320px, 1.18fr)',
+              gap: '24px',
+              alignItems: 'start',
+              marginBottom: '22px',
             }}
           >
-            {messages.home.lanesIntroTitle}
-          </div>
-          <p style={{ fontSize: '18px', lineHeight: 1.72, color: '#495863', maxWidth: '430px' }}>
-            {messages.home.lanesIntroBody}
-          </p>
-        </ScrollReveal>
+            <ScrollReveal delay={40} className={locale !== 'en' ? 'home-lanes-intro-long' : ''} style={{ paddingTop: '4px' }}>
+              <div
+                style={{
+                  fontSize: 'clamp(42px, 6vw, 68px)',
+                  lineHeight: 0.95,
+                  letterSpacing: '-0.06em',
+                  fontWeight: 700,
+                  fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif',
+                  marginBottom: '18px',
+                  maxWidth: '460px',
+                }}
+              >
+                {messages.home.lanesIntroTitle}
+              </div>
+              <p style={{ fontSize: '18px', lineHeight: 1.72, color: '#495863', maxWidth: '440px', margin: 0 }}>
+                {messages.home.lanesIntroBody}
+              </p>
+            </ScrollReveal>
 
-        <div className="home-lanes-list" style={{ display: 'grid', gap: '16px' }}>
+            <div
+              className="home-value-grid"
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+                gap: '16px',
+              }}
+            >
+              {valueCards.map((card, index) => (
+                <ScrollReveal
+                  key={card.title}
+                  className="home-hover-lift"
+                  delay={index * 90}
+                  style={{
+                    borderRadius: '26px',
+                    padding: '22px',
+                    background: 'rgba(255,255,255,0.58)',
+                    border: `1px solid ${palette.border}`,
+                  }}
+                >
+                  <div style={{ fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6A7882', marginBottom: '10px', fontWeight: 800 }}>
+                    {card.eyebrow}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: '24px',
+                      lineHeight: 1.06,
+                      letterSpacing: '-0.04em',
+                      fontWeight: 700,
+                      fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif',
+                      marginBottom: '10px',
+                    }}
+                  >
+                    {card.title}
+                  </div>
+                  <div style={{ fontSize: '14px', lineHeight: 1.68, color: '#50606B' }}>{card.body}</div>
+                </ScrollReveal>
+              ))}
+            </div>
+          </div>
+
+        <div className="home-lanes-list" style={{ display: 'grid', gap: '14px' }}>
           {pivotLanes.map((lane, index) => (
             <ScrollReveal
               key={lane.title}
               className="home-hover-lift home-lane-card"
               delay={index * 100}
               style={{
-                ...shellCardStyle(),
-                borderRadius: '30px',
-                padding: '24px',
+                borderRadius: '24px',
+                padding: '22px 24px',
+                background: 'rgba(255,255,255,0.52)',
+                border: `1px solid ${palette.border}`,
                 display: 'grid',
-                gridTemplateColumns: '140px minmax(0, 1fr)',
+                gridTemplateColumns: '160px minmax(0, 1fr)',
                 gap: '18px',
                 alignItems: 'start',
               }}
             >
               <div
                 style={{
-                  borderRadius: '22px',
-                  padding: '18px',
+                  borderRadius: '18px',
+                  padding: '16px',
                   background: 'linear-gradient(180deg, rgba(242, 138, 67, 0.12), rgba(27, 111, 99, 0.08))',
                   color: '#25485A',
                   fontSize: '12px',
@@ -693,6 +699,7 @@ export default function Home() {
               </div>
             </ScrollReveal>
           ))}
+        </div>
         </div>
       </ScrollReveal>
 
