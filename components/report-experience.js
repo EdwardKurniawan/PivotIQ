@@ -302,6 +302,34 @@ function RiskRing({ score, size = 165, label = 'RISK SCORE' }) {
   );
 }
 
+function SignalStatCard({ label, value, tone = palette.orange }) {
+  return (
+    <div
+      style={{
+        padding: '14px 16px',
+        borderRadius: '18px',
+        background: 'rgba(255,255,255,0.62)',
+        border: `1px solid ${palette.border}`,
+      }}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '10px', alignItems: 'baseline', marginBottom: '8px' }}>
+        <div style={{ color: palette.textSoft, fontSize: '11px', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase' }}>{label}</div>
+        <div style={{ color: tone, fontSize: '21px', fontWeight: 900, letterSpacing: '-0.04em' }}>{value}</div>
+      </div>
+      <div style={{ height: '7px', borderRadius: '999px', background: 'rgba(19, 27, 35, 0.08)', overflow: 'hidden' }}>
+        <div
+          style={{
+            width: `${Math.max(24, Math.min(92, parseInt(String(value), 10) || 56))}%`,
+            height: '100%',
+            borderRadius: '999px',
+            background: tone,
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
 function SkillGapCard({ skill, color, messages }) {
   const priorityColors = {
     critical: '#FF8F4D',
@@ -476,6 +504,11 @@ function TeaserView({ payload, onCheckout, loading }) {
             </h1>
             <p style={{ color: palette.textMuted, fontSize: '15px', lineHeight: 1.72, marginBottom: '12px' }}>{summary.narrative}</p>
             <p style={{ color, fontSize: '13px', fontWeight: 800 }}>{summary.displacement_timeline}</p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '10px', marginTop: '16px' }} className="three-col">
+              <SignalStatCard label={messages.report.riskScore} value={summary.overall_score} tone={color} />
+              <SignalStatCard label={messages.report.tabs[0]} value={taskBreakdown.length} tone={palette.navy} />
+              <SignalStatCard label={messages.report.tabs[1]} value={pivots.length} tone={palette.teal} />
+            </div>
           </div>
         </div>
       </div>
@@ -800,6 +833,11 @@ export default function ReportExperience({ payload, embedded = false }) {
             <p style={{ color: palette.textSoft, fontSize: '14px', lineHeight: 1.7, marginBottom: '10px' }}>{summary.what_this_means}</p>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: `${color}14`, border: `1px solid ${color}30`, borderRadius: '10px', padding: '8px 14px' }}>
               <span style={{ color: color === '#F4E4C7' ? '#7A5A43' : color, fontSize: '12px', fontWeight: 800 }}>TL {summary.displacement_timeline}</span>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '10px', marginTop: '16px' }} className="three-col">
+              <SignalStatCard label={messages.report.riskScore} value={summary.overall_score || 0} tone={color} />
+              <SignalStatCard label={messages.report.skillGapMap} value={(pivot.skill_gaps || []).length} tone={pColor} />
+              <SignalStatCard label={messages.report.week} value={pivot.roadmap?.weeks?.length || 0} tone={palette.teal} />
             </div>
           </div>
         </div>

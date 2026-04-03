@@ -58,7 +58,16 @@ function panelStyle({ accent = 'rgba(143, 162, 179, 0.12)', background = palette
   };
 }
 
+function taskSignal(task) {
+  const category = String(task.category || '').toLowerCase();
+  if (category.includes('soft')) return { tone: palette.teal, width: '48%' };
+  if (category.includes('analysis')) return { tone: palette.navy, width: '72%' };
+  if (category.includes('management')) return { tone: palette.orange, width: '68%' };
+  return { tone: palette.orange, width: '58%' };
+}
+
 function TaskCard({ task, onClick, selected = false, subtle = false }) {
+  const signal = taskSignal(task);
   return (
     <button
       type="button"
@@ -84,6 +93,14 @@ function TaskCard({ task, onClick, selected = false, subtle = false }) {
         transition: 'transform 0.15s ease, border-color 0.15s ease, background 0.15s ease',
       }}
     >
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px' }}>
+        <div style={{ width: '58%', height: '6px', borderRadius: '999px', background: 'rgba(19, 27, 35, 0.08)', overflow: 'hidden' }}>
+          <div style={{ width: signal.width, height: '100%', borderRadius: '999px', background: signal.tone }} />
+        </div>
+        <span style={{ color: signal.tone, fontSize: '10px', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+          {selected ? 'Live' : 'Fit'}
+        </span>
+      </div>
       <span style={{ color: palette.text, fontSize: '14px', fontWeight: 700, lineHeight: 1.4, letterSpacing: '-0.02em' }}>{task.label}</span>
       <span style={{ color: selected ? '#9A5727' : '#1B6F63', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{task.category}</span>
     </button>
@@ -532,6 +549,18 @@ export default function AuditPage() {
           {step === 1 && (
               <div style={stepShell} className="audit-step-shell">
               <div style={{ maxWidth: '600px', marginBottom: '30px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '10px', marginBottom: '18px' }} className="three-col">
+                  {[
+                    ['01', 'Role'],
+                    ['02', 'Industry'],
+                    ['03', 'Workload'],
+                  ].map(([label, value], index) => (
+                    <div key={label} style={{ padding: '12px 14px', borderRadius: '18px', background: 'rgba(255,255,255,0.58)', border: `1px solid ${palette.border}` }}>
+                      <div style={{ color: index === 0 ? palette.orange : index === 1 ? palette.navy : palette.teal, fontSize: '11px', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '6px' }}>{label}</div>
+                      <div style={{ color: palette.textMuted, fontSize: '13px', fontWeight: 700 }}>{value}</div>
+                    </div>
+                  ))}
+                </div>
                 <div style={{ color: '#6A7882', fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '12px' }}>{messages.audit.startLabel}</div>
                 <h1 style={{ color: palette.text, fontSize: 'clamp(34px, 6vw, 58px)', fontWeight: 900, marginBottom: '10px', letterSpacing: '-0.05em', lineHeight: 0.96, fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif' }}>
                   {messages.audit.startTitle}
@@ -692,6 +721,12 @@ export default function AuditPage() {
                     </p>
                   </div>
 
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '14px' }}>
+                    {[palette.orange, palette.navy, palette.teal].map((tone, index) => (
+                      <div key={tone} style={{ width: index === 2 ? '28px' : '10px', height: '10px', borderRadius: '999px', background: tone, opacity: index === 1 ? 0.85 : 1 }} />
+                    ))}
+                  </div>
+
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '12px' }}>
                     {recommendedTasks.map((task) => (
                       <TaskCard key={task.task_id} task={task} onClick={() => addTask(task, 'recommended')} />
@@ -740,6 +775,18 @@ export default function AuditPage() {
                   <span style={{ color: selectedTasks.length >= 3 && selectedTasks.length <= 8 ? palette.teal : '#8B4A1B', fontSize: '12px', fontWeight: 800, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
                     {messages.audit.selectedTarget}
                   </span>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '10px', marginBottom: '16px' }} className="three-col">
+                  {[
+                    ['Tasks', String(selectedTasks.length), palette.orange],
+                    ['Primary', String(primaryTasks.length), palette.navy],
+                    ['Custom', String(customTaskCount), palette.teal],
+                  ].map(([label, value, tone]) => (
+                    <div key={label} style={{ padding: '12px 14px', borderRadius: '16px', background: 'rgba(255,255,255,0.66)', border: `1px solid ${palette.border}` }}>
+                      <div style={{ color: palette.textSoft, fontSize: '11px', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '6px' }}>{label}</div>
+                      <div style={{ color: tone, fontSize: '22px', fontWeight: 800, letterSpacing: '-0.03em' }}>{value}</div>
+                    </div>
+                  ))}
                 </div>
 
                 {selectedTasks.length > 0 ? (

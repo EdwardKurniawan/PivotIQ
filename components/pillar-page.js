@@ -200,7 +200,7 @@ export function PillarPage({ locale, page, relatedPages, rolePages = [], path })
             {page.takeawaysTitle}
           </div>
           <div style={{ display: 'grid', gap: '10px' }}>
-            {page.takeaways.map((item) => (
+            {page.takeaways.map((item, index) => (
               <div
                 key={item}
                 style={{
@@ -213,6 +213,14 @@ export function PillarPage({ locale, page, relatedPages, rolePages = [], path })
                   lineHeight: 1.6,
                 }}
               >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', marginBottom: '10px' }}>
+                  <div style={{ color: index === 0 ? '#F28A43' : index === 1 ? '#13202A' : '#1B6F63', fontSize: '11px', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                    0{index + 1}
+                  </div>
+                  <div style={{ width: '62%', height: '6px', borderRadius: '999px', background: 'rgba(19, 27, 35, 0.08)', overflow: 'hidden' }}>
+                    <div style={{ width: index === 0 ? '78%' : index === 1 ? '63%' : '52%', height: '100%', borderRadius: '999px', background: index === 0 ? '#F28A43' : index === 1 ? '#13202A' : '#1B6F63' }} />
+                  </div>
+                </div>
                 {item}
               </div>
             ))}
@@ -231,7 +239,7 @@ export function PillarPage({ locale, page, relatedPages, rolePages = [], path })
           gap: '18px',
         }}
       >
-        {page.blocks.map(([eyebrow, title, body]) => (
+        {page.blocks.map(([eyebrow, title, body], index) => (
           <article
             key={title}
             style={{
@@ -240,6 +248,19 @@ export function PillarPage({ locale, page, relatedPages, rolePages = [], path })
               padding: '24px',
             }}
           >
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+              {[0, 1, 2].map((marker) => (
+                <div
+                  key={marker}
+                  style={{
+                    width: marker === 2 ? '34px' : '10px',
+                    height: '10px',
+                    borderRadius: '999px',
+                    background: marker === 2 ? (index === 0 ? '#F28A43' : index === 1 ? '#13202A' : '#1B6F63') : 'rgba(19, 27, 35, 0.1)',
+                  }}
+                />
+              ))}
+            </div>
             <div style={{ fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6A7882', marginBottom: '10px', fontWeight: 800 }}>
               {eyebrow}
             </div>
