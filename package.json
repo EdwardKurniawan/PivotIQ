@@ -10,7 +10,8 @@
     "db:build-job-titles": "node scripts/build-job-title-catalog.mjs",
     "db:seed-job-titles": "node --env-file=.env.local scripts/seed-job-title-catalog.mjs",
     "db:seed-courses": "node --env-file=.env.local scripts/seed-course-catalog.mjs",
-    "db:verify-courses": "node --env-file=.env.local scripts/verify-course-catalog.mjs"
+    "db:verify-courses": "node --env-file=.env.local scripts/verify-course-catalog.mjs",
+    "db:sync-coursera": "node --env-file=.env.local scripts/sync-coursera-catalog.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.24.0",

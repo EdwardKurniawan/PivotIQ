@@ -53,6 +53,7 @@ create table if not exists public.course_catalog (
   id uuid primary key default gen_random_uuid(),
   slug text not null unique,
   provider text not null,
+  external_id text,
   title text not null,
   url text not null unique,
   summary text not null default '',
@@ -71,11 +72,18 @@ create table if not exists public.course_catalog (
   verification_http_status integer,
   final_url text,
   verification_error text,
+  provider_program_ids text[] not null default '{}'::text[],
+  provider_partners text[] not null default '{}'::text[],
+  language_code text not null default '',
+  source_metadata jsonb not null default '{}'::jsonb,
   last_checked_at timestamptz,
   verified_at timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table public.course_catalog
+  add column if not exists external_id text;
 
 alter table public.course_catalog
   add column if not exists role_families text[] not null default '{}'::text[];
@@ -99,10 +107,25 @@ alter table public.course_catalog
   add column if not exists verification_error text;
 
 alter table public.course_catalog
+  add column if not exists provider_program_ids text[] not null default '{}'::text[];
+
+alter table public.course_catalog
+  add column if not exists provider_partners text[] not null default '{}'::text[];
+
+alter table public.course_catalog
+  add column if not exists language_code text not null default '';
+
+alter table public.course_catalog
+  add column if not exists source_metadata jsonb not null default '{}'::jsonb;
+
+alter table public.course_catalog
   add column if not exists last_checked_at timestamptz;
 
 create index if not exists course_catalog_status_idx on public.course_catalog(status);
 create index if not exists course_catalog_verification_idx on public.course_catalog(verification_status);
+create unique index if not exists course_catalog_provider_external_id_uidx
+  on public.course_catalog(provider, external_id)
+  where external_id is not null;
 
 create table if not exists public.job_title_catalog (
   id uuid primary key default gen_random_uuid(),
