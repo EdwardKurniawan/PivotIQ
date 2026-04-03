@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createSupabaseBrowserClient } from '../../lib/supabase/browser';
@@ -29,12 +29,27 @@ export default function LoginPage() {
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [authMethod, setAuthMethod] = useState(searchParams.get('mode') === 'recovery' ? 'password' : 'magic');
+  const [recoveryMode, setRecoveryMode] = useState(searchParams.get('mode') === 'recovery');
   const [status, setStatus] = useState('idle');
   const [message, setMessage] = useState('');
   const authConfigured = Boolean(supabase);
   const messages = getMessages(locale);
   const appUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://pivotiq.app').replace(/\/$/, '');
+
+  useEffect(() => {
+    const searchMode = searchParams.get('mode');
+    const searchType = searchParams.get('type');
+    const hash = typeof window !== 'undefined' ? window.location.hash : '';
+    const hashSignalsRecovery = hash.includes('type=recovery') || hash.includes('access_token=');
+    const isRecovery = searchMode === 'recovery' || searchType === 'recovery' || hashSignalsRecovery;
+
+    if (isRecovery) {
+      setRecoveryMode(true);
+      setAuthMethod('password');
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -147,6 +162,48 @@ export default function LoginPage() {
     setMessage(messages.login.resetSuccess);
   };
 
+  const handleRecoverySubmit = async (event) => {
+    event.preventDefault();
+
+    if (!supabase) {
+      setStatus('error');
+      setMessage(messages.login.supabaseWarning);
+      return;
+    }
+
+    if (!password || !confirmPassword) {
+      setStatus('error');
+      setMessage(messages.login.recoveryMissingPassword);
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setStatus('error');
+      setMessage(messages.login.recoveryPasswordMismatch);
+      return;
+    }
+
+    setStatus('loading');
+    setMessage('');
+
+    const { error } = await supabase.auth.updateUser({
+      password,
+    });
+
+    if (error) {
+      setStatus('error');
+      setMessage(error.message);
+      return;
+    }
+
+    setStatus('success');
+    setMessage(messages.login.recoverySuccess);
+    setTimeout(() => {
+      router.push('/dashboard');
+      router.refresh();
+    }, 1200);
+  };
+
   return (
     <div className="auth-page" style={{ minHeight: '100vh', background: palette.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', position: 'relative', overflow: 'hidden' }}>
       <div
@@ -232,22 +289,24 @@ export default function LoginPage() {
             <LanguageSwitcher locale={locale} onChange={setLocale} />
           </div>
           <div style={{ color: '#A7602E', fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '12px' }}>
-            {authMethod === 'magic' ? messages.login.sendLabel : messages.login.passwordLabel}
+            {recoveryMode ? messages.login.recoveryLabel : authMethod === 'magic' ? messages.login.sendLabel : messages.login.passwordLabel}
           </div>
           <h2 style={{ color: palette.text, fontSize: '28px', fontWeight: 900, letterSpacing: '-0.04em', margin: '0 0 10px' }}>
-            {authMethod === 'magic' ? messages.login.sendTitle : messages.login.passwordTitle}
+            {recoveryMode ? messages.login.recoveryTitle : authMethod === 'magic' ? messages.login.sendTitle : messages.login.passwordTitle}
           </h2>
           <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.72, marginBottom: '24px' }}>
-            {authMethod === 'magic' ? messages.login.sendBody : messages.login.passwordBody}
+            {recoveryMode ? messages.login.recoveryBody : authMethod === 'magic' ? messages.login.sendBody : messages.login.passwordBody}
           </p>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '10px', marginBottom: '18px' }}>
+          {!recoveryMode && (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '10px', marginBottom: '18px' }}>
             <button
               type="button"
               onClick={() => {
                 setAuthMethod('magic');
                 setStatus('idle');
                 setMessage('');
+                setRecoveryMode(false);
               }}
               style={authMethod === 'magic'
                 ? { border: 'none', borderRadius: '16px', background: palette.navy, color: '#FFF7F1', padding: '12px 14px', fontSize: '14px', fontWeight: 800, cursor: 'pointer' }
@@ -261,6 +320,7 @@ export default function LoginPage() {
                 setAuthMethod('password');
                 setStatus('idle');
                 setMessage('');
+                setRecoveryMode(false);
               }}
               style={authMethod === 'password'
                 ? { border: 'none', borderRadius: '16px', background: palette.navy, color: '#FFF7F1', padding: '12px 14px', fontSize: '14px', fontWeight: 800, cursor: 'pointer' }
@@ -268,7 +328,8 @@ export default function LoginPage() {
             >
               {messages.login.methodPassword}
             </button>
-          </div>
+            </div>
+          )}
 
           {!authConfigured && (
             <div style={{ marginBottom: '18px', padding: '14px 16px', borderRadius: '18px', border: '1px solid rgba(242, 138, 67, 0.22)', background: 'rgba(242, 138, 67, 0.10)', color: '#8B4A1B', fontSize: '14px', lineHeight: 1.65 }}>
@@ -276,19 +337,23 @@ export default function LoginPage() {
             </div>
           )}
 
-          <form onSubmit={authMethod === 'magic' ? handleSubmit : handlePasswordSignIn}>
-            <label className="section-label" style={{ color: '#7A5A43' }}>{messages.login.emailLabel}</label>
-            <input
-              className="piq-input"
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              placeholder={messages.login.emailPlaceholder}
-              style={{ marginBottom: '18px' }}
-            />
-            {authMethod === 'password' && (
+          <form onSubmit={recoveryMode ? handleRecoverySubmit : authMethod === 'magic' ? handleSubmit : handlePasswordSignIn}>
+            {!recoveryMode && (
               <>
-                <label className="section-label" style={{ color: '#7A5A43' }}>{messages.login.passwordField}</label>
+                <label className="section-label" style={{ color: '#7A5A43' }}>{messages.login.emailLabel}</label>
+                <input
+                  className="piq-input"
+                  type="email"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  placeholder={messages.login.emailPlaceholder}
+                  style={{ marginBottom: '18px' }}
+                />
+              </>
+            )}
+            {(authMethod === 'password' || recoveryMode) && (
+              <>
+                <label className="section-label" style={{ color: '#7A5A43' }}>{recoveryMode ? messages.login.newPasswordField : messages.login.passwordField}</label>
                 <input
                   className="piq-input"
                   type="password"
@@ -299,23 +364,40 @@ export default function LoginPage() {
                 />
               </>
             )}
+            {recoveryMode && (
+              <>
+                <label className="section-label" style={{ color: '#7A5A43' }}>{messages.login.confirmPasswordField}</label>
+                <input
+                  className="piq-input"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(event) => setConfirmPassword(event.target.value)}
+                  placeholder={messages.login.confirmPasswordPlaceholder}
+                  style={{ marginBottom: '18px' }}
+                />
+              </>
+            )}
             <button
-              disabled={!email || status === 'loading' || (authMethod === 'password' && !password)}
-              style={!email || status === 'loading' || (authMethod === 'password' && !password)
+              disabled={status === 'loading' || (recoveryMode ? (!password || !confirmPassword) : (!email || (authMethod === 'password' && !password)))}
+              style={status === 'loading' || (recoveryMode ? (!password || !confirmPassword) : (!email || (authMethod === 'password' && !password)))
                 ? { width: '100%', border: 'none', borderRadius: '20px', background: palette.navy, color: '#FFF7F1', padding: '17px 22px', fontSize: '16px', fontWeight: 900, opacity: 0.45, cursor: 'default', boxShadow: 'none' }
                 : { width: '100%', border: 'none', borderRadius: '20px', background: palette.navy, color: '#FFF7F1', padding: '17px 22px', fontSize: '16px', fontWeight: 900, cursor: 'pointer', boxShadow: '0 18px 40px rgba(19, 32, 42, 0.18)' }}
             >
               {status === 'loading'
-                ? authMethod === 'magic'
-                  ? messages.login.sendingButton
-                  : messages.login.signingIn
-                : authMethod === 'magic'
-                  ? messages.login.sendButton
-                  : messages.login.passwordSignIn}
+                ? recoveryMode
+                  ? messages.login.updatingPassword
+                  : authMethod === 'magic'
+                    ? messages.login.sendingButton
+                    : messages.login.signingIn
+                : recoveryMode
+                  ? messages.login.completeRecovery
+                  : authMethod === 'magic'
+                    ? messages.login.sendButton
+                    : messages.login.passwordSignIn}
             </button>
           </form>
 
-          {authMethod === 'password' && (
+          {authMethod === 'password' && !recoveryMode && (
             <div style={{ marginTop: '14px', display: 'grid', gap: '12px' }}>
               <button
                 type="button"
