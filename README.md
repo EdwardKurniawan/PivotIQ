@@ -1,6 +1,6 @@
 # PivotIQ — AI Career Risk Auditor
 
-A Next.js app that gives users a personalized AI job displacement risk score and 90-day pivot plan, powered by Claude.
+A Next.js app that gives users a personalized AI job displacement risk score and 90-day pivot plan, powered by OpenRouter with Nemotron Nano.
 
 ---
 
@@ -10,9 +10,9 @@ A Next.js app that gives users a personalized AI job displacement risk score and
 # 1. Install dependencies
 npm install
 
-# 2. Add your Claude API key
+# 2. Add your OpenRouter API key
 cp .env.example .env.local
-# Open .env.local and paste your key from https://console.anthropic.com
+# Open .env.local and paste your key from https://openrouter.ai/
 
 # 3. Start the dev server
 npm run dev
@@ -33,7 +33,7 @@ vercel
 
 # Add your API key to Vercel environment variables:
 # Go to vercel.com → your project → Settings → Environment Variables
-# Add: ANTHROPIC_API_KEY = your_key_here
+# Add: OPENROUTER_API_KEY = your_key_here
 ```
 
 That's it. Your app is live at https://yourapp.vercel.app
@@ -89,7 +89,7 @@ app/
   page.js                      ← Landing page
   audit/page.js                ← Multi-step quiz flow
   report/page.js               ← Report display (3 tabs)
-  api/generate-report/route.js ← Claude API call
+  api/generate-report/route.js ← OpenRouter API call
   globals.css                  ← Theme variables
 ```
 
@@ -97,12 +97,11 @@ app/
 
 ## Cost Per Report
 
-| Model           | Cost/report | Use for         |
-|-----------------|-------------|-----------------|
-| claude-opus-4-6 | ~$0.10      | Paying customers |
-| claude-sonnet-4-6 | ~$0.03   | Testing          |
+| Model                             | Cost/report | Use for     |
+|-----------------------------------|-------------|-------------|
+| nvidia/nemotron-3-nano-30b-a3b:free | $0.00     | All reports |
 
-At $29/report with ~$0.10 API cost → **99.6% margin**
+At $29/report with free-model generation cost → **very high margin**
 
 ---
 
