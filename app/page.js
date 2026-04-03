@@ -102,7 +102,7 @@ export default function Home() {
   const pivotLanes = messages.home.pivotLanes.map(([label, title, body]) => ({ label, title, body }));
   const roadmapSteps = messages.home.roadmapSteps.map(([number, title, body]) => ({ number, title, body }));
   const searchIntentItems = messages.home.searchIntentItems.map(([title, body]) => ({ title, body }));
-  const faqItems = messages.home.faqItems.map(([question, answer]) => ({ question, answer }));
+  const faqItems = messages.home.faqItems.map(([question, answer]) => ({ question, answer })).slice(0, 4);
   const featuredRoleGuides = getRoleGuideLinks(locale, [
     'marketing-manager-ai-risk',
     'fpa-analyst-ai-risk',
@@ -110,7 +110,7 @@ export default function Home() {
     'customer-success-manager-ai-risk',
     'recruiter-ai-risk',
     'office-manager-ai-risk',
-  ]);
+  ]).slice(0, 3);
   const sampleTaskNotes = messages.home.sampleNotes;
   const sampleTaskLabels = messages.home.sampleTaskLabels;
   const softwareSchema = {
@@ -271,7 +271,7 @@ export default function Home() {
             {messages.home.heroBody}
           </p>
 
-          <div className="home-reveal-4 home-hero-actions" style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', marginBottom: '26px' }}>
+          <div className="home-reveal-4 home-hero-actions" style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', marginBottom: '14px' }}>
             <Link className="home-primary-cta" href="/audit" style={primaryLinkStyle()}>
               {messages.common.runFreeScan}
             </Link>
@@ -293,21 +293,19 @@ export default function Home() {
             >
               {messages.home.methodologyButton}
             </Link>
-            <div
-              className="home-hero-note"
-              style={{
-                padding: '17px 20px',
-                borderRadius: '999px',
-                background: 'rgba(255,255,255,0.66)',
-                border: `1px solid ${palette.border}`,
-                color: '#4A5762',
-                fontSize: '15px',
-                fontWeight: 700,
-              }}
-            >
-              {messages.home.heroNote}
-            </div>
           </div>
+          <p
+            className="home-hero-note-inline"
+            style={{
+              maxWidth: '520px',
+              margin: 0,
+              fontSize: '14px',
+              lineHeight: 1.7,
+              color: '#667681',
+            }}
+          >
+            {messages.home.heroNote}
+          </p>
 
         </div>
 
@@ -498,74 +496,78 @@ export default function Home() {
           maxWidth: '1220px',
           margin: '0 auto',
           padding: '0 28px 52px',
-          display: 'grid',
-          gridTemplateColumns: 'minmax(0, 0.92fr) minmax(320px, 1.08fr)',
-          gap: '22px',
-          alignItems: 'start',
         }}
       >
-        <ScrollReveal
-          delay={40}
+        <div
+          className="home-search-shell"
           style={{
             ...shellCardStyle(),
             borderRadius: '34px',
             padding: '30px',
-          }}
-        >
-          <div style={{ fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6A7882', marginBottom: '12px', fontWeight: 800 }}>
-            {messages.home.searchIntentEyebrow}
-          </div>
-          <div
-            style={{
-              fontSize: 'clamp(34px, 5vw, 58px)',
-              lineHeight: 0.98,
-              letterSpacing: '-0.055em',
-              fontWeight: 700,
-              fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif',
-              marginBottom: '14px',
-              maxWidth: '560px',
-            }}
-          >
-            {messages.home.searchIntentTitle}
-          </div>
-          <p style={{ fontSize: '17px', lineHeight: 1.76, color: '#495863', maxWidth: '600px', margin: 0 }}>
-            {messages.home.searchIntentBody}
-          </p>
-        </ScrollReveal>
-
-        <div
-          style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-            gap: '16px',
+            gridTemplateColumns: 'minmax(0, 0.86fr) minmax(320px, 1.14fr)',
+            gap: '22px',
+            alignItems: 'start',
           }}
         >
-          {searchIntentItems.map((item, index) => (
-            <ScrollReveal
-              key={item.title}
-              className="home-hover-lift"
-              delay={index * 80}
+          <ScrollReveal delay={40}>
+            <div style={{ fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6A7882', marginBottom: '12px', fontWeight: 800 }}>
+              {messages.home.searchIntentEyebrow}
+            </div>
+            <div
               style={{
-                ...shellCardStyle(),
-                borderRadius: '26px',
-                padding: '22px',
+                fontSize: 'clamp(34px, 5vw, 58px)',
+                lineHeight: 0.98,
+                letterSpacing: '-0.055em',
+                fontWeight: 700,
+                fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif',
+                marginBottom: '14px',
+                maxWidth: '520px',
               }}
             >
-              <div
+              {messages.home.searchIntentTitle}
+            </div>
+            <p style={{ fontSize: '17px', lineHeight: 1.76, color: '#495863', maxWidth: '560px', margin: 0 }}>
+              {messages.home.searchIntentBody}
+            </p>
+          </ScrollReveal>
+
+          <div
+            className="home-search-grid"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+              gap: '16px',
+            }}
+          >
+            {searchIntentItems.map((item, index) => (
+              <ScrollReveal
+                key={item.title}
+                className="home-hover-lift"
+                delay={index * 80}
                 style={{
-                  fontSize: '22px',
-                  lineHeight: 1.05,
-                  letterSpacing: '-0.04em',
-                  fontWeight: 700,
-                  fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif',
-                  marginBottom: '10px',
+                  borderRadius: '26px',
+                  padding: '22px',
+                  background: 'rgba(255,255,255,0.66)',
+                  border: `1px solid ${palette.border}`,
                 }}
               >
-                {item.title}
-              </div>
-              <div style={{ fontSize: '14px', lineHeight: 1.72, color: '#50606B' }}>{item.body}</div>
-            </ScrollReveal>
-          ))}
+                <div
+                  style={{
+                    fontSize: '22px',
+                    lineHeight: 1.05,
+                    letterSpacing: '-0.04em',
+                    fontWeight: 700,
+                    fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif',
+                    marginBottom: '10px',
+                  }}
+                >
+                  {item.title}
+                </div>
+                <div style={{ fontSize: '14px', lineHeight: 1.72, color: '#50606B' }}>{item.body}</div>
+              </ScrollReveal>
+            ))}
+          </div>
         </div>
       </ScrollReveal>
 
@@ -577,7 +579,7 @@ export default function Home() {
           zIndex: 2,
           maxWidth: '1220px',
           margin: '0 auto',
-          padding: '12px 28px 82px',
+          padding: '12px 28px 72px',
         }}
       >
         <div
@@ -605,7 +607,7 @@ export default function Home() {
                 style={{
                   fontSize: '28px',
                   lineHeight: 1.02,
-                  letterSpacing: '-0.045em',
+                  letterSpacing: '-0.04em',
                   fontWeight: 700,
                   fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif',
                   marginBottom: '12px',
@@ -627,7 +629,7 @@ export default function Home() {
           zIndex: 2,
           maxWidth: '1220px',
           margin: '0 auto',
-          padding: '0 28px 88px',
+          padding: '0 28px 72px',
           display: 'grid',
           gridTemplateColumns: 'minmax(0, 0.85fr) minmax(320px, 1.15fr)',
           gap: '24px',
@@ -702,7 +704,7 @@ export default function Home() {
           zIndex: 2,
           maxWidth: '1220px',
           margin: '0 auto',
-          padding: '0 28px 88px',
+          padding: '0 28px 72px',
           display: 'grid',
           gridTemplateColumns: 'minmax(280px, 0.72fr) minmax(0, 1.28fr)',
           gap: '22px',

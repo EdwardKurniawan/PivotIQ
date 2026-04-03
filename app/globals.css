@@ -297,6 +297,12 @@ input, textarea, select { font-family: var(--font); }
   position: relative;
   overflow: hidden;
 }
+.home-hero-note-inline {
+  text-wrap: pretty;
+}
+.home-search-shell {
+  overflow: hidden;
+}
 .home-badge::after {
   content: "";
   position: absolute;
@@ -681,12 +687,17 @@ input, textarea, select { font-family: var(--font); }
   .home-value-section,
   .home-search-intent-section,
   .home-faq-section,
+  .home-role-guides-section,
   .home-lanes-section,
   .home-closing-section { padding-left: 16px !important; padding-right: 16px !important; }
   .home-search-intent-section { padding-bottom: 56px !important; gap: 18px !important; }
   .home-faq-section { padding-bottom: 56px !important; gap: 18px !important; }
+  .home-role-guides-section { padding-bottom: 56px !important; gap: 18px !important; }
   .home-value-section { padding-bottom: 56px !important; }
   .home-lanes-section { padding-bottom: 64px !important; gap: 18px !important; }
+  .home-search-shell { padding: 22px !important; grid-template-columns: 1fr !important; gap: 18px !important; }
+  .home-search-grid { grid-template-columns: 1fr !important; }
+  .home-hero-note-inline { font-size: 13px !important; line-height: 1.6 !important; max-width: 100% !important; }
   .home-lanes-intro-long > div:first-child { font-size: 34px !important; max-width: 100% !important; }
   .home-lanes-intro-long > p { max-width: 100% !important; }
   .home-lanes-list { gap: 12px !important; }
