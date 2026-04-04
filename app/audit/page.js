@@ -127,6 +127,7 @@ export default function AuditPage() {
   const [roleBlend, setRoleBlend] = useState('');
   const [managementScope, setManagementScope] = useState('');
   const [decisionScope, setDecisionScope] = useState('');
+  const [domainFocus, setDomainFocus] = useState('');
   const [coreSystemsInput, setCoreSystemsInput] = useState('');
   const [linkedinProfileUrl, setLinkedinProfileUrl] = useState('');
   const [taskSearch, setTaskSearch] = useState('');
@@ -329,6 +330,7 @@ export default function AuditPage() {
         role_blend: roleBlend || null,
         management_scope: leadershipSignals ? managementScope || null : null,
         decision_scope: decisionScope || null,
+        domain_focus: domainFocus.trim() || null,
         core_systems: parseSignalList(coreSystemsInput),
       },
     };
@@ -942,6 +944,20 @@ export default function AuditPage() {
                   </div>
 
                   <div>
+                    <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>
+                      {messages.audit.domainFocusPrompt}
+                    </label>
+                    <input
+                      className="piq-input"
+                      value={domainFocus}
+                      onChange={(event) => setDomainFocus(event.target.value)}
+                      placeholder={messages.audit.domainFocusPlaceholder}
+                      style={{ marginBottom: '8px' }}
+                    />
+                    <p style={{ color: palette.textSoft, fontSize: '12px', marginBottom: '20px' }}>
+                      {messages.audit.domainFocusBody}
+                    </p>
+
                     <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>
                       {messages.audit.coreSystemsPrompt}
                     </label>
