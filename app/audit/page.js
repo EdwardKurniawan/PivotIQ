@@ -21,17 +21,11 @@ const INDUSTRIES = [
   'Consulting', 'Media', 'Real Estate', 'Other',
 ];
 
-const ROLE_BLEND_OPTIONS = [
-  { value: 'execution', label: 'Mostly execution' },
-  { value: 'mixed', label: 'Execution + strategy' },
-  { value: 'strategy', label: 'Mostly strategy / leadership' },
-];
+const ROLE_BLEND_OPTIONS = ['execution', 'mixed', 'strategy'];
 
-const MANAGEMENT_SCOPE_OPTIONS = [
-  { value: 'none', label: 'No direct reports' },
-  { value: 'small-team', label: 'I manage a small team' },
-  { value: 'larger-team', label: 'I manage a larger team' },
-];
+const MANAGEMENT_SCOPE_OPTIONS = ['none', 'small-team', 'larger-team'];
+
+const DECISION_SCOPE_OPTIONS = ['internal-ops', 'customer-revenue', 'regulated-high-stakes'];
 
 const palette = {
   bg: '#F4EFE7',
@@ -111,6 +105,14 @@ function getSelectedTaskCountLabel(count, messages) {
   return `${count} ${count === 1 ? messages.audit.selectedSummarySingle : messages.audit.selectedSummaryPlural}`;
 }
 
+function parseSignalList(value) {
+  return String(value || '')
+    .split(/[\n,]/)
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .slice(0, 6);
+}
+
 export default function AuditPage() {
   const router = useRouter();
   const [locale, setLocale] = useState(getBrowserLocale());
@@ -124,6 +126,8 @@ export default function AuditPage() {
   const [primaryTasks, setPrimaryTasks] = useState([]);
   const [roleBlend, setRoleBlend] = useState('');
   const [managementScope, setManagementScope] = useState('');
+  const [decisionScope, setDecisionScope] = useState('');
+  const [coreSystemsInput, setCoreSystemsInput] = useState('');
   const [linkedinProfileUrl, setLinkedinProfileUrl] = useState('');
   const [taskSearch, setTaskSearch] = useState('');
   const [customTaskInput, setCustomTaskInput] = useState('');
@@ -324,6 +328,8 @@ export default function AuditPage() {
       clarifiers: {
         role_blend: roleBlend || null,
         management_scope: leadershipSignals ? managementScope || null : null,
+        decision_scope: decisionScope || null,
+        core_systems: parseSignalList(coreSystemsInput),
       },
     };
 
@@ -883,13 +889,13 @@ export default function AuditPage() {
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
                       {ROLE_BLEND_OPTIONS.map((option) => (
                         <button
-                          key={option.value}
+                          key={option}
                           type="button"
-                          onClick={() => setRoleBlend(option.value)}
-                          className={`chip ${roleBlend === option.value ? 'active-primary' : ''}`}
-                          style={roleBlend === option.value ? { background: 'rgba(27, 111, 99, 0.12)', color: palette.teal, outlineColor: 'rgba(27, 111, 99, 0.38)' } : { background: 'rgba(255,255,255,0.58)', color: palette.textMuted, outlineColor: 'rgba(19,27,35,0.08)' }}
+                          onClick={() => setRoleBlend(option)}
+                          className={`chip ${roleBlend === option ? 'active-primary' : ''}`}
+                          style={roleBlend === option ? { background: 'rgba(27, 111, 99, 0.12)', color: palette.teal, outlineColor: 'rgba(27, 111, 99, 0.38)' } : { background: 'rgba(255,255,255,0.58)', color: palette.textMuted, outlineColor: 'rgba(19,27,35,0.08)' }}
                         >
-                          {option.label}
+                          {messages.audit.roleBlendOptions[option]}
                         </button>
                       ))}
                     </div>
@@ -903,18 +909,54 @@ export default function AuditPage() {
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
                         {MANAGEMENT_SCOPE_OPTIONS.map((option) => (
                           <button
-                            key={option.value}
+                            key={option}
                             type="button"
-                            onClick={() => setManagementScope(option.value)}
-                            className={`chip ${managementScope === option.value ? 'active-primary' : ''}`}
-                            style={managementScope === option.value ? { background: 'rgba(27, 111, 99, 0.12)', color: palette.teal, outlineColor: 'rgba(27, 111, 99, 0.38)' } : { background: 'rgba(255,255,255,0.58)', color: palette.textMuted, outlineColor: 'rgba(19,27,35,0.08)' }}
+                            onClick={() => setManagementScope(option)}
+                            className={`chip ${managementScope === option ? 'active-primary' : ''}`}
+                            style={managementScope === option ? { background: 'rgba(27, 111, 99, 0.12)', color: palette.teal, outlineColor: 'rgba(27, 111, 99, 0.38)' } : { background: 'rgba(255,255,255,0.58)', color: palette.textMuted, outlineColor: 'rgba(19,27,35,0.08)' }}
                           >
-                            {option.label}
+                            {messages.audit.managementScopeOptions[option]}
                           </button>
                         ))}
                       </div>
                     </div>
                   )}
+
+                  <div style={{ marginTop: leadershipSignals ? '20px' : '20px', marginBottom: '20px' }}>
+                    <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>
+                      {messages.audit.decisionScopePrompt}
+                    </label>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                      {DECISION_SCOPE_OPTIONS.map((value) => (
+                        <button
+                          key={value}
+                          type="button"
+                          onClick={() => setDecisionScope(value)}
+                          className={`chip ${decisionScope === value ? 'active-primary' : ''}`}
+                          style={decisionScope === value ? { background: 'rgba(27, 111, 99, 0.12)', color: palette.teal, outlineColor: 'rgba(27, 111, 99, 0.38)' } : { background: 'rgba(255,255,255,0.58)', color: palette.textMuted, outlineColor: 'rgba(19,27,35,0.08)' }}
+                        >
+                          {messages.audit.decisionScopeOptions[value]}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>
+                      {messages.audit.coreSystemsPrompt}
+                    </label>
+                    <textarea
+                      className="piq-input"
+                      value={coreSystemsInput}
+                      onChange={(event) => setCoreSystemsInput(event.target.value)}
+                      placeholder={messages.audit.coreSystemsPlaceholder}
+                      rows={3}
+                      style={{ marginBottom: '8px', minHeight: '96px', resize: 'vertical' }}
+                    />
+                    <p style={{ color: palette.textSoft, fontSize: '12px', marginBottom: 0 }}>
+                      {messages.audit.coreSystemsBody}
+                    </p>
+                  </div>
                 </div>
               )}
 
