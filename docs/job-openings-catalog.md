@@ -21,6 +21,7 @@ PivotIQ can now ingest live job descriptions into Supabase so we can learn from 
 npm run db:apply-schema
 npm run db:seed-job-sources
 npm run db:sync-job-openings
+npm run db:enrich-job-openings
 ```
 
 To sync only one source:
@@ -34,6 +35,7 @@ node --env-file=.env.local scripts/sync-job-openings.mjs --source=stripe-greenho
 - This first pass is a safe ingestion layer, not a universal scraper.
 - Prefer public ATS feeds and approved APIs over brittle scraping of restricted job boards.
 - `required_skills`, `preferred_skills`, and `tools` are extracted heuristically from the description text and can be upgraded later with LLM enrichment or taxonomy matching.
+- `db:enrich-job-openings` uses OpenRouter with `nvidia/nemotron-3-nano-30b-a3b:free` to improve role family, domain focus, skills, tools, proof assets, and summary fields.
 - `remoteok` has attribution requirements in the feed response. Respect them anywhere the data is shown externally.
 
 ## Best next upgrades
@@ -41,3 +43,4 @@ node --env-file=.env.local scripts/sync-job-openings.mjs --source=stripe-greenho
 - Add LLM-based enrichment to extract proof assets, outcomes, and sharper skill taxonomies.
 - Link postings to O*NET / ESCO occupation families.
 - Add embeddings and search so we can compare a user profile against current live roles.
+- Add a UI for exploring `/api/job-openings/search`.

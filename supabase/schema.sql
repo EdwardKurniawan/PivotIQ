@@ -202,22 +202,44 @@ create table if not exists public.job_openings (
   preferred_skills text[] not null default '{}'::text[],
   tools text[] not null default '{}'::text[],
   job_functions text[] not null default '{}'::text[],
+  proof_assets text[] not null default '{}'::text[],
+  enrichment_summary text not null default '',
+  enrichment_status text not null default 'pending',
+  enrichment_model text not null default '',
   metadata jsonb not null default '{}'::jsonb,
   raw_payload jsonb not null default '{}'::jsonb,
   posted_at timestamptz,
   closed_at timestamptz,
   status text not null default 'open',
   fetched_at timestamptz not null default now(),
+  enriched_at timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   unique(source_id, source_job_id)
 );
+
+alter table public.job_openings
+  add column if not exists proof_assets text[] not null default '{}'::text[];
+
+alter table public.job_openings
+  add column if not exists enrichment_summary text not null default '';
+
+alter table public.job_openings
+  add column if not exists enrichment_status text not null default 'pending';
+
+alter table public.job_openings
+  add column if not exists enrichment_model text not null default '';
+
+alter table public.job_openings
+  add column if not exists enriched_at timestamptz;
 
 create index if not exists job_openings_source_status_idx on public.job_openings(source_id, status);
 create index if not exists job_openings_provider_idx on public.job_openings(provider);
 create index if not exists job_openings_role_family_idx on public.job_openings(role_family);
 create index if not exists job_openings_domain_focus_idx on public.job_openings(domain_focus);
 create index if not exists job_openings_posted_at_idx on public.job_openings(posted_at desc);
+create index if not exists job_openings_enrichment_status_idx on public.job_openings(enrichment_status);
 create index if not exists job_openings_required_skills_gin_idx on public.job_openings using gin (required_skills);
 create index if not exists job_openings_preferred_skills_gin_idx on public.job_openings using gin (preferred_skills);
 create index if not exists job_openings_tools_gin_idx on public.job_openings using gin (tools);
+create index if not exists job_openings_proof_assets_gin_idx on public.job_openings using gin (proof_assets);

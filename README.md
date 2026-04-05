@@ -103,6 +103,7 @@ PivotIQ can also ingest live job descriptions into Supabase from public ATS feed
 npm run db:apply-schema
 npm run db:seed-job-sources
 npm run db:sync-job-openings
+npm run db:enrich-job-openings
 ```
 
 Supported providers in this first pass:
