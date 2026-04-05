@@ -510,7 +510,7 @@ function MarketSignalCard({ signal, color, compact = false }) {
           <div style={{ width: missingWidth, background: '#F28A43' }} />
           <div style={{ width: modelOnlyWidth, background: '#6D7A84' }} />
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '8px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '8px' }}>
           {[
             ['Already signal', overlapCount],
             ['Missing from market', missingCount],
@@ -522,6 +522,16 @@ function MarketSignalCard({ signal, color, compact = false }) {
             </div>
           ))}
         </div>
+        {signal.ranking_reason && (
+          <div style={{ marginTop: '10px', padding: '10px 12px', borderRadius: '12px', background: 'rgba(255,255,255,0.72)', border: `1px solid ${palette.border}` }}>
+            <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '4px' }}>
+              Why it ranks here
+            </div>
+            <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.55 }}>
+              {signal.ranking_reason}
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -572,6 +582,13 @@ function MarketSignalCard({ signal, color, compact = false }) {
           </div>
         </div>
       </div>
+
+      {signal.ranking_reason && (
+        <div style={{ padding: '14px 16px', borderRadius: '16px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}`, marginBottom: '16px' }}>
+          <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>Why this pivot ranks here</div>
+          <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7 }}>{signal.ranking_reason}</div>
+        </div>
+      )}
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '12px', marginBottom: '16px' }} className="two-col">
         {[
