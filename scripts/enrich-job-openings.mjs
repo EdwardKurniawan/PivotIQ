@@ -7,6 +7,8 @@ const supabaseUrl = getSupabaseUrl();
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const limit = Math.min(Math.max(Number(process.argv.find((arg) => arg.startsWith('--limit='))?.split('=')[1] || 10), 1), 50);
 const targetId = process.argv.find((arg) => arg.startsWith('--id='))?.split('=')[1] || '';
+const force = process.argv.includes('--force');
+const roleFamilyFilter = process.argv.find((arg) => arg.startsWith('--role-family='))?.split('=')[1] || '';
 
 if (!supabaseUrl || !serviceRoleKey) {
   console.error('NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required.');
@@ -30,8 +32,12 @@ async function fetchCandidates() {
 
   if (targetId) {
     query = query.eq('id', targetId);
-  } else {
+  } else if (!force) {
     query = query.in('enrichment_status', ['pending', 'failed']);
+  }
+
+  if (roleFamilyFilter) {
+    query = query.eq('role_family', roleFamilyFilter);
   }
 
   const { data, error } = await query;
