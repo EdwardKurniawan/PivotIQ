@@ -440,6 +440,172 @@ function SkillGapCard({ skill, color, messages }) {
   );
 }
 
+function MarketSkillPill({ label, tone = 'default' }) {
+  const tones = {
+    default: { bg: 'rgba(255,255,255,0.76)', border: 'rgba(19, 32, 42, 0.12)', color: palette.textMuted },
+    positive: { bg: 'rgba(27,111,99,0.10)', border: 'rgba(27,111,99,0.18)', color: '#1B6F63' },
+    caution: { bg: 'rgba(242,138,67,0.10)', border: 'rgba(242,138,67,0.18)', color: '#8B4A1B' },
+    muted: { bg: 'rgba(19,32,42,0.06)', border: 'rgba(19,32,42,0.10)', color: palette.textSoft },
+  };
+  const style = tones[tone] || tones.default;
+
+  return (
+    <span
+      style={{
+        padding: '7px 10px',
+        borderRadius: '999px',
+        background: style.bg,
+        border: `1px solid ${style.border}`,
+        color: style.color,
+        fontSize: '12px',
+        fontWeight: 700,
+        lineHeight: 1.2,
+      }}
+    >
+      {label}
+    </span>
+  );
+}
+
+function MarketMeter({ value, color, label, sublabel }) {
+  const clamped = Math.max(0, Math.min(100, Number(value) || 0));
+  return (
+    <div style={{ padding: '14px 16px', borderRadius: '16px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}` }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '10px', alignItems: 'baseline', marginBottom: '8px' }}>
+        <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800 }}>{label}</div>
+        <div style={{ color, fontSize: '20px', fontWeight: 900 }}>{clamped}%</div>
+      </div>
+      <div style={{ height: '8px', background: 'rgba(19, 27, 35, 0.08)', borderRadius: '999px', overflow: 'hidden', marginBottom: '8px' }}>
+        <div style={{ width: `${Math.max(clamped, clamped > 0 ? 10 : 0)}%`, height: '100%', borderRadius: '999px', background: `linear-gradient(90deg, ${color}, ${color}BB)` }} />
+      </div>
+      <div style={{ color: palette.textSoft, fontSize: '12px', lineHeight: 1.55 }}>{sublabel}</div>
+    </div>
+  );
+}
+
+function MarketSignalCard({ signal, color, compact = false }) {
+  if (!signal) return null;
+
+  const overlapCount = signal.overlap_skills?.length || 0;
+  const missingCount = signal.missing_required_skills?.length || 0;
+  const modelOnlyCount = signal.model_only_skill_gaps?.length || 0;
+  const maxDenominator = Math.max(overlapCount + missingCount + modelOnlyCount, 1);
+  const overlapWidth = `${Math.max(8, (overlapCount / maxDenominator) * 100)}%`;
+  const missingWidth = `${Math.max(missingCount ? 8 : 0, (missingCount / maxDenominator) * 100)}%`;
+  const modelOnlyWidth = `${Math.max(modelOnlyCount ? 8 : 0, (modelOnlyCount / maxDenominator) * 100)}%`;
+
+  if (compact) {
+    return (
+      <div style={{ marginTop: '14px', padding: '14px', borderRadius: '14px', background: `${color}0C`, border: `1px solid ${color}22` }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap' }}>
+          <div style={{ color, fontSize: '11px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase' }}>
+            Market reality check
+          </div>
+          <div style={{ color: palette.text, fontSize: '13px', fontWeight: 800 }}>
+            {signal.matched_openings_count || 0} live openings · {signal.profile_fit_score || 0}% fit
+          </div>
+        </div>
+        <div style={{ height: '9px', borderRadius: '999px', overflow: 'hidden', background: 'rgba(19, 27, 35, 0.08)', display: 'flex', marginBottom: '10px' }}>
+          <div style={{ width: overlapWidth, background: '#1B6F63' }} />
+          <div style={{ width: missingWidth, background: '#F28A43' }} />
+          <div style={{ width: modelOnlyWidth, background: '#6D7A84' }} />
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '8px' }}>
+          {[
+            ['Already signal', overlapCount],
+            ['Missing from market', missingCount],
+            ['Model-only gaps', modelOnlyCount],
+          ].map(([label, value]) => (
+            <div key={label} style={{ padding: '10px 12px', borderRadius: '12px', background: 'rgba(255,255,255,0.72)', border: `1px solid ${palette.border}` }}>
+              <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '4px' }}>{label}</div>
+              <div style={{ color: palette.text, fontSize: '16px', fontWeight: 800 }}>{value}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="piq-card" style={{ padding: '24px', background: `linear-gradient(180deg, ${color}0D, rgba(255,255,255,0.96))`, border: `1px solid ${color}22`, marginBottom: '24px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '14px', flexWrap: 'wrap', alignItems: 'center', marginBottom: '16px' }}>
+        <div>
+          <div style={{ color, fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px' }}>
+            Live market reality check
+          </div>
+          <div style={{ color: palette.text, fontSize: '22px', fontWeight: 900, letterSpacing: '-0.03em', marginBottom: '6px' }}>
+            This pivot is now grounded against real openings
+          </div>
+          <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.7 }}>
+            {signal.grounding_summary}
+          </div>
+        </div>
+        <div style={{ minWidth: '210px', padding: '16px 18px', borderRadius: '18px', background: 'rgba(255,255,255,0.82)', border: `1px solid ${palette.border}` }}>
+          <div style={{ color: palette.textSoft, fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px' }}>
+            Sample size
+          </div>
+          <div style={{ color: palette.text, fontSize: '24px', fontWeight: 900, marginBottom: '4px' }}>{signal.matched_openings_count || 0}</div>
+          <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.6 }}>
+            openings across {signal.sampled_companies_count || 0} companies
+          </div>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '12px', marginBottom: '16px' }} className="two-col">
+        <MarketMeter
+          value={signal.profile_fit_score}
+          color="#1B6F63"
+          label="Profile fit vs live postings"
+          sublabel="Higher means the user already signals more of the repeated required skills showing up in current openings."
+        />
+        <div style={{ padding: '14px 16px', borderRadius: '16px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}` }}>
+          <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '10px' }}>Signal split</div>
+          <div style={{ height: '12px', borderRadius: '999px', overflow: 'hidden', background: 'rgba(19, 27, 35, 0.08)', display: 'flex', marginBottom: '10px' }}>
+            <div style={{ width: overlapWidth, background: '#1B6F63' }} />
+            <div style={{ width: missingWidth, background: '#F28A43' }} />
+            <div style={{ width: modelOnlyWidth, background: '#6D7A84' }} />
+          </div>
+          <div style={{ display: 'grid', gap: '6px' }}>
+            <div style={{ color: palette.textMuted, fontSize: '12px' }}><strong style={{ color: '#1B6F63' }}>{overlapCount}</strong> skills already signaled by the user</div>
+            <div style={{ color: palette.textMuted, fontSize: '12px' }}><strong style={{ color: '#8B4A1B' }}>{missingCount}</strong> repeated market requirements still missing</div>
+            <div style={{ color: palette.textMuted, fontSize: '12px' }}><strong style={{ color: palette.text }}>{modelOnlyCount}</strong> model-only gaps to treat as lower-confidence</div>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '12px', marginBottom: '16px' }} className="two-col">
+        {[
+          ['Skills you already signal', signal.overlap_skills || [], 'positive'],
+          ['Repeated market gaps', signal.missing_required_skills || [], 'caution'],
+          ['Model-only gaps', signal.model_only_skill_gaps || [], 'muted'],
+        ].map(([label, items, tone]) => (
+          <div key={label} style={{ padding: '14px', borderRadius: '16px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}` }}>
+            <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '10px' }}>{label}</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+              {items.length ? items.slice(0, 8).map((item) => <MarketSkillPill key={item} label={item} tone={tone} />) : <div style={{ color: palette.textSoft, fontSize: '12px' }}>No strong signal yet.</div>}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '12px' }} className="two-col">
+        {[
+          ['What live postings ask for', signal.market_required_skills || []],
+          ['Common tools in postings', signal.market_tools || []],
+          ['Proof assets implied by postings', signal.market_proof_assets || []],
+        ].map(([label, items]) => (
+          <div key={label} style={{ padding: '14px', borderRadius: '16px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}` }}>
+            <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '10px' }}>{label}</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+              {items.length ? items.slice(0, 8).map((item) => <MarketSkillPill key={item} label={item} />) : <div style={{ color: palette.textSoft, fontSize: '12px' }}>Not stable enough yet.</div>}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function getMilestoneStatus({ week, index, startDate, completedWeeks }) {
   const isCompleted = completedWeeks.includes(week.week_number);
   if (isCompleted) return 'completed';
@@ -686,6 +852,7 @@ export default function ReportExperience({ payload, embedded = false }) {
   const activePath = reportPaths[selectedPlanPath] || reportPaths[0] || pivot || {};
   const isStayPlan = tier === 'full' && Boolean(stayPath) && selectedPlanPath === 0;
   const planColor = isStayPlan ? palette.teal : getPivotColor(Math.max(selectedPlanPath - (stayPath ? 1 : 0), 0)) || pColor;
+  const activeMarketSignal = activePath.live_market_signal || null;
 
   useEffect(() => {
     setReportData(payload.reportData);
@@ -1382,6 +1549,8 @@ export default function ReportExperience({ payload, embedded = false }) {
                     </div>
                   </div>
 
+                  {item.live_market_signal && <MarketSignalCard signal={item.live_market_signal} color={itemColor} compact />}
+
                   {Array.isArray(item.tradeoffs) && item.tradeoffs.length > 0 && (
                     <div style={{ marginTop: '14px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}`, borderRadius: '14px', padding: '14px' }}>
                       <div style={{ color: '#8B4A1B', fontSize: '11px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '8px' }}>{messages.report.tradeoffs}</div>
@@ -1469,6 +1638,21 @@ export default function ReportExperience({ payload, embedded = false }) {
             </div>
 
             <div style={{ marginBottom: '28px' }}>
+              {activeMarketSignal && <MarketSignalCard signal={activeMarketSignal} color={planColor} />}
+              {!activeMarketSignal && isStayPlan && (
+                <div className="piq-card" style={{ padding: '20px', marginBottom: '24px', background: 'linear-gradient(180deg, rgba(27,111,99,0.08), rgba(255,255,255,0.92))', border: `1px solid ${palette.teal}22` }}>
+                  <div style={{ color: palette.teal, fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>
+                    Market reality check
+                  </div>
+                  <div style={{ color: palette.text, fontSize: '18px', fontWeight: 800, marginBottom: '6px' }}>
+                    Stay-and-advance is still strategy-led
+                  </div>
+                  <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.7 }}>
+                    We currently ground adjacent pivot roles against live openings. The stay path is still generated from your current-role leverage, redesign opportunities, and AI adoption logic rather than external hiring-market samples.
+                  </div>
+                </div>
+              )}
+
               <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap' }}>
                 <div>
                   <div className="section-label" style={{ marginBottom: '4px' }}>{messages.report.skillGapMap}</div>
