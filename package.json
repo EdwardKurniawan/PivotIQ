@@ -9,7 +9,9 @@
     "db:apply-schema": "node --env-file=.env.local scripts/apply-supabase-schema.mjs",
     "db:build-job-titles": "node scripts/build-job-title-catalog.mjs",
     "db:seed-job-titles": "node --env-file=.env.local scripts/seed-job-title-catalog.mjs",
+    "db:seed-job-sources": "node --env-file=.env.local scripts/seed-job-sources.mjs",
     "db:seed-courses": "node --env-file=.env.local scripts/seed-course-catalog.mjs",
+    "db:sync-job-openings": "node --env-file=.env.local scripts/sync-job-openings.mjs",
     "db:verify-courses": "node --env-file=.env.local scripts/verify-course-catalog.mjs",
     "db:sync-coursera": "node --env-file=.env.local scripts/sync-coursera-catalog.mjs"
   },

@@ -95,6 +95,27 @@ app/
 
 ---
 
+## Live Jobs Catalog
+
+PivotIQ can also ingest live job descriptions into Supabase from public ATS feeds and approved APIs.
+
+```bash
+npm run db:apply-schema
+npm run db:seed-job-sources
+npm run db:sync-job-openings
+```
+
+Supported providers in this first pass:
+- Greenhouse
+- Lever
+- SmartRecruiters
+- Remote OK
+- Adzuna (optional, requires API keys)
+
+See [docs/job-openings-catalog.md](./docs/job-openings-catalog.md) for details.
+
+---
+
 ## Cost Per Report
 
 | Model                             | Cost/report | Use for     |

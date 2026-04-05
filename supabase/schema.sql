@@ -155,3 +155,69 @@ create index if not exists job_title_catalog_major_group_idx
 create index if not exists job_title_catalog_normalized_trgm_idx
   on public.job_title_catalog
   using gin (normalized_title gin_trgm_ops);
+
+create table if not exists public.job_sources (
+  id uuid primary key default gen_random_uuid(),
+  slug text not null unique,
+  company_name text not null,
+  provider text not null,
+  source_url text,
+  external_board_id text,
+  status text not null default 'draft',
+  sync_frequency text not null default 'daily',
+  source_config jsonb not null default '{}'::jsonb,
+  notes text not null default '',
+  last_synced_at timestamptz,
+  last_success_at timestamptz,
+  last_error text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index if not exists job_sources_status_idx on public.job_sources(status);
+create index if not exists job_sources_provider_idx on public.job_sources(provider);
+
+create table if not exists public.job_openings (
+  id uuid primary key default gen_random_uuid(),
+  source_id uuid not null references public.job_sources(id) on delete cascade,
+  source_job_id text not null,
+  provider text not null,
+  company_name text not null,
+  title text not null,
+  normalized_title text not null default '',
+  slug text not null,
+  department text not null default '',
+  location_text text not null default '',
+  location_type text not null default '',
+  employment_type text not null default '',
+  seniority text not null default '',
+  salary_text text not null default '',
+  apply_url text not null default '',
+  posting_url text not null default '',
+  description_text text not null default '',
+  description_html text not null default '',
+  domain_focus text not null default '',
+  role_family text not null default '',
+  required_skills text[] not null default '{}'::text[],
+  preferred_skills text[] not null default '{}'::text[],
+  tools text[] not null default '{}'::text[],
+  job_functions text[] not null default '{}'::text[],
+  metadata jsonb not null default '{}'::jsonb,
+  raw_payload jsonb not null default '{}'::jsonb,
+  posted_at timestamptz,
+  closed_at timestamptz,
+  status text not null default 'open',
+  fetched_at timestamptz not null default now(),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique(source_id, source_job_id)
+);
+
+create index if not exists job_openings_source_status_idx on public.job_openings(source_id, status);
+create index if not exists job_openings_provider_idx on public.job_openings(provider);
+create index if not exists job_openings_role_family_idx on public.job_openings(role_family);
+create index if not exists job_openings_domain_focus_idx on public.job_openings(domain_focus);
+create index if not exists job_openings_posted_at_idx on public.job_openings(posted_at desc);
+create index if not exists job_openings_required_skills_gin_idx on public.job_openings using gin (required_skills);
+create index if not exists job_openings_preferred_skills_gin_idx on public.job_openings using gin (preferred_skills);
+create index if not exists job_openings_tools_gin_idx on public.job_openings using gin (tools);

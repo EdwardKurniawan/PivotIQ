@@ -1,0 +1,62 @@
+{
+  "rows": [
+    {
+      "slug": "remoteok-global",
+      "company_name": "Remote OK",
+      "provider": "remoteok",
+      "source_url": "https://remoteok.com/api",
+      "external_board_id": "remoteok",
+      "status": "active",
+      "sync_frequency": "hourly",
+      "notes": "Public remote job feed. Respect attribution requirements from Remote OK.",
+      "source_config": {
+        "limit": 150
+      }
+    },
+    {
+      "slug": "stripe-greenhouse",
+      "company_name": "Stripe",
+      "provider": "greenhouse",
+      "source_url": "https://boards-api.greenhouse.io/v1/boards/stripe/jobs?content=true",
+      "external_board_id": "stripe",
+      "status": "active",
+      "sync_frequency": "daily",
+      "notes": "Public Greenhouse board for Stripe.",
+      "source_config": {
+        "board_token": "stripe",
+        "content": true
+      }
+    },
+    {
+      "slug": "smartrecruiters-public",
+      "company_name": "SmartRecruiters",
+      "provider": "smartrecruiters",
+      "source_url": "https://api.smartrecruiters.com/v1/companies/smartrecruiters/postings",
+      "external_board_id": "smartrecruiters",
+      "status": "active",
+      "sync_frequency": "daily",
+      "notes": "Public SmartRecruiters board for testing and schema validation.",
+      "source_config": {
+        "company_identifier": "smartrecruiters",
+        "limit": 50
+      }
+    },
+    {
+      "slug": "adzuna-us-template",
+      "company_name": "Adzuna US",
+      "provider": "adzuna",
+      "source_url": "https://api.adzuna.com/v1/api/jobs/us/search/1",
+      "external_board_id": "us",
+      "status": "draft",
+      "sync_frequency": "daily",
+      "notes": "Optional aggregator source. Requires ADZUNA_APP_ID and ADZUNA_APP_KEY.",
+      "source_config": {
+        "country": "us",
+        "what": "",
+        "where": "",
+        "results_per_page": 50,
+        "pages": 2
+      }
+    }
+  ]
+}
