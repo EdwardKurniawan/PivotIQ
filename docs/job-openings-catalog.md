@@ -38,6 +38,43 @@ node --env-file=.env.local scripts/sync-job-openings.mjs --source=stripe-greenho
 - `db:enrich-job-openings` uses OpenRouter with `nvidia/nemotron-3-nano-30b-a3b:free` to improve role family, domain focus, skills, tools, proof assets, and summary fields.
 - `remoteok` has attribution requirements in the feed response. Respect them anywhere the data is shown externally.
 
+## APIs
+
+- `GET /api/job-openings/search?q=payments&skills=SQL&limit=5`
+- `POST /api/job-openings/gap-analysis`
+
+Example `gap-analysis` payload:
+
+```json
+{
+  "targetTitle": "Payments Performance Strategist",
+  "roleFamily": "finance",
+  "profile": {
+    "job_title": "Procurement Analyst",
+    "tasks": ["Reporting and status updates", "Analysis and insight generation"],
+    "selected_tasks": [
+      { "task_id": "reporting", "label": "Reporting and status updates" },
+      { "task_id": "analysis", "label": "Analysis and insight generation" }
+    ],
+    "primary_tasks": ["Analysis and insight generation"],
+    "clarifiers": {
+      "core_systems": ["Excel", "NetSuite"]
+    }
+  }
+}
+```
+
+## Report grounding
+
+- Full report generation now adds live-market grounding to each pivot.
+- Each pivot can include:
+  - `live_market_signal.market_required_skills`
+  - `live_market_signal.missing_required_skills`
+  - `live_market_signal.model_only_skill_gaps`
+  - `live_market_signal.market_only_required_skills`
+  - `live_market_signal.profile_fit_score`
+- Top-level report payload also includes `live_market_grounding` so we can audit what the model suggested against what live postings actually require.
+
 ## Best next upgrades
 
 - Add LLM-based enrichment to extract proof assets, outcomes, and sharper skill taxonomies.

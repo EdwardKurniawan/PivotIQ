@@ -115,6 +115,11 @@ Supported providers in this first pass:
 
 See [docs/job-openings-catalog.md](./docs/job-openings-catalog.md) for details.
 
+The catalog now also supports:
+- `GET /api/job-openings/search`
+- `POST /api/job-openings/gap-analysis`
+- live-market grounding inside full report pivots so PivotIQ can compare model skill gaps against real current job requirements
+
 ---
 
 ## Cost Per Report
