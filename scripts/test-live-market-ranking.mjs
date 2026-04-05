@@ -32,14 +32,15 @@ function testMarketFitCanBeatRawModelScore() {
 
 function testNoOpeningFallbackKeepsOrderingUsable() {
   const stronger = rankPivotWithMarketSignal(
-    { title: 'Procurement Intelligence Director', match_score: 84 },
+    { title: 'Procurement Strategy Lead', match_score: 84 },
     {
       matched_openings_count: 0,
       profile_fit_score: 0,
       overlap_skills: [],
       missing_required_skills: [],
       model_only_skill_gaps: ['Prompt Engineering'],
-    }
+    },
+    { job_title: 'Procurement Analyst', clarifiers: { management_scope: 'small-team' } }
   );
 
   const weaker = rankPivotWithMarketSignal(
@@ -50,7 +51,8 @@ function testNoOpeningFallbackKeepsOrderingUsable() {
       overlap_skills: [],
       missing_required_skills: [],
       model_only_skill_gaps: ['Prompt Engineering'],
-    }
+    },
+    { job_title: 'Procurement Analyst', clarifiers: { management_scope: 'small-team' } }
   );
 
   assert.ok(
