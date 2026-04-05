@@ -22,12 +22,19 @@ npm run db:apply-schema
 npm run db:seed-job-sources
 npm run db:sync-job-openings
 npm run db:enrich-job-openings
+npm run test:job-grounding
 ```
 
 To sync only one source:
 
 ```bash
 node --env-file=.env.local scripts/sync-job-openings.mjs --source=stripe-greenhouse
+```
+
+To force a backfill of already-enriched legal openings after a grounding change:
+
+```bash
+npm run db:enrich-job-openings -- --force --role-family=legal --limit=50
 ```
 
 ## Notes
@@ -67,6 +74,7 @@ Example `gap-analysis` payload:
 ## Report grounding
 
 - Full report generation now adds live-market grounding to each pivot.
+- Live-market grounding is filtered through a deterministic job-track validator before postings are allowed to influence specialized pivots.
 - Each pivot can include:
   - `live_market_signal.market_required_skills`
   - `live_market_signal.missing_required_skills`
@@ -74,6 +82,15 @@ Example `gap-analysis` payload:
   - `live_market_signal.market_only_required_skills`
   - `live_market_signal.profile_fit_score`
 - Top-level report payload also includes `live_market_grounding` so we can audit what the model suggested against what live postings actually require.
+
+## Specialized-role hardening
+
+- `lib/job-grounding.js` now classifies openings into narrower tracks such as `legal-ops`, `contract-ops`, `compliance-risk`, `legal-counsel`, `finance-control`, `product-compliance`, `engineering`, and `recruiting`.
+- Role-family grounding no longer trusts raw LLM enrichment on its own.
+- Required skills are sanitized by track before they influence report pivots.
+- Openings can be rejected from pivot grounding even if they still exist in the catalog, which protects reports while the catalog is being backfilled.
+
+This was added after legal-role reports were polluted by mismatched openings like recruiters, engineers, tax/control roles, counsel roles, and compliance-adjacent product roles being treated as legal-ops evidence.
 
 ## Best next upgrades
 

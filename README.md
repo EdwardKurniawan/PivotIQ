@@ -104,6 +104,7 @@ npm run db:apply-schema
 npm run db:seed-job-sources
 npm run db:sync-job-openings
 npm run db:enrich-job-openings
+npm run test:job-grounding
 ```
 
 Supported providers in this first pass:
@@ -119,6 +120,7 @@ The catalog now also supports:
 - `GET /api/job-openings/search`
 - `POST /api/job-openings/gap-analysis`
 - live-market grounding inside full report pivots so PivotIQ can compare model skill gaps against real current job requirements
+- deterministic job-track filtering so polluted openings do not poison specialized-role grounding
 
 ---
 
