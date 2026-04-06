@@ -122,10 +122,20 @@ and inspect whether the top pivot becomes cleaner and the market-backed gaps los
 
 ## Most important next steps
 
-1. Backfill legal openings with the new enrichment normalization.
-2. Regenerate the legal fixture and inspect the new market evidence.
-3. Tighten plan-generation consistency so first-30-days always references the final featured pivot only.
-4. Expand deterministic skill sanitation for other specialized families if similar drift appears.
+1. Backfill specialized-family openings beyond legal, especially `education` and `procurement`, using the same grounding normalization approach.
+2. Regenerate the seeded non-legal fixtures and inspect whether live-market grounding remains credible after the broader backfill.
+3. Expand deterministic job-track filtering and skill sanitation for other specialized families if similar drift appears.
+4. Improve catalog quality controls so enrichment failures, polluted tracks, and weak market evidence are visible before they affect reports.
+
+## Low-priority follow-up
+
+- Legal report content quality can still improve even though grounding and plan coherence are now better.
+- Specifically, legal pivots like `Contract Lifecycle Manager` still get overly AI-generic first skills such as `Prompt design`.
+- Low-priority content cleanup later:
+  - prefer legal-first defaults like `Contract lifecycle administration`
+  - `Clause library design`
+  - `Legal intake workflow design`
+  - `Regulatory workflow governance`
 
 ## Relevant files
 
