@@ -104,6 +104,8 @@ npm run db:apply-schema
 npm run db:seed-job-sources
 npm run db:sync-job-openings
 npm run db:enrich-job-openings
+npm run db:audit-job-openings
+npm run reports:regenerate -- --ids=<report-id>
 npm run test:job-grounding
 ```
 
@@ -121,6 +123,7 @@ The catalog now also supports:
 - `POST /api/job-openings/gap-analysis`
 - live-market grounding inside full report pivots so PivotIQ can compare model skill gaps against real current job requirements
 - deterministic job-track filtering so polluted openings do not poison specialized-role grounding
+- a direct regeneration workflow that does not depend on `next dev`
 
 ---
 

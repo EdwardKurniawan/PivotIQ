@@ -96,6 +96,14 @@ Temporary workaround:
 2. `rm -rf .next`
 3. restart `npm run dev`
 
+Better workaround now in repo:
+
+```bash
+npm run reports:regenerate -- --ids=<report-id-1>,<report-id-2>
+```
+
+This script regenerates stored reports directly through `generatePivotIQReport` and writes them back to Supabase, so validation no longer depends on a flaky long-lived dev server.
+
 ### 2. Catalog still needs backfill
 
 The runtime filter is better now, but many already-enriched rows in Supabase still contain bad role-family or skill data.
@@ -112,6 +120,12 @@ Potentially repeat for other specialized families later:
 - education
 - finance
 
+Progress since the first note:
+
+- `education` backfill was run with `--force --role-family=education --limit=50`
+- `procurement` backfill was run with `--force --role-family=procurement --limit=50`
+- this exposed more mislabeled rows in both families, which is now visible through the audit command
+
 ### 3. Report regeneration after grounding backfill
 
 After the catalog is backfilled, regenerate the seeded reports again, especially:
@@ -120,12 +134,43 @@ After the catalog is backfilled, regenerate the seeded reports again, especially
 
 and inspect whether the top pivot becomes cleaner and the market-backed gaps lose contaminated skills.
 
+Current non-legal rerun status:
+
+- `Customer Education Manager` was regenerated successfully
+  - top pivot remains `Customer Education Lead`
+  - downstream plan is coherent
+  - live openings still do not cleanly ground the top pivot, so the recommendation remains mostly model-led
+- `Procurement Analyst` was regenerated successfully
+  - top pivot shifted to `Procurement Data Analyst`
+  - first-30-days plan is coherent and more specific than before
+  - matched live openings are still sparse, so the top pivots remain mostly model-led
+
+This means the next issue is not regeneration stability anymore. It is catalog coverage and role purity for procurement and education.
+
 ## Most important next steps
 
 1. Backfill specialized-family openings beyond legal, especially `education` and `procurement`, using the same grounding normalization approach.
 2. Regenerate the seeded non-legal fixtures and inspect whether live-market grounding remains credible after the broader backfill.
 3. Expand deterministic job-track filtering and skill sanitation for other specialized families if similar drift appears.
 4. Improve catalog quality controls so enrichment failures, polluted tracks, and weak market evidence are visible before they affect reports.
+
+## New commands added
+
+```bash
+npm run db:audit-job-openings -- --limit=250
+npm run reports:regenerate -- --ids=<report-id-1>,<report-id-2>
+```
+
+What they do:
+
+- `db:audit-job-openings` highlights failed enrichments, suspicious role-family mismatches, and skill sanitation issues
+- `reports:regenerate` bypasses `next dev` and writes refreshed report payloads directly to Supabase
+
+## Current high-priority read
+
+1. Expand role-pure catalog coverage for procurement and education so top pivots are not forced to stay model-led.
+2. Use the audit output to reclassify or exclude large buckets of `general -> product` noise from future grounding logic.
+3. Keep regenerating seeded fixtures with the direct script after each catalog cleanup so regressions are visible immediately.
 
 ## Low-priority follow-up
 

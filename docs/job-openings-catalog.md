@@ -22,6 +22,8 @@ npm run db:apply-schema
 npm run db:seed-job-sources
 npm run db:sync-job-openings
 npm run db:enrich-job-openings
+npm run db:audit-job-openings
+npm run reports:regenerate -- --ids=<report-id>
 npm run test:job-grounding
 ```
 
@@ -35,6 +37,25 @@ To force a backfill of already-enriched legal openings after a grounding change:
 
 ```bash
 npm run db:enrich-job-openings -- --force --role-family=legal --limit=50
+```
+
+To backfill other specialized families:
+
+```bash
+npm run db:enrich-job-openings -- --force --role-family=education --limit=50
+npm run db:enrich-job-openings -- --force --role-family=procurement --limit=50
+```
+
+To audit catalog quality after a sync or backfill:
+
+```bash
+npm run db:audit-job-openings -- --limit=250
+```
+
+To regenerate stored reports directly without `next dev`:
+
+```bash
+npm run reports:regenerate -- --ids=075b8ed5-0b26-4d1c-b904-5f886329d262,30be2b01-c0a5-4cca-a70e-1a017339896c
 ```
 
 ## Notes
@@ -91,6 +112,21 @@ Example `gap-analysis` payload:
 - Openings can be rejected from pivot grounding even if they still exist in the catalog, which protects reports while the catalog is being backfilled.
 
 This was added after legal-role reports were polluted by mismatched openings like recruiters, engineers, tax/control roles, counsel roles, and compliance-adjacent product roles being treated as legal-ops evidence.
+
+## Quality controls
+
+- `db:audit-job-openings` now reports:
+  - open-count distribution by `role_family`
+  - top suspicious role-family transitions such as `general -> product`
+  - failed enrichments
+  - suspicious openings whose canonical family or cleaned skills do not match their stored enrichment
+- This is meant to catch polluted catalog segments before they distort report grounding.
+
+Recent audit snapshot after legal, education, and procurement backfills:
+
+- most common suspicious transition: `general -> product`
+- legal-specific drift is much lower than before, but not fully eliminated
+- procurement and education still have thin role-pure coverage, which is why some seeded pivots remain model-led
 
 ## Best next upgrades
 
