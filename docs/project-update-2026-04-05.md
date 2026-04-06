@@ -174,6 +174,58 @@ What they do:
 2. Continue shrinking the remaining `general -> engineering` and `general -> legal` drift after the first deterministic cleanup pass.
 3. Keep regenerating seeded fixtures with the direct script after each catalog cleanup so regressions are visible immediately.
 
+## Latest seeded report rerun
+
+After the engineering-vs-product cleanup, all 3 seeded reports were regenerated again with:
+
+```bash
+npm run reports:regenerate -- --ids=075b8ed5-0b26-4d1c-b904-5f886329d262,30be2b01-c0a5-4cca-a70e-1a017339896c,98172726-3059-412b-869e-119bff813e4a
+```
+
+Current stored featured pivots:
+
+- Procurement Analyst: `Procurement Data Strategist`
+- Customer Education Manager: `Operations Enablement Manager`
+- Legal Operations Manager: `Contract Lifecycle Manager`
+
+Read on current quality:
+
+- `Customer Education Manager` now has the strongest live-market grounding of the three.
+  - The featured pivot changed from a mostly model-led education title to `Operations Enablement Manager`.
+  - This appears to be a real grounding effect, not engineering/product contamination.
+  - Market-required skills now look much more believable:
+    - `Enablement`
+    - `Instructional Design`
+    - `Program Design`
+    - `Sales Enablement`
+    - `Training Delivery`
+  - Remaining tradeoff: this top pivot may be slightly less identity-consistent than `Customer Education Lead`.
+
+- `Procurement Analyst` is coherent but still mostly model-led.
+  - The report is cleaner and no longer obviously polluted by product/engineering demand.
+  - Top pivot is now `Procurement Data Strategist`.
+  - All top pivots still have `0` matched openings, so the procurement catalog still lacks enough role-pure demand to strongly ground the recommendation.
+  - `Spend Analytics Manager` remains a more legible real-world title candidate than `Procurement Data Strategist`.
+
+- `Legal Operations Manager` is safer than before, but still weakest.
+  - `Contract Lifecycle Manager` remains the best current featured pivot.
+  - Top pivots still have `0` matched openings, so the report remains mostly model-led.
+  - The first skill and proof path are still too AI-generic:
+    - `Prompt design`
+    - `AI QA workflows`
+
+Best-to-worst order after the latest rerun:
+
+1. Customer Education Manager
+2. Procurement Analyst
+3. Legal Operations Manager
+
+Main interpretation:
+
+- The engineering/product cleanup worked.
+- The current limiting factor is no longer obvious catalog contamination.
+- The next limiting factor is thin role-pure market coverage, especially for procurement and legal.
+
 ## Latest catalog cleanup result
 
 The largest audit problem used to be `general -> product`, mostly because engineering roles were being collapsed into product.
@@ -192,6 +244,22 @@ After reclassifying the latest 300 open postings:
   - `general -> engineering`
   - `general -> legal`
   - `operations -> engineering`
+
+Most recent audit snapshot after reclassification:
+
+- `general`: `87`
+- `engineering`: `71`
+- `operations`: `41`
+- `product`: `37`
+- `legal`: `13`
+
+Top remaining mismatch counts:
+
+- `general -> engineering`: `3`
+- `general -> legal`: `2`
+- `operations -> engineering`: `1`
+
+This is a major improvement from the earlier `general -> product` pattern.
 
 ## Low-priority follow-up
 
@@ -217,3 +285,5 @@ After reclassifying the latest 300 open postings:
 
 - `b17f6be` Tighten report coherence and pivot realism
 - `1c13855` Harden job grounding for specialized roles
+- `ef8bc84` Add report regeneration and catalog audit tooling
+- `a7fe15d` Separate engineering from product grounding
