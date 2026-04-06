@@ -5,6 +5,7 @@ function testClassifiesPollutedLegalTitlesMorePrecisely() {
   assert.equal(classifyJobTrack({ title: 'Technical Recruiter (Fixed Term Contract)', role_family: 'legal' }), 'recruiting');
   assert.equal(classifyJobTrack({ title: 'Product Manager, Risk & Compliance', role_family: 'legal' }), 'product-compliance');
   assert.equal(classifyJobTrack({ title: 'Contracting Operations Specialist', role_family: 'operations' }), 'contract-ops');
+  assert.equal(classifyJobTrack({ title: 'Software Engineer, Machine Learning Infrastructure', role_family: 'general' }), 'engineering');
 }
 
 function testSanitizesHallucinatedLegalSkills() {
@@ -26,6 +27,11 @@ function testExcludesNonAdjacentLegalOpeningsFromGrounding() {
     true
   );
   assert.equal(canonicalRoleFamilyForTrack('contract-ops'), 'legal');
+  assert.equal(canonicalRoleFamilyForTrack('engineering'), 'engineering');
+  assert.equal(
+    isGroundingEligibleForPivot({ title: 'Software Engineer, Platform', role_family: 'engineering' }, 'Product Operations Manager', 'product'),
+    false
+  );
 }
 
 try {

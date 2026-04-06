@@ -23,6 +23,7 @@ npm run db:seed-job-sources
 npm run db:sync-job-openings
 npm run db:enrich-job-openings
 npm run db:audit-job-openings
+npm run db:reclassify-job-openings
 npm run reports:regenerate -- --ids=<report-id>
 npm run test:job-grounding
 ```
@@ -50,6 +51,12 @@ To audit catalog quality after a sync or backfill:
 
 ```bash
 npm run db:audit-job-openings -- --limit=250
+```
+
+To deterministically correct noisy role-family labels without another LLM enrichment pass:
+
+```bash
+npm run db:reclassify-job-openings -- --limit=300
 ```
 
 To regenerate stored reports directly without `next dev`:
@@ -127,6 +134,15 @@ Recent audit snapshot after legal, education, and procurement backfills:
 - most common suspicious transition: `general -> product`
 - legal-specific drift is much lower than before, but not fully eliminated
 - procurement and education still have thin role-pure coverage, which is why some seeded pivots remain model-led
+
+Recent audit snapshot after deterministic reclassification:
+
+- the large `general -> product` mismatch bucket was replaced by explicit `engineering` classification
+- top remaining mismatch counts dropped to:
+  - `general -> engineering`
+  - `general -> legal`
+  - `operations -> engineering`
+- this means the catalog is now separating engineering demand from product demand instead of letting it pollute product grounding
 
 ## Best next upgrades
 

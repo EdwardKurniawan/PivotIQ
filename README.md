@@ -105,6 +105,7 @@ npm run db:seed-job-sources
 npm run db:sync-job-openings
 npm run db:enrich-job-openings
 npm run db:audit-job-openings
+npm run db:reclassify-job-openings
 npm run reports:regenerate -- --ids=<report-id>
 npm run test:job-grounding
 ```

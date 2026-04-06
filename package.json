@@ -13,6 +13,7 @@
     "db:seed-courses": "node --env-file=.env.local scripts/seed-course-catalog.mjs",
     "db:enrich-job-openings": "node --env-file=.env.local scripts/enrich-job-openings.mjs",
     "db:audit-job-openings": "node --env-file=.env.local scripts/audit-job-openings-quality.mjs",
+    "db:reclassify-job-openings": "node --env-file=.env.local scripts/reclassify-job-openings.mjs",
     "db:sync-job-openings": "node --env-file=.env.local scripts/sync-job-openings.mjs",
     "db:verify-courses": "node --env-file=.env.local scripts/verify-course-catalog.mjs",
     "db:sync-coursera": "node --env-file=.env.local scripts/sync-coursera-catalog.mjs",

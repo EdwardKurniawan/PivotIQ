@@ -158,19 +158,40 @@ This means the next issue is not regeneration stability anymore. It is catalog c
 
 ```bash
 npm run db:audit-job-openings -- --limit=250
+npm run db:reclassify-job-openings -- --limit=300
 npm run reports:regenerate -- --ids=<report-id-1>,<report-id-2>
 ```
 
 What they do:
 
 - `db:audit-job-openings` highlights failed enrichments, suspicious role-family mismatches, and skill sanitation issues
+- `db:reclassify-job-openings` deterministically updates stored `role_family` and sanitized skills from the track classifier, which is much cheaper than full re-enrichment
 - `reports:regenerate` bypasses `next dev` and writes refreshed report payloads directly to Supabase
 
 ## Current high-priority read
 
 1. Expand role-pure catalog coverage for procurement and education so top pivots are not forced to stay model-led.
-2. Use the audit output to reclassify or exclude large buckets of `general -> product` noise from future grounding logic.
+2. Continue shrinking the remaining `general -> engineering` and `general -> legal` drift after the first deterministic cleanup pass.
 3. Keep regenerating seeded fixtures with the direct script after each catalog cleanup so regressions are visible immediately.
+
+## Latest catalog cleanup result
+
+The largest audit problem used to be `general -> product`, mostly because engineering roles were being collapsed into product.
+
+That is now fixed by:
+
+- giving engineering its own canonical role family
+- rejecting engineering openings as market evidence for non-engineering pivots
+- adding `db:reclassify-job-openings` to rewrite noisy stored rows in bulk
+
+After reclassifying the latest 300 open postings:
+
+- `engineering` became a first-class stored family with `71` openings in the sample
+- the old `general -> product` bucket dropped out of the top audit mismatches
+- the remaining top mismatches are much smaller and clearer:
+  - `general -> engineering`
+  - `general -> legal`
+  - `operations -> engineering`
 
 ## Low-priority follow-up
 
