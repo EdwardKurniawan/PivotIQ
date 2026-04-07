@@ -16,7 +16,7 @@ PivotIQ now does more than generate model-only pivots. It:
 ## Model configuration
 
 - OpenRouter model in use: `nvidia/nemotron-3-nano-30b-a3b:free`
-- Claude references have been removed from the app
+- Legacy non-OpenRouter model references have been removed from the app
 
 ## Important seeded reports
 
@@ -261,10 +261,64 @@ Top remaining mismatch counts:
 
 This is a major improvement from the earlier `general -> product` pattern.
 
+## 2026-04-07 continuation update
+
+The next build pass expanded role-pure market coverage and tightened the report stabilizers.
+
+Catalog changes:
+
+- Added role-filtered Greenhouse sources for Anthropic, Airtable, Cloudflare, Flexport, Faire, Databricks, Applied Intuition, Giga Energy, and Intercom.
+- Added source-level filters in `lib/job-openings.js` using `include_title_keywords`, `exclude_title_keywords`, `include_text_keywords`, and `max_jobs`.
+- Seeded and synced the new role-filtered sources.
+- Ran deterministic reclassification on a broader sample.
+- Latest broad audit sample showed no suspicious role-family mismatches, with much stronger legal/procurement coverage than before.
+- OpenRouter enrichment hit `429` for some rows, so the deterministic grounding layer remains the safer runtime protection until enrichment is retried.
+
+Grounding/ranking changes:
+
+- No-opening pivots are now capped lower so model-only destinations do not dominate merely because the model liked them.
+- Same-family specialized matching allows a narrow domain-token overlap, but `risk` was removed as a legal relaxation token because it was too broad.
+- Market-backed pivots now get a conservative floor when there are enough close openings, while the floor is reduced by seniority stretch.
+- Specialized validation now rejects off-family titles and obvious synthetic stretches before grounding.
+- A final pre-grounding repair pass runs after retries so the market layer ranks repaired pivots, not stale odd titles.
+- Specialized skill gaps are sanitized so legal, procurement, and education paths stop defaulting to generic AI or consulting skills when a role-native proof sprint is safer.
+
+Latest persisted seeded report state after the final regeneration:
+
+- Procurement Analyst `075b8ed5-0b26-4d1c-b904-5f886329d262`
+  - active pivot: `Procurement Data Analyst`
+  - market signal: 5 matched openings, profile fit 42
+  - first skill: `SQL`
+  - read: strongest improvement; now genuinely market-backed rather than purely model-led
+
+- Customer Education Manager `30be2b01-c0a5-4cca-a70e-1a017339896c`
+  - active pivot: `Learning Operations Manager`
+  - market signal: 0 matched openings for the top pivot, but `Enablement Program Lead` and `Technical Enablement Lead` have live openings nearby
+  - first skill: `Dashboard storytelling`
+  - read: coherent and role-native; still needs more education-specific catalog coverage
+
+- Legal Operations Manager `98172726-3059-412b-869e-119bff813e4a`
+  - active pivot: `Compliance Operations Manager`
+  - market signal: 4 matched openings, profile fit 15
+  - first skill: `Regulatory framework mapping`
+  - read: much safer than the earlier synthetic legal outputs; still lower confidence because the profile fit is modest
+
+Best-to-worst order after this pass:
+
+1. Procurement Analyst
+2. Customer Education Manager
+3. Legal Operations Manager
+
+Current high-priority next step:
+
+- Retry enrichment after the OpenRouter rate limit clears, especially failed legal/procurement rows.
+- Add more role-pure education/customer-education sources so `Learning Operations Manager` and `Customer Education Lead` can be grounded against live postings instead of mostly model-led.
+- Add one regression test for specialized-title repair so titles like `AI Adoption Consultant`, `Legal Infrastructure Entrepreneur`, and `Procurement Intelligence Director` cannot reappear as top recommendations for these seeded fixtures.
+
 ## Low-priority follow-up
 
 - Legal report content quality can still improve even though grounding and plan coherence are now better.
-- Specifically, legal pivots like `Contract Lifecycle Manager` still get overly AI-generic first skills such as `Prompt design`.
+- Legal pivots no longer default to `Prompt design`, but their first skills can still be sharpened further.
 - Low-priority content cleanup later:
   - prefer legal-first defaults like `Contract lifecycle administration`
   - `Clause library design`

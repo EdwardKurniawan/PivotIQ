@@ -117,6 +117,7 @@ Example `gap-analysis` payload:
 - Role-family grounding no longer trusts raw LLM enrichment on its own.
 - Required skills are sanitized by track before they influence report pivots.
 - Openings can be rejected from pivot grounding even if they still exist in the catalog, which protects reports while the catalog is being backfilled.
+- Source-level filters can now be configured on `job_sources.source_config` with `include_title_keywords`, `exclude_title_keywords`, `include_text_keywords`, and `max_jobs`. This lets PivotIQ ingest only role-relevant postings from broad company ATS boards instead of syncing every engineering, sales, or product role from that company.
 
 This was added after legal-role reports were polluted by mismatched openings like recruiters, engineers, tax/control roles, counsel roles, and compliance-adjacent product roles being treated as legal-ops evidence.
 
@@ -143,6 +144,31 @@ Recent audit snapshot after deterministic reclassification:
   - `general -> legal`
   - `operations -> engineering`
 - this means the catalog is now separating engineering demand from product demand instead of letting it pollute product grounding
+
+## Role-filtered ATS sources
+
+The seed file now includes targeted Greenhouse sources for legal, procurement, contracts, sourcing, compliance, privacy, vendor-risk, and supply-chain coverage:
+
+- `anthropic-role-filtered-greenhouse`
+- `airtable-role-filtered-greenhouse`
+- `cloudflare-role-filtered-greenhouse`
+- `flexport-role-filtered-greenhouse`
+- `faire-role-filtered-greenhouse`
+- `databricks-role-filtered-greenhouse`
+- `appliedintuition-role-filtered-greenhouse`
+- `gigaenergy-role-filtered-greenhouse`
+- `intercom-role-filtered-greenhouse`
+
+These sources are intentionally filtered at ingestion time. They are not meant to become broad company catalogs; they are meant to improve role-pure market evidence for specialized PivotIQ fixtures.
+
+After the filtered-source sync and deterministic reclassification, the catalog sample had roughly:
+
+- `legal`: 72 open postings
+- `procurement`: 10 open postings
+- `education`: 5 open postings
+- no suspicious role-family mismatches in the latest broad audit sample
+
+OpenRouter enrichment hit `429` on some rows during the backfill, so deterministic grounding remains the safer source of truth until the failed enrichment rows are retried.
 
 ## Best next upgrades
 

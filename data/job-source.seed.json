@@ -28,6 +28,150 @@
       }
     },
     {
+      "slug": "anthropic-role-filtered-greenhouse",
+      "company_name": "Anthropic",
+      "provider": "greenhouse",
+      "source_url": "https://boards-api.greenhouse.io/v1/boards/anthropic/jobs?content=true",
+      "external_board_id": "anthropic",
+      "status": "active",
+      "sync_frequency": "daily",
+      "notes": "Role-filtered Greenhouse board for legal, contract, procurement, supply-chain, and vendor-risk coverage.",
+      "source_config": {
+        "board_token": "anthropic",
+        "content": true,
+        "include_title_keywords": ["legal", "counsel", "contracts", "compliance", "privacy", "procurement", "sourcing", "supplier", "vendor", "supply chain", "supply ", "trade compliance"],
+        "exclude_title_keywords": ["contractor", "contract ", "security risk", "research risk", "emerging risks"]
+      }
+    },
+    {
+      "slug": "airtable-role-filtered-greenhouse",
+      "company_name": "Airtable",
+      "provider": "greenhouse",
+      "source_url": "https://boards-api.greenhouse.io/v1/boards/airtable/jobs?content=true",
+      "external_board_id": "airtable",
+      "status": "active",
+      "sync_frequency": "daily",
+      "notes": "Role-filtered Greenhouse board for procurement, contracts, and compliance coverage.",
+      "source_config": {
+        "board_token": "airtable",
+        "content": true,
+        "include_title_keywords": ["legal", "counsel", "contracts", "compliance", "privacy", "procurement", "sourcing", "supplier", "vendor", "supply chain", "spend"],
+        "exclude_title_keywords": ["contractor", "contract "]
+      }
+    },
+    {
+      "slug": "cloudflare-role-filtered-greenhouse",
+      "company_name": "Cloudflare",
+      "provider": "greenhouse",
+      "source_url": "https://boards-api.greenhouse.io/v1/boards/cloudflare/jobs?content=true",
+      "external_board_id": "cloudflare",
+      "status": "active",
+      "sync_frequency": "daily",
+      "notes": "Role-filtered Greenhouse board for legal operations, compliance, privacy, and third-party risk coverage.",
+      "source_config": {
+        "board_token": "cloudflare",
+        "content": true,
+        "include_title_keywords": ["legal", "counsel", "contracts", "compliance", "privacy", "third party risk", "vendor", "procurement", "sourcing", "supplier", "supply chain"],
+        "exclude_title_keywords": ["intern", "contractor", "contract "]
+      }
+    },
+    {
+      "slug": "flexport-role-filtered-greenhouse",
+      "company_name": "Flexport",
+      "provider": "greenhouse",
+      "source_url": "https://boards-api.greenhouse.io/v1/boards/flexport/jobs?content=true",
+      "external_board_id": "flexport",
+      "status": "active",
+      "sync_frequency": "daily",
+      "notes": "Role-filtered Greenhouse board for logistics, procurement, sourcing, and supply-chain coverage.",
+      "source_config": {
+        "board_token": "flexport",
+        "content": true,
+        "include_title_keywords": ["procurement", "sourcing", "supplier", "vendor", "supply chain", "partner procurement", "spend", "category"],
+        "exclude_title_keywords": ["engineer", "software"]
+      }
+    },
+    {
+      "slug": "faire-role-filtered-greenhouse",
+      "company_name": "Faire",
+      "provider": "greenhouse",
+      "source_url": "https://boards-api.greenhouse.io/v1/boards/faire/jobs?content=true",
+      "external_board_id": "faire",
+      "status": "active",
+      "sync_frequency": "daily",
+      "notes": "Role-filtered Greenhouse board for legal programs, supply-chain, and analytics coverage.",
+      "source_config": {
+        "board_token": "faire",
+        "content": true,
+        "include_title_keywords": ["legal", "counsel", "contracts", "compliance", "procurement", "sourcing", "supplier", "vendor", "supply chain", "spend", "category"],
+        "exclude_title_keywords": ["contractor", "contract "]
+      }
+    },
+    {
+      "slug": "databricks-role-filtered-greenhouse",
+      "company_name": "Databricks",
+      "provider": "greenhouse",
+      "source_url": "https://boards-api.greenhouse.io/v1/boards/databricks/jobs?content=true",
+      "external_board_id": "databricks",
+      "status": "active",
+      "sync_frequency": "daily",
+      "notes": "Role-filtered Greenhouse board for legal, counsel, contracts, compliance, procurement, and sourcing coverage.",
+      "source_config": {
+        "board_token": "databricks",
+        "content": true,
+        "include_title_keywords": ["legal", "counsel", "contracts", "compliance", "privacy", "procurement", "sourcing", "supplier", "vendor", "supply chain", "spend", "category"],
+        "exclude_title_keywords": ["candidate experience", "contractor", "contract "]
+      }
+    },
+    {
+      "slug": "appliedintuition-role-filtered-greenhouse",
+      "company_name": "Applied Intuition",
+      "provider": "greenhouse",
+      "source_url": "https://boards-api.greenhouse.io/v1/boards/appliedintuition/jobs?content=true",
+      "external_board_id": "appliedintuition",
+      "status": "active",
+      "sync_frequency": "daily",
+      "notes": "Role-filtered Greenhouse board for procurement, contracts, counsel, and compliance coverage.",
+      "source_config": {
+        "board_token": "appliedintuition",
+        "content": true,
+        "include_title_keywords": ["legal", "counsel", "contracts", "compliance", "privacy", "procurement", "sourcing", "supplier", "vendor", "supply chain", "spend", "category"],
+        "exclude_title_keywords": ["contractor", "contract "]
+      }
+    },
+    {
+      "slug": "gigaenergy-role-filtered-greenhouse",
+      "company_name": "Giga Energy",
+      "provider": "greenhouse",
+      "source_url": "https://boards-api.greenhouse.io/v1/boards/gigaenergy/jobs?content=true",
+      "external_board_id": "gigaenergy",
+      "status": "active",
+      "sync_frequency": "daily",
+      "notes": "Role-filtered Greenhouse board for legal and procurement coverage.",
+      "source_config": {
+        "board_token": "gigaenergy",
+        "content": true,
+        "include_title_keywords": ["legal", "counsel", "contracts", "compliance", "procurement", "sourcing", "supplier", "vendor", "supply chain", "spend", "category"],
+        "exclude_title_keywords": ["contractor", "contract "]
+      }
+    },
+    {
+      "slug": "intercom-role-filtered-greenhouse",
+      "company_name": "Intercom",
+      "provider": "greenhouse",
+      "source_url": "https://boards-api.greenhouse.io/v1/boards/intercom/jobs?content=true",
+      "external_board_id": "intercom",
+      "status": "active",
+      "sync_frequency": "daily",
+      "notes": "Role-filtered Greenhouse board for privacy, product counsel, contracts, and compliance coverage.",
+      "source_config": {
+        "board_token": "intercom",
+        "content": true,
+        "include_title_keywords": ["legal", "counsel", "contracts", "compliance", "privacy", "procurement", "sourcing", "supplier", "vendor", "supply chain"],
+        "exclude_title_keywords": ["contractor", "contract "]
+      }
+    },
+    {
       "slug": "smartrecruiters-public",
       "company_name": "SmartRecruiters",
       "provider": "smartrecruiters",
