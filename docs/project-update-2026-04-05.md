@@ -368,6 +368,14 @@ Remaining UX priorities:
 - Improve `/report` empty states so users get a guided restart instead of a dead end.
 - Improve the internal catalog page access control before exposing it beyond local/internal use.
 
+Homepage elegance pass:
+
+- Shortened the homepage by removing the repeated search-intent explainer section.
+- Reduced hero height/type scale slightly so the first screen feels more premium and less crowded.
+- Compressed FAQ into one card with a two-column answer grid.
+- Removed the standalone role-guides block while preserving key role-guide links as compact pills in the closing CTA.
+- Cleaned up unused homepage responsive selectors for deleted sections.
+
 ## Low-priority follow-up
 
 - Legal report content quality can still improve even though grounding and plan coherence are now better.

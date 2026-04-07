@@ -101,7 +101,6 @@ export default function Home() {
   const valueCards = messages.home.valueCards.map(([eyebrow, title, body]) => ({ eyebrow, title, body }));
   const pivotLanes = messages.home.pivotLanes.map(([label, title, body]) => ({ label, title, body }));
   const roadmapSteps = messages.home.roadmapSteps.map(([number, title, body]) => ({ number, title, body }));
-  const searchIntentItems = messages.home.searchIntentItems.map(([title, body]) => ({ title, body }));
   const faqItems = messages.home.faqItems.map(([question, answer]) => ({ question, answer })).slice(0, 4);
   const featuredRoleGuides = getRoleGuideLinks(locale, [
     'marketing-manager-ai-risk',
@@ -113,23 +112,11 @@ export default function Home() {
   ]).slice(0, 3);
   const sampleTaskNotes = messages.home.sampleNotes;
   const sampleTaskLabels = messages.home.sampleTaskLabels;
-  const searchIntentVisuals = [
-    { width: '78%', tone: '#F28A43', label: '01' },
-    { width: '62%', tone: '#13202A', label: '02' },
-    { width: '71%', tone: '#1B6F63', label: '03' },
-    { width: '56%', tone: '#D0B792', label: '04' },
-  ];
   const editorialSignals = [
     { label: 'Pressure', value: '82', tone: '#F28A43' },
     { label: 'Leverage', value: '61', tone: '#13202A' },
     { label: 'Pivot fit', value: '74', tone: '#1B6F63' },
   ];
-  const faqSignalRows = [
-    { label: 'Task pressure', width: '74%', tone: '#F28A43' },
-    { label: 'Human edge', width: '58%', tone: '#1B6F63' },
-    { label: 'Pivot distance', width: '46%', tone: '#13202A' },
-  ];
-  const roleGuideVisuals = ['#F28A43', '#13202A', '#1B6F63'];
   const softwareSchema = {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
@@ -248,7 +235,7 @@ export default function Home() {
           zIndex: 2,
           maxWidth: '1220px',
           margin: '0 auto',
-          padding: '34px 28px 42px',
+          padding: '26px 28px 34px',
           display: 'grid',
           gridTemplateColumns: 'minmax(0, 1.08fr) minmax(320px, 0.92fr)',
           gap: '28px',
@@ -261,7 +248,7 @@ export default function Home() {
           <h1
             className="home-reveal-2"
             style={{
-              fontSize: 'clamp(56px, 8vw, 104px)',
+              fontSize: 'clamp(52px, 7.2vw, 92px)',
               lineHeight: 0.92,
               letterSpacing: '-0.07em',
               margin: '0 0 20px',
@@ -278,7 +265,7 @@ export default function Home() {
             className="home-reveal-3"
             style={{
               maxWidth: '660px',
-              fontSize: '20px',
+              fontSize: '18px',
               lineHeight: 1.65,
               color: '#42505C',
               margin: '0 0 28px',
@@ -330,7 +317,7 @@ export default function Home() {
           className="home-hero-art"
           style={{
             position: 'relative',
-            minHeight: '560px',
+            minHeight: '480px',
             display: 'grid',
             alignItems: 'stretch',
           }}
@@ -506,135 +493,13 @@ export default function Home() {
 
       <ScrollReveal
         as="section"
-        className="home-search-intent-section"
-        style={{
-          position: 'relative',
-          zIndex: 2,
-          maxWidth: '1220px',
-          margin: '0 auto',
-          padding: '0 28px 52px',
-        }}
-      >
-        <div
-          className="home-search-shell"
-          style={{
-            ...shellCardStyle(),
-            borderRadius: '34px',
-            padding: '30px',
-            display: 'grid',
-            gridTemplateColumns: 'minmax(0, 0.86fr) minmax(320px, 1.14fr)',
-            gap: '22px',
-            alignItems: 'start',
-          }}
-        >
-          <ScrollReveal delay={40}>
-            <div style={{ fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6A7882', marginBottom: '12px', fontWeight: 800 }}>
-              {messages.home.searchIntentEyebrow}
-            </div>
-            <div
-              style={{
-                fontSize: 'clamp(34px, 5vw, 58px)',
-                lineHeight: 0.98,
-                letterSpacing: '-0.055em',
-                fontWeight: 700,
-                fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif',
-                marginBottom: '14px',
-                maxWidth: '520px',
-              }}
-            >
-              {messages.home.searchIntentTitle}
-            </div>
-            <p style={{ fontSize: '17px', lineHeight: 1.76, color: '#495863', maxWidth: '560px', margin: 0 }}>
-              {messages.home.searchIntentBody}
-            </p>
-          </ScrollReveal>
-
-          <div
-            className="home-search-grid"
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-              gap: '16px',
-            }}
-          >
-            {searchIntentItems.map((item, index) => (
-              <ScrollReveal
-                key={item.title}
-                className="home-hover-lift"
-                delay={index * 80}
-                style={{
-                  borderRadius: '26px',
-                  padding: '22px',
-                  background: 'rgba(255,255,255,0.66)',
-                  border: `1px solid ${palette.border}`,
-                }}
-              >
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    marginBottom: '14px',
-                  }}
-                >
-                  <div
-                    style={{
-                      fontSize: '11px',
-                      letterSpacing: '0.08em',
-                      textTransform: 'uppercase',
-                      color: '#7B8892',
-                      fontWeight: 800,
-                    }}
-                  >
-                    {searchIntentVisuals[index]?.label || '01'}
-                  </div>
-                  <div
-                    style={{
-                      width: '64%',
-                      height: '8px',
-                      borderRadius: '999px',
-                      background: 'rgba(19, 27, 35, 0.08)',
-                      overflow: 'hidden',
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: searchIntentVisuals[index]?.width || '60%',
-                        height: '100%',
-                        borderRadius: '999px',
-                        background: searchIntentVisuals[index]?.tone || '#F28A43',
-                      }}
-                    />
-                  </div>
-                </div>
-                <div
-                  style={{
-                    fontSize: '22px',
-                    lineHeight: 1.05,
-                    letterSpacing: '-0.04em',
-                    fontWeight: 700,
-                    fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif',
-                    marginBottom: '10px',
-                  }}
-                >
-                  {item.title}
-                </div>
-                <div style={{ fontSize: '14px', lineHeight: 1.72, color: '#50606B' }}>{item.body}</div>
-              </ScrollReveal>
-            ))}
-          </div>
-        </div>
-      </ScrollReveal>
-
-      <ScrollReveal
-        as="section"
         className={`home-editorial-section ${locale !== 'en' ? 'home-lanes-section-long' : ''}`}
         style={{
           position: 'relative',
           zIndex: 2,
           maxWidth: '1220px',
           margin: '0 auto',
-          padding: '6px 28px 72px',
+          padding: '8px 28px 54px',
         }}
       >
         <div
@@ -810,11 +675,7 @@ export default function Home() {
           zIndex: 2,
           maxWidth: '1220px',
           margin: '0 auto',
-          padding: '0 28px 72px',
-          display: 'grid',
-          gridTemplateColumns: 'minmax(280px, 0.72fr) minmax(0, 1.28fr)',
-          gap: '22px',
-          alignItems: 'start',
+          padding: '0 28px 54px',
         }}
       >
         <ScrollReveal
@@ -822,50 +683,32 @@ export default function Home() {
           style={{
             ...shellCardStyle(),
             borderRadius: '34px',
-            padding: '30px',
+            padding: '28px',
           }}
         >
-          <div
-            style={{
-              display: 'grid',
-              gap: '10px',
-              marginBottom: '18px',
-            }}
-          >
-            {faqSignalRows.map((row) => (
-              <div key={row.label}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '10px', marginBottom: '6px', fontSize: '12px', color: '#6A7882', fontWeight: 700 }}>
-                  <span>{row.label}</span>
-                  <span>{row.width}</span>
-                </div>
-                <div style={{ height: '8px', borderRadius: '999px', background: 'rgba(19, 27, 35, 0.08)', overflow: 'hidden' }}>
-                  <div style={{ width: row.width, height: '100%', borderRadius: '999px', background: row.tone }} />
-                </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: '22px', alignItems: 'end', flexWrap: 'wrap', marginBottom: '20px' }}>
+            <div>
+              <div style={{ fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6A7882', marginBottom: '10px', fontWeight: 800 }}>
+                {messages.home.faqEyebrow}
               </div>
-            ))}
+              <div
+                style={{
+                  fontSize: 'clamp(30px, 4vw, 48px)',
+                  lineHeight: 0.98,
+                  letterSpacing: '-0.055em',
+                  fontWeight: 700,
+                  fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif',
+                  maxWidth: '620px',
+                }}
+              >
+                {messages.home.faqTitle}
+              </div>
+            </div>
+            <p style={{ fontSize: '15px', lineHeight: 1.7, color: '#495863', maxWidth: '430px', margin: 0 }}>
+              {messages.home.faqBody}
+            </p>
           </div>
-          <div style={{ fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6A7882', marginBottom: '12px', fontWeight: 800 }}>
-            {messages.home.faqEyebrow}
-          </div>
-          <div
-            style={{
-              fontSize: 'clamp(34px, 5vw, 58px)',
-              lineHeight: 0.98,
-              letterSpacing: '-0.055em',
-              fontWeight: 700,
-              fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif',
-              marginBottom: '14px',
-              maxWidth: '520px',
-            }}
-          >
-            {messages.home.faqTitle}
-          </div>
-          <p style={{ fontSize: '17px', lineHeight: 1.76, color: '#495863', maxWidth: '520px', margin: 0 }}>
-            {messages.home.faqBody}
-          </p>
-        </ScrollReveal>
-
-        <div style={{ display: 'grid', gap: '14px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '14px' }} className="two-col">
           {faqItems.map((item, index) => (
             <ScrollReveal
               key={item.question}
@@ -873,15 +716,16 @@ export default function Home() {
               delay={index * 70}
               className="home-hover-lift"
               style={{
-                ...shellCardStyle(),
-                borderRadius: '26px',
-                padding: '22px 24px',
+                borderRadius: '22px',
+                padding: '20px 22px',
+                background: 'rgba(255,255,255,0.58)',
+                border: `1px solid ${palette.border}`,
               }}
             >
               <h2
                 style={{
                   margin: '0 0 10px',
-                  fontSize: '24px',
+                  fontSize: '21px',
                   lineHeight: 1.08,
                   letterSpacing: '-0.04em',
                   fontWeight: 700,
@@ -895,107 +739,8 @@ export default function Home() {
               </p>
             </ScrollReveal>
           ))}
-        </div>
-      </ScrollReveal>
-
-      <ScrollReveal
-        as="section"
-        className="home-role-guides-section"
-        style={{
-          position: 'relative',
-          zIndex: 2,
-          maxWidth: '1220px',
-          margin: '0 auto',
-          padding: '0 28px 88px',
-          display: 'grid',
-          gridTemplateColumns: 'minmax(280px, 0.72fr) minmax(0, 1.28fr)',
-          gap: '22px',
-          alignItems: 'start',
-        }}
-      >
-        <ScrollReveal
-          delay={40}
-          style={{
-            ...shellCardStyle(),
-            borderRadius: '34px',
-            padding: '30px',
-          }}
-        >
-          <div style={{ fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6A7882', marginBottom: '12px', fontWeight: 800 }}>
-            {messages.home.roleGuidesEyebrow}
           </div>
-          <div
-            style={{
-              fontSize: 'clamp(34px, 5vw, 56px)',
-              lineHeight: 0.98,
-              letterSpacing: '-0.055em',
-              fontWeight: 700,
-              fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif',
-              marginBottom: '14px',
-            }}
-          >
-            {messages.home.roleGuidesTitle}
-          </div>
-          <p style={{ fontSize: '17px', lineHeight: 1.76, color: '#495863', margin: 0 }}>
-            {messages.home.roleGuidesBody}
-          </p>
         </ScrollReveal>
-
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-            gap: '14px',
-          }}
-        >
-          {featuredRoleGuides.map((item, index) => (
-            <ScrollReveal
-              key={item.href}
-              delay={index * 60}
-              as="article"
-              className="home-hover-lift"
-              style={{
-                ...shellCardStyle(),
-                borderRadius: '24px',
-                padding: '20px 22px',
-              }}
-            >
-              <Link href={item.href} style={{ textDecoration: 'none', color: '#13202A' }}>
-                <div style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}>
-                  {[0, 1, 2].map((dotIndex) => (
-                    <div
-                      key={dotIndex}
-                      style={{
-                        width: dotIndex === 2 ? '34px' : '10px',
-                        height: '10px',
-                        borderRadius: '999px',
-                        background: dotIndex === 2 ? roleGuideVisuals[index] || '#F28A43' : 'rgba(19, 27, 35, 0.1)',
-                      }}
-                    />
-                  ))}
-                </div>
-                <div style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#6A7882', fontWeight: 800, marginBottom: '10px' }}>
-                  {item.label}
-                </div>
-                <div
-                  style={{
-                    fontSize: '22px',
-                    lineHeight: 1.1,
-                    letterSpacing: '-0.035em',
-                    fontWeight: 700,
-                    fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif',
-                    marginBottom: '10px',
-                  }}
-                >
-                  {item.title}
-                </div>
-                <div style={{ fontSize: '14px', lineHeight: 1.65, color: '#50606B' }}>
-                  {messages.home.roleGuidesPrompt}
-                </div>
-              </Link>
-            </ScrollReveal>
-          ))}
-        </div>
       </ScrollReveal>
 
       <ScrollReveal
@@ -1055,6 +800,29 @@ export default function Home() {
               >
                 {messages.home.methodologyLinkLabel}
               </Link>
+            </div>
+            <div style={{ marginTop: '18px', display: 'flex', gap: '9px', flexWrap: 'wrap', alignItems: 'center' }}>
+              <span style={{ color: '#9DADB7', fontSize: '11px', fontWeight: 900, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                {messages.home.roleGuidesEyebrow}
+              </span>
+              {featuredRoleGuides.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  style={{
+                    color: '#F3D4B5',
+                    background: 'rgba(255,255,255,0.06)',
+                    border: '1px solid rgba(255,255,255,0.10)',
+                    borderRadius: '999px',
+                    padding: '7px 10px',
+                    fontSize: '12px',
+                    fontWeight: 800,
+                    textDecoration: 'none',
+                  }}
+                >
+                  {item.label}
+                </Link>
+              ))}
             </div>
           </div>
 

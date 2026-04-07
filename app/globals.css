@@ -300,9 +300,6 @@ input, textarea, select { font-family: var(--font); }
 .home-hero-note-inline {
   text-wrap: pretty;
 }
-.home-search-shell {
-  overflow: hidden;
-}
 .home-editorial-shell {
   overflow: hidden;
 }
@@ -601,7 +598,6 @@ input, textarea, select { font-family: var(--font); }
   }
   .home-hero,
   .home-hero-long,
-  .home-search-intent-section,
   .home-faq-section,
   .home-editorial-top,
   .home-lanes-section,
@@ -698,21 +694,15 @@ input, textarea, select { font-family: var(--font); }
   .home-roadmap-card > div { padding: 14px !important; border-radius: 18px !important; }
   .home-metrics-grid { grid-template-columns: 1fr !important; }
   .home-value-section,
-  .home-search-intent-section,
   .home-faq-section,
-  .home-role-guides-section,
   .home-editorial-section,
   .home-closing-section { padding-left: 16px !important; padding-right: 16px !important; }
-  .home-search-intent-section { padding-bottom: 56px !important; gap: 18px !important; }
   .home-faq-section { padding-bottom: 56px !important; gap: 18px !important; }
-  .home-role-guides-section { padding-bottom: 56px !important; gap: 18px !important; }
   .home-editorial-section { padding-bottom: 64px !important; }
   .home-editorial-shell { padding: 22px !important; border-radius: 30px !important; }
   .home-editorial-top { grid-template-columns: 1fr !important; gap: 18px !important; margin-bottom: 18px !important; }
   .home-value-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
   .home-editorial-signal-row { grid-template-columns: 1fr !important; gap: 10px !important; margin-bottom: 14px !important; }
-  .home-search-shell { padding: 22px !important; grid-template-columns: 1fr !important; gap: 18px !important; }
-  .home-search-grid { grid-template-columns: 1fr !important; }
   .home-hero-note-inline { font-size: 13px !important; line-height: 1.6 !important; max-width: 100% !important; }
   .home-lanes-intro-long > div:first-child { font-size: 34px !important; max-width: 100% !important; }
   .home-lanes-intro-long > p { max-width: 100% !important; }
