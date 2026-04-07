@@ -565,6 +565,111 @@ function RoadmapJourneyMap({ phases = [], planColor, palette, messages, onWeekSe
   );
 }
 
+function uniqCompact(items = []) {
+  return [...new Set(items.filter(Boolean).map((item) => String(item).trim()).filter(Boolean))];
+}
+
+function RecommendationWhyCard({ pivot, color, first30Days }) {
+  if (!pivot?.title) return null;
+
+  const signal = pivot.live_market_signal || {};
+  const confidence = buildMarketConfidenceSummary(signal);
+  const strengths = uniqCompact([
+    ...(pivot.strengths_to_leverage || []),
+    ...(signal.overlap_skills || []),
+    ...(pivot.skill_gaps || []).map((skill) => skill.evidence_you_already_have).filter(Boolean),
+  ]).slice(0, 3);
+  const marketNeeds = uniqCompact([
+    ...(signal.market_required_skills || []),
+    ...(signal.market_tools || []),
+    ...(pivot.skill_gaps || []).map((skill) => skill.skill_name),
+  ]).slice(0, 4);
+  const proofNeeds = uniqCompact([
+    first30Days?.proof_asset?.title,
+    ...(signal.market_proof_assets || []),
+    ...(signal.missing_required_skills || []),
+    ...(pivot.skill_gaps || []).filter((skill) => skill.gap_priority === 'critical').map((skill) => skill.skill_name),
+  ]).slice(0, 4);
+  const matchedOpenings = Number(signal.matched_openings_count || 0);
+  const profileFit = Number(signal.profile_fit_score || 0);
+  const matchScore = Number(pivot.match_score || 0);
+
+  const columns = [
+    {
+      label: 'You already signal',
+      value: strengths.length || 'Some',
+      body: strengths,
+      empty: pivot.fit_summary || 'Your current role still contains transferable evidence for this path.',
+      tone: palette.teal,
+    },
+    {
+      label: 'The market asks for',
+      value: matchedOpenings || 'Verify',
+      body: marketNeeds,
+      empty: 'Live evidence is still thin, so validate this title against postings before betting hard.',
+      tone: palette.orange,
+    },
+    {
+      label: 'Proof to build',
+      value: proofNeeds.length || '1',
+      body: proofNeeds,
+      empty: 'Build one concrete artifact that makes the transition visible.',
+      tone: color,
+    },
+  ];
+
+  return (
+    <div className="piq-card" style={{ marginTop: '18px', padding: '22px', background: `linear-gradient(135deg, rgba(255,255,255,0.88), ${color}0F 48%, rgba(244,239,231,0.96))`, border: `1px solid ${color}24`, boxShadow: '0 22px 54px rgba(19, 32, 42, 0.08)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', gap: '16px', flexWrap: 'wrap', marginBottom: '18px' }}>
+        <div>
+          <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '8px' }}>Why this recommendation?</div>
+          <div style={{ color: palette.text, fontSize: '24px', fontWeight: 950, letterSpacing: '-0.05em', lineHeight: 1.06, fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif' }}>
+            {pivot.title} is the current best bet because three signals line up.
+          </div>
+        </div>
+        <div style={{ maxWidth: '320px', padding: '12px 14px', borderRadius: '16px', background: `${color}10`, border: `1px solid ${color}26` }}>
+          <div style={{ color, fontSize: '12px', fontWeight: 900, marginBottom: '4px' }}>{confidence.label}</div>
+          <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.55 }}>{confidence.body}</div>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '12px', marginBottom: '16px' }} className="two-col">
+        {columns.map((column) => (
+          <div key={column.label} style={{ borderRadius: '18px', padding: '15px', background: 'rgba(255,255,255,0.74)', border: `1px solid ${column.tone}22` }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '10px', alignItems: 'center', marginBottom: '10px' }}>
+              <div style={{ color: column.tone, fontSize: '11px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase' }}>{column.label}</div>
+              <div style={{ color: column.tone, fontSize: '18px', fontWeight: 950, letterSpacing: '-0.04em' }}>{column.value}</div>
+            </div>
+            <div style={{ display: 'flex', gap: '7px', flexWrap: 'wrap' }}>
+              {column.body.length
+                ? column.body.map((item) => <MarketSkillPill key={item} label={item} tone={column.tone === palette.teal ? 'positive' : column.tone === palette.orange ? 'caution' : 'default'} />)
+                : <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{column.empty}</div>}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '10px' }} className="three-col">
+        {[
+          ['Model match', matchScore, color],
+          ['Profile fit', profileFit, palette.teal],
+          ['Live openings', Math.min(100, matchedOpenings * 12), palette.orange, matchedOpenings],
+        ].map(([label, value, tone, rawValue]) => (
+          <div key={label} style={{ display: 'grid', gap: '7px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: palette.textSoft, fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              <span>{label}</span>
+              <span style={{ color: tone }}>{rawValue ?? `${Number(value) || 0}%`}</span>
+            </div>
+            <div style={{ height: '8px', borderRadius: '999px', background: 'rgba(19,27,35,0.08)', overflow: 'hidden' }}>
+              <div style={{ width: `${Math.max(Number(value) ? 8 : 0, Math.min(100, Number(value) || 0))}%`, height: '100%', background: tone, borderRadius: '999px' }} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function SkillGapCard({ skill, color, messages }) {
   const priorityColors = {
     critical: '#FF8F4D',
@@ -1437,6 +1542,7 @@ export default function ReportExperience({ payload, embedded = false }) {
               <SignalStatCard label={messages.report.skillGapMap} value={(pivot.skill_gaps || []).length} tone={pColor} />
               <SignalStatCard label={messages.report.week} value={pivot.roadmap?.weeks?.length || 0} tone={palette.teal} />
             </div>
+            {tier === 'full' && <RecommendationWhyCard pivot={pivot} color={pColor} first30Days={first30Days} />}
           </div>
         </div>
       </div>

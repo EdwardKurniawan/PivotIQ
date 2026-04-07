@@ -355,11 +355,15 @@ What changed in the first UX pass:
   - `Build visible proof`
   - `Convert into signal`
 - Each roadmap phase shows phase progress, clickable week chips, and a proof checkpoint so the roadmap feels more like momentum and less like a long checklist.
+- The report hero now includes a compact `Why this recommendation?` explainer that connects:
+  - what the user already signals
+  - what live-market postings ask for
+  - what proof needs to be built
+  - market confidence and fit/openings meters
 
 Remaining UX priorities:
 
 - Add a small market-confidence badge near the active pivot title in the hero.
-- Add a compact `Why this recommendation?` visual summary that connects current skills, market demand, and missing proof.
 - Consider a lightweight onboarding tour for the report tabs: `Exposure -> Pivots -> Plan`.
 - Improve `/report` empty states so users get a guided restart instead of a dead end.
 - Improve the internal catalog page access control before exposing it beyond local/internal use.
