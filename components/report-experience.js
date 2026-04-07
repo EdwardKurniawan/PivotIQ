@@ -447,6 +447,124 @@ function PivotMarketComparison({ pivots = [] }) {
   );
 }
 
+const roadmapPhaseCopy = [
+  {
+    label: 'Phase 1',
+    title: 'Make the move legible',
+    body: 'Clarify the target, translate your current experience, and choose the first proof thread.',
+  },
+  {
+    label: 'Phase 2',
+    title: 'Build visible proof',
+    body: 'Turn skill gaps into artifacts, examples, and concrete signals a hiring manager can evaluate.',
+  },
+  {
+    label: 'Phase 3',
+    title: 'Convert into signal',
+    body: 'Package the story, pressure-test it against the market, and make the move visible.',
+  },
+];
+
+function getRoadmapPhases(milestoneStatuses = []) {
+  const total = Math.max(milestoneStatuses.length, 1);
+
+  return roadmapPhaseCopy.map((phase, phaseIndex) => {
+    const startIndex = Math.floor((phaseIndex * total) / roadmapPhaseCopy.length);
+    const endIndex = Math.floor(((phaseIndex + 1) * total) / roadmapPhaseCopy.length);
+    const items = milestoneStatuses.slice(startIndex, endIndex);
+    const completed = items.filter((item) => item.status === 'completed').length;
+    const active = items.find((item) => item.status === 'current' || item.status === 'at_risk') || items[0];
+    const proofCheckpoint = [...items].reverse().find((item) => item.week?.proof_of_completion)?.week?.proof_of_completion;
+
+    return {
+      ...phase,
+      items,
+      completed,
+      active,
+      proofCheckpoint,
+      progress: Math.round((completed / Math.max(items.length, 1)) * 100),
+    };
+  });
+}
+
+function RoadmapJourneyMap({ phases = [], planColor, palette, messages, onWeekSelect }) {
+  const hasWeeks = phases.some((phase) => phase.items.length);
+  if (!hasWeeks) return null;
+
+  return (
+    <div className="piq-card" style={{ padding: '24px', marginBottom: '24px', background: `linear-gradient(135deg, ${planColor}10, rgba(255,255,255,0.94) 54%, rgba(244,239,231,0.96))`, border: `1px solid ${planColor}24`, boxShadow: '0 24px 60px rgba(19, 32, 42, 0.08)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', gap: '18px', flexWrap: 'wrap', marginBottom: '22px' }}>
+        <div>
+          <div style={{ color: planColor, fontSize: '11px', fontWeight: 900, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '8px' }}>Roadmap journey map</div>
+          <div style={{ color: palette.text, fontSize: '28px', fontWeight: 950, letterSpacing: '-0.05em', lineHeight: 1.05, fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif' }}>
+            Turn 12 weeks into three visible arcs.
+          </div>
+        </div>
+        <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65, maxWidth: '360px' }}>
+          Each phase ends with a proof checkpoint, so the plan reads like momentum instead of homework.
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '14px' }} className="two-col">
+        {phases.map((phase, phaseIndex) => {
+          const phaseColor = phaseIndex === 0 ? planColor : phaseIndex === 1 ? palette.orange : palette.teal;
+          return (
+            <div key={phase.title} style={{ position: 'relative', overflow: 'hidden', borderRadius: '22px', padding: '18px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${phaseColor}24` }}>
+              <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: `radial-gradient(circle at 12% 0%, ${phaseColor}18, transparent 32%)` }} />
+              <div style={{ position: 'relative', zIndex: 1 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '10px', alignItems: 'center', marginBottom: '12px' }}>
+                  <span style={{ color: phaseColor, fontSize: '11px', fontWeight: 900, letterSpacing: '0.12em', textTransform: 'uppercase' }}>{phase.label}</span>
+                  <span style={{ color: phaseColor, background: `${phaseColor}12`, border: `1px solid ${phaseColor}24`, borderRadius: '999px', padding: '5px 9px', fontSize: '11px', fontWeight: 900 }}>{phase.progress}%</span>
+                </div>
+                <div style={{ color: palette.text, fontSize: '18px', fontWeight: 900, letterSpacing: '-0.03em', marginBottom: '7px' }}>{phase.title}</div>
+                <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65, marginBottom: '14px' }}>{phase.body}</div>
+
+                <div style={{ height: '8px', borderRadius: '999px', overflow: 'hidden', background: 'rgba(19,27,35,0.08)', marginBottom: '14px' }}>
+                  <div style={{ width: `${phase.progress}%`, height: '100%', background: `linear-gradient(90deg, ${phaseColor}, ${phaseColor}AA)`, borderRadius: '999px' }} />
+                </div>
+
+                <div style={{ display: 'flex', gap: '7px', flexWrap: 'wrap', marginBottom: '14px' }}>
+                  {phase.items.map(({ week, status }) => {
+                    const styles = statusStyles(status, phaseColor);
+                    return (
+                      <button
+                        key={week.week_number}
+                        type="button"
+                        onClick={() => onWeekSelect?.(week.week_number)}
+                        style={{
+                          border: `1px solid ${styles.border}`,
+                          background: styles.bg,
+                          color: styles.fg,
+                          borderRadius: '999px',
+                          padding: '6px 9px',
+                          fontSize: '11px',
+                          fontWeight: 900,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        W{week.week_number}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div style={{ borderRadius: '16px', padding: '13px', background: `${phaseColor}0F`, border: `1px solid ${phaseColor}24` }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: phaseColor, fontSize: '11px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>
+                    <MonoIcon name="proof" tone="default" /> Proof checkpoint
+                  </div>
+                  <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.6 }}>
+                    {phase.proofCheckpoint || phase.active?.week?.success_signal || messages.report.proofOfCompletion}
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function SkillGapCard({ skill, color, messages }) {
   const priorityColors = {
     critical: '#FF8F4D',
@@ -1161,6 +1279,8 @@ export default function ReportExperience({ payload, embedded = false }) {
     || milestoneStatuses.find((item) => item.status === 'upcoming')
     || milestoneStatuses[milestoneStatuses.length - 1];
 
+  const roadmapPhases = useMemo(() => getRoadmapPhases(milestoneStatuses), [milestoneStatuses]);
+
   const skillGapCounts = useMemo(() => {
     return (activePath.skill_gaps || []).reduce((acc, skill) => {
       acc[skill.gap_priority] = (acc[skill.gap_priority] || 0) + 1;
@@ -1812,6 +1932,14 @@ export default function ReportExperience({ payload, embedded = false }) {
                 </p>
               </div>
             </div>
+
+            <RoadmapJourneyMap
+              phases={roadmapPhases}
+              planColor={planColor}
+              palette={palette}
+              messages={messages}
+              onWeekSelect={(weekNumber) => setExpandedWeeks((prev) => (prev.includes(weekNumber) ? prev : [...prev, weekNumber]))}
+            />
 
             <div style={{ marginBottom: '28px' }}>
               {activeMarketSignal && <MarketSignalCard signal={activeMarketSignal} color={planColor} />}

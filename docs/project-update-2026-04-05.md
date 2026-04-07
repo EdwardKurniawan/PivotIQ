@@ -350,12 +350,18 @@ What changed in the first UX pass:
   - model match score
   - profile fit against live postings
   - matched live openings
+- The Plan tab now includes a roadmap journey map that groups the 12-week plan into three visual phases:
+  - `Make the move legible`
+  - `Build visible proof`
+  - `Convert into signal`
+- Each roadmap phase shows phase progress, clickable week chips, and a proof checkpoint so the roadmap feels more like momentum and less like a long checklist.
 
 Remaining UX priorities:
 
-- Add more “why this matters” visual captions to the roadmap so the 12-week plan feels less like a checklist.
 - Add a small market-confidence badge near the active pivot title in the hero.
+- Add a compact `Why this recommendation?` visual summary that connects current skills, market demand, and missing proof.
 - Consider a lightweight onboarding tour for the report tabs: `Exposure -> Pivots -> Plan`.
+- Improve `/report` empty states so users get a guided restart instead of a dead end.
 - Improve the internal catalog page access control before exposing it beyond local/internal use.
 
 ## Low-priority follow-up
