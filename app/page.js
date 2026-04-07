@@ -9,11 +9,19 @@ import { getRoleGuideLinks } from '../lib/role-pages';
 import { buildPageMetadata } from '../lib/seo';
 
 export function generateMetadata() {
-  return buildPageMetadata({
+  const metadata = buildPageMetadata({
     locale: getServerLocale(),
     key: 'home',
     path: '/',
   });
+
+  return {
+    ...metadata,
+    other: {
+      ...(metadata.other || {}),
+      'impact-site-verification': '834dadd9-6392-4583-b90e-7af5e7c73c53',
+    },
+  };
 }
 
 const sampleTasks = [
