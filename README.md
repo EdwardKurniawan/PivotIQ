@@ -137,6 +137,7 @@ npm run db:seed-courses
 npm run db:sync-coursera
 npm run db:sync-datacamp
 npm run db:verify-courses
+npm run db:audit-courses
 ```
 
 DataCamp sync uses the LMS External Catalog API live courses endpoint:
@@ -147,6 +148,8 @@ npm run db:sync-datacamp
 ```
 
 The DataCamp command upserts live courses into Supabase with provider `DataCamp`, normalized skills/tags, role families, outcome types, and `Included with DataCamp for Business` pricing metadata.
+
+Course catalog quality can be checked with `npm run db:audit-courses`, `GET /api/course-catalog/quality`, or the internal dashboard at `/internal/course-catalog`. The audit flags provider coverage, verification status, generic entries, missing skills, and sample learning probes whose course matches do not overlap the expected skill domain.
 
 ---
 

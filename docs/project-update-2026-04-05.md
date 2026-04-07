@@ -382,6 +382,8 @@ Learning catalog update:
 - The script pulls DataCamp live courses from the LMS External Catalog API and upserts them into `public.course_catalog`.
 - It expects `DATACAMP_LMS_CATALOG_API_TOKEN` in `.env.local`; `DATACAMP_LMS_API_TOKEN` and `DATACAMP_API_TOKEN` are accepted as compatibility aliases.
 - Learning-resource normalization now lets strong Supabase catalog matches beat hard-coded fallback links, so synced DataCamp courses can actually appear in generated report recommendations.
+- Added `npm run db:audit-courses`, `GET /api/course-catalog/quality`, and `/internal/course-catalog` for learning catalog quality checks while waiting on the DataCamp API key.
+- The course audit checks provider coverage, verification status, generic entries, missing skill tags, and sample learning probes. Probe matches now flag weak domain overlap, so a high-ish score cannot hide a semantically wrong recommendation like a project-management course for contract lifecycle management.
 
 ## Low-priority follow-up
 

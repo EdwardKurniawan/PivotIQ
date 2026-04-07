@@ -16,6 +16,7 @@
     "db:reclassify-job-openings": "node --env-file=.env.local scripts/reclassify-job-openings.mjs",
     "db:sync-job-openings": "node --env-file=.env.local scripts/sync-job-openings.mjs",
     "db:verify-courses": "node --env-file=.env.local scripts/verify-course-catalog.mjs",
+    "db:audit-courses": "node --env-file=.env.local scripts/audit-course-catalog-quality.mjs",
     "db:sync-coursera": "node --env-file=.env.local scripts/sync-coursera-catalog.mjs",
     "db:sync-datacamp": "node --env-file=.env.local scripts/sync-datacamp-catalog.mjs",
     "reports:regenerate": "node --env-file=.env.local scripts/regenerate-reports.mjs",
