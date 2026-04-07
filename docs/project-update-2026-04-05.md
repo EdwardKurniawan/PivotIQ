@@ -384,6 +384,8 @@ Learning catalog update:
 - Learning-resource normalization now lets strong Supabase catalog matches beat hard-coded fallback links, so synced DataCamp courses can actually appear in generated report recommendations.
 - Added `npm run db:audit-courses`, `GET /api/course-catalog/quality`, and `/internal/course-catalog` for learning catalog quality checks while waiting on the DataCamp API key.
 - The course audit checks provider coverage, verification status, generic entries, missing skill tags, and sample learning probes. Probe matches now flag weak domain overlap, so a high-ish score cannot hide a semantically wrong recommendation like a project-management course for contract lifecycle management.
+- Added `npm run test:course-catalog` to lock course matching behavior: exact tool/domain matches should beat generic reporting or AI fallback resources, weak semantic matches should be flagged, and DataCamp should win when it is the stronger catalog match.
+- Added curated seed coverage for the previously weak probes: Microsoft Learn Power BI, Ironclad Digital Contracting Academy, Coursera Global Procurement and Sourcing, and Coursera Instructional Design Foundations. After reseeding, `npm run db:audit-courses -- --limit=100` reports `44` active catalog entries and `0` weak recommendation probes.
 
 ## Low-priority follow-up
 

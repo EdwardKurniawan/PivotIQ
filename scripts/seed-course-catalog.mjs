@@ -96,7 +96,7 @@ try {
         row.pivot_frames || [],
         row.outcome_types || [],
         row.status || 'active',
-        row.verification_status || 'pending',
+        row.verification_status || 'verified',
         row.final_url || row.url,
         row.provider_program_ids || [],
         row.provider_partners || [],

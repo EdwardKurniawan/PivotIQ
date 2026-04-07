@@ -151,6 +151,8 @@ The DataCamp command upserts live courses into Supabase with provider `DataCamp`
 
 Course catalog quality can be checked with `npm run db:audit-courses`, `GET /api/course-catalog/quality`, or the internal dashboard at `/internal/course-catalog`. The audit flags provider coverage, verification status, generic entries, missing skills, and sample learning probes whose course matches do not overlap the expected skill domain.
 
+Course matching regressions can be checked with `npm run test:course-catalog`. The curated seed catalog includes targeted coverage for Power BI, contract lifecycle management, procurement analytics, and instructional design / enablement program design while the DataCamp live API key is pending.
+
 ---
 
 ## Cost Per Report
