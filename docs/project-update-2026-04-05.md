@@ -315,6 +315,22 @@ Current high-priority next step:
 - Add more role-pure education/customer-education sources so `Learning Operations Manager` and `Customer Education Lead` can be grounded against live postings instead of mostly model-led.
 - Add one regression test for specialized-title repair so titles like `AI Adoption Consultant`, `Legal Infrastructure Entrepreneur`, and `Procurement Intelligence Director` cannot reappear as top recommendations for these seeded fixtures.
 
+## 2026-04-07 internal quality visibility update
+
+Catalog quality is no longer CLI-only.
+
+- Added shared audit helper: `lib/job-openings-quality.js`
+- Added JSON API: `GET /api/job-openings/quality?limit=1000`
+- Added internal visual dashboard: `/internal/job-catalog`
+- The dashboard shows health score, scanned openings, failed enrichment count, suspicious row count, watched-family coverage, suspicious transitions, failed enrichment examples, and the current action queue.
+- `scripts/audit-job-openings-quality.mjs` now calls the shared helper, so the CLI and internal page use the same logic.
+
+Report confidence wording also changed:
+
+- `MarketSignalCard` no longer prints raw `ranking_reason` as the primary user-facing explanation.
+- It now translates market evidence into clearer labels such as `Market-backed, proof needed`, `Model-led, verify with postings`, and `Early market signal`.
+- The detailed grounding summary still appears in the expanded report panel for auditability.
+
 ## Low-priority follow-up
 
 - Legal report content quality can still improve even though grounding and plan coherence are now better.

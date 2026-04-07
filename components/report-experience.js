@@ -483,6 +483,46 @@ function MarketMeter({ value, color, label, sublabel }) {
   );
 }
 
+function buildMarketConfidenceSummary(signal) {
+  const openings = Number(signal?.matched_openings_count || 0);
+  const fitScore = Number(signal?.profile_fit_score || 0);
+  const missingCount = signal?.missing_required_skills?.length || 0;
+  const modelOnlyCount = signal?.model_only_skill_gaps?.length || 0;
+
+  if (!openings) {
+    return {
+      label: 'Model-led, verify with postings',
+      body: 'We did not find close live openings for this exact pivot title yet. Treat it as a plausible strategy, but validate the title and requirements before committing hard.',
+    };
+  }
+
+  if (fitScore >= 45 && missingCount <= 3) {
+    return {
+      label: 'Market-backed and adjacent',
+      body: `${openings} live opening${openings === 1 ? '' : 's'} matched this path, and the user already signals a meaningful share of the repeated requirements.`,
+    };
+  }
+
+  if (openings >= 4) {
+    return {
+      label: 'Market-backed, proof needed',
+      body: `${openings} live opening${openings === 1 ? '' : 's'} matched this path, but the user still needs visible proof for several repeated market requirements before the move feels strong.`,
+    };
+  }
+
+  if (modelOnlyCount >= 3) {
+    return {
+      label: 'Thin market signal',
+      body: 'A few postings matched, but several gaps still come mostly from the model. Use this as a validation sprint rather than a final bet.',
+    };
+  }
+
+  return {
+    label: 'Early market signal',
+    body: `${openings} live opening${openings === 1 ? '' : 's'} matched this path. The evidence is useful, but the sample is still small.`,
+  };
+}
+
 function MarketSignalCard({ signal, color, compact = false }) {
   if (!signal) return null;
 
@@ -493,6 +533,7 @@ function MarketSignalCard({ signal, color, compact = false }) {
   const overlapWidth = `${Math.max(8, (overlapCount / maxDenominator) * 100)}%`;
   const missingWidth = `${Math.max(missingCount ? 8 : 0, (missingCount / maxDenominator) * 100)}%`;
   const modelOnlyWidth = `${Math.max(modelOnlyCount ? 8 : 0, (modelOnlyCount / maxDenominator) * 100)}%`;
+  const confidenceSummary = buildMarketConfidenceSummary(signal);
 
   if (compact) {
     return (
@@ -528,7 +569,7 @@ function MarketSignalCard({ signal, color, compact = false }) {
               Why it ranks here
             </div>
             <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.55 }}>
-              {signal.ranking_reason}
+              <strong style={{ color: palette.text }}>{confidenceSummary.label}.</strong> {confidenceSummary.body}
             </div>
           </div>
         )}
@@ -544,10 +585,10 @@ function MarketSignalCard({ signal, color, compact = false }) {
             Live market reality check
           </div>
           <div style={{ color: palette.text, fontSize: '22px', fontWeight: 900, letterSpacing: '-0.03em', marginBottom: '6px' }}>
-            This pivot is now grounded against real openings
+            {confidenceSummary.label}
           </div>
           <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.7 }}>
-            {signal.grounding_summary}
+            {confidenceSummary.body}
           </div>
         </div>
         <div style={{ minWidth: '210px', padding: '16px 18px', borderRadius: '18px', background: 'rgba(255,255,255,0.82)', border: `1px solid ${palette.border}` }}>
@@ -586,7 +627,7 @@ function MarketSignalCard({ signal, color, compact = false }) {
       {signal.ranking_reason && (
         <div style={{ padding: '14px 16px', borderRadius: '16px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}`, marginBottom: '16px' }}>
           <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>Why this pivot ranks here</div>
-          <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7 }}>{signal.ranking_reason}</div>
+          <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7 }}>{signal.grounding_summary}</div>
         </div>
       )}
 

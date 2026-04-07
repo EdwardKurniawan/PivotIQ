@@ -77,6 +77,13 @@ npm run reports:regenerate -- --ids=075b8ed5-0b26-4d1c-b904-5f886329d262,30be2b0
 
 - `GET /api/job-openings/search?q=payments&skills=SQL&limit=5`
 - `POST /api/job-openings/gap-analysis`
+- `GET /api/job-openings/quality?limit=1000`
+
+Internal dashboard:
+
+- `/internal/job-catalog`
+
+The internal catalog page shows the same quality audit in a visual format: health score, failed enrichment count, suspicious openings, watched-family coverage, suspicious transitions, and the next action queue.
 
 Example `gap-analysis` payload:
 

@@ -122,6 +122,8 @@ See [docs/job-openings-catalog.md](./docs/job-openings-catalog.md) for details.
 The catalog now also supports:
 - `GET /api/job-openings/search`
 - `POST /api/job-openings/gap-analysis`
+- `GET /api/job-openings/quality`
+- `/internal/job-catalog` for an internal catalog quality dashboard
 - live-market grounding inside full report pivots so PivotIQ can compare model skill gaps against real current job requirements
 - deterministic job-track filtering so polluted openings do not poison specialized-role grounding
 - a direct regeneration workflow that does not depend on `next dev`
