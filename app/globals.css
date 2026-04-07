@@ -661,12 +661,12 @@ input, textarea, select { font-family: var(--font); }
   .upgrade-bar { padding: 12px 14px !important; gap: 8px !important; }
   .upgrade-bar-label { display: none !important; }
   .lock-gate { padding: 70px 16px 28px !important; }
-  .home-nav { padding: 18px 16px !important; align-items: flex-start !important; }
+  .home-nav { padding: 14px 16px 8px !important; align-items: flex-start !important; }
   .home-nav-actions { width: 100% !important; }
   .home-nav-signin { width: fit-content !important; }
   .home-nav-cta { display: none !important; }
   .home-badge { margin-bottom: 14px !important; }
-  .home-hero { padding: 20px 16px 28px !important; gap: 16px !important; }
+  .home-hero { padding: 8px 16px 28px !important; gap: 16px !important; }
   .home-hero-long { gap: 16px !important; }
   .home-hero-copy { max-width: 100% !important; }
   .home-hero-copy h1 { font-size: 38px !important; line-height: 0.96 !important; letter-spacing: -0.055em !important; }

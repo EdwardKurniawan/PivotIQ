@@ -180,7 +180,7 @@ export default function Home() {
           zIndex: 2,
           maxWidth: '1220px',
           margin: '0 auto',
-          padding: '24px 28px',
+          padding: '18px 28px 12px',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
@@ -235,11 +235,11 @@ export default function Home() {
           zIndex: 2,
           maxWidth: '1220px',
           margin: '0 auto',
-          padding: '26px 28px 34px',
+          padding: '8px 28px 34px',
           display: 'grid',
           gridTemplateColumns: 'minmax(0, 1.08fr) minmax(320px, 0.92fr)',
           gap: '28px',
-          alignItems: 'end',
+          alignItems: 'start',
         }}
       >
         <div className={`home-hero-copy ${locale !== 'en' ? 'home-hero-copy-long' : ''}`}>
