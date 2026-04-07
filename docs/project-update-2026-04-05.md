@@ -331,6 +331,33 @@ Report confidence wording also changed:
 - It now translates market evidence into clearer labels such as `Market-backed, proof needed`, `Model-led, verify with postings`, and `Early market signal`.
 - The detailed grounding summary still appears in the expanded report panel for auditability.
 
+## 2026-04-07 UX and visualization audit
+
+Main finding:
+
+- PivotIQ has strong underlying data, but several pages still make users read too much prose before they understand the shape of the result.
+- The best immediate UX improvement is to make the report more visual, because that is where task exposure, pivot fit, live market evidence, and skill gaps already exist as structured data.
+
+What changed in the first UX pass:
+
+- Step 2 audit task cards now use intuitive exposure colors:
+  - green = low exposure / safer work
+  - orange = medium exposure
+  - red = high exposure
+- The confusing `FIT` badge was removed from audit task cards because it was not a real score. Task cards now show explicit exposure labels instead.
+- The report Breakdown tab now includes a task exposure mix chart before the raw task list.
+- The Pivot Paths tab now includes a pivot evidence map that compares:
+  - model match score
+  - profile fit against live postings
+  - matched live openings
+
+Remaining UX priorities:
+
+- Add more “why this matters” visual captions to the roadmap so the 12-week plan feels less like a checklist.
+- Add a small market-confidence badge near the active pivot title in the hero.
+- Consider a lightweight onboarding tour for the report tabs: `Exposure -> Pivots -> Plan`.
+- Improve the internal catalog page access control before exposing it beyond local/internal use.
+
 ## Low-priority follow-up
 
 - Legal report content quality can still improve even though grounding and plan coherence are now better.

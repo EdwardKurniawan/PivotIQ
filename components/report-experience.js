@@ -331,6 +331,122 @@ function SignalStatCard({ label, value, tone = palette.orange }) {
   );
 }
 
+function TaskExposureChart({ tasks = [] }) {
+  const high = tasks.filter((item) => Number(item.risk_score || 0) >= 70).length;
+  const medium = tasks.filter((item) => Number(item.risk_score || 0) >= 40 && Number(item.risk_score || 0) < 70).length;
+  const low = tasks.filter((item) => Number(item.risk_score || 0) < 40).length;
+  const total = Math.max(tasks.length, 1);
+  const average = Math.round(tasks.reduce((sum, item) => sum + Number(item.risk_score || 0), 0) / total);
+  const highDeg = (high / total) * 360;
+  const mediumDeg = ((high + medium) / total) * 360;
+
+  return (
+    <div className="piq-card" style={{ padding: '24px', marginBottom: '24px', background: 'linear-gradient(135deg, rgba(255,255,255,0.94), rgba(244,239,231,0.96))', border: `1px solid ${palette.border}` }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(180px, 0.55fr) minmax(0, 1fr)', gap: '22px', alignItems: 'center' }} className="two-col">
+        <div style={{ display: 'grid', placeItems: 'center' }}>
+          <div
+            style={{
+              width: '190px',
+              height: '190px',
+              borderRadius: '50%',
+              background: `conic-gradient(#C86A2C 0deg ${highDeg}deg, #F28A43 ${highDeg}deg ${mediumDeg}deg, #1B6F63 ${mediumDeg}deg 360deg)`,
+              display: 'grid',
+              placeItems: 'center',
+              boxShadow: 'inset 0 0 0 1px rgba(19,27,35,0.08), 0 24px 70px rgba(19,33,45,0.10)',
+            }}
+          >
+            <div style={{ width: '118px', height: '118px', borderRadius: '50%', background: palette.cream, display: 'grid', placeItems: 'center', textAlign: 'center', border: `1px solid ${palette.border}` }}>
+              <div>
+                <div style={{ color: riskColor(average), fontSize: '34px', fontWeight: 950, letterSpacing: '-0.06em', lineHeight: 1 }}>{average}</div>
+                <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.12em', textTransform: 'uppercase' }}>avg exposure</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div style={{ color: palette.orange, fontSize: '11px', fontWeight: 900, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '8px' }}>Exposure mix</div>
+          <div style={{ color: palette.text, fontSize: '28px', fontWeight: 950, letterSpacing: '-0.05em', lineHeight: 1.02, marginBottom: '8px', fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif' }}>
+            See the workload shape before reading the task list.
+          </div>
+          <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.75, marginBottom: '16px' }}>
+            The chart separates compressible work from the tasks that still carry human judgment, trust, and cross-functional context.
+          </div>
+          <div style={{ display: 'grid', gap: '10px' }}>
+            {[
+              ['High exposure', high, '#C86A2C'],
+              ['Medium exposure', medium, '#F28A43'],
+              ['Low exposure', low, '#1B6F63'],
+            ].map(([label, value, color]) => (
+              <div key={label}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '10px', color: palette.textMuted, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>
+                  <span>{label}</span>
+                  <span style={{ color }}>{value} task{value === 1 ? '' : 's'}</span>
+                </div>
+                <div style={{ height: '9px', borderRadius: '999px', background: 'rgba(19,27,35,0.08)', overflow: 'hidden' }}>
+                  <div style={{ width: `${Math.max(value ? 8 : 0, (value / total) * 100)}%`, height: '100%', background: color, borderRadius: '999px' }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PivotMarketComparison({ pivots = [] }) {
+  const rows = pivots.slice(0, 5);
+  const maxOpenings = Math.max(...rows.map((pivot) => Number(pivot.live_market_signal?.matched_openings_count || 0)), 1);
+
+  return (
+    <div className="piq-card" style={{ padding: '24px', background: 'linear-gradient(135deg, rgba(255,255,255,0.94), rgba(244,239,231,0.96))', border: `1px solid ${palette.border}` }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap', alignItems: 'end', marginBottom: '18px' }}>
+        <div>
+          <div style={{ color: palette.teal, fontSize: '11px', fontWeight: 900, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '8px' }}>Pivot evidence map</div>
+          <div style={{ color: palette.text, fontSize: '26px', fontWeight: 950, letterSpacing: '-0.05em', lineHeight: 1.05, fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif' }}>
+            Compare model fit against live market evidence.
+          </div>
+        </div>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', color: palette.textSoft, fontSize: '11px', fontWeight: 900, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+          <span>Match score</span>
+          <span style={{ color: palette.teal }}>Profile fit</span>
+          <span style={{ color: palette.orange }}>Openings</span>
+        </div>
+      </div>
+      <div style={{ display: 'grid', gap: '14px' }}>
+        {rows.map((pivot, index) => {
+          const openings = Number(pivot.live_market_signal?.matched_openings_count || 0);
+          const profileFit = Number(pivot.live_market_signal?.profile_fit_score || 0);
+          const matchScore = Number(pivot.match_score || 0);
+          return (
+            <div key={pivot.id || pivot.title} style={{ display: 'grid', gridTemplateColumns: 'minmax(190px, 0.72fr) minmax(0, 1fr)', gap: '14px', alignItems: 'center' }} className="two-col">
+              <div>
+                <div style={{ color: palette.text, fontSize: '14px', fontWeight: 900, lineHeight: 1.35 }}>{index + 1}. {pivot.title}</div>
+                <div style={{ color: palette.textSoft, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: '4px' }}>{openings ? `${openings} live openings` : 'model-led'}</div>
+              </div>
+              <div style={{ display: 'grid', gap: '7px' }}>
+                {[
+                  ['Model match', matchScore, getPivotColor(index)],
+                  ['Profile fit', profileFit, palette.teal],
+                  ['Live openings', Math.round((openings / maxOpenings) * 100), palette.orange, openings],
+                ].map(([label, value, color, rawValue]) => (
+                  <div key={label} style={{ display: 'grid', gridTemplateColumns: '92px minmax(0, 1fr) 42px', gap: '10px', alignItems: 'center' }}>
+                    <span style={{ color: palette.textSoft, fontSize: '11px', fontWeight: 800 }}>{label}</span>
+                    <div style={{ height: '8px', borderRadius: '999px', background: 'rgba(19,27,35,0.08)', overflow: 'hidden' }}>
+                      <div style={{ width: `${Math.max(Number(value) ? 6 : 0, Math.min(100, Number(value) || 0))}%`, height: '100%', borderRadius: '999px', background: color }} />
+                    </div>
+                    <span style={{ color, fontSize: '12px', fontWeight: 900, textAlign: 'right' }}>{rawValue ?? value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function SkillGapCard({ skill, color, messages }) {
   const priorityColors = {
     critical: '#FF8F4D',
@@ -1435,6 +1551,7 @@ export default function ReportExperience({ payload, embedded = false }) {
       <div style={{ position: 'relative', zIndex: 2, maxWidth: '1100px', margin: '0 auto', padding: '36px 24px 80px' }}>
         {activeTab === 'breakdown' && (
           <>
+            <TaskExposureChart tasks={reportData.task_breakdown || []} />
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px', marginBottom: '28px' }}>
               {[
                 { label: messages.report.breakdownStats[0][0], value: reportData.task_breakdown.filter((item) => item.risk_score >= 70).length, sub: messages.report.breakdownStats[0][1] },
@@ -1471,6 +1588,7 @@ export default function ReportExperience({ payload, embedded = false }) {
 
         {activeTab === 'pivots' && (
           <div style={{ display: 'grid', gap: '16px' }}>
+            {tier === 'full' && <PivotMarketComparison pivots={pivots} />}
             {tier === 'full' && stayPath && (
               <div
                 className="piq-card piq-card-clickable"
