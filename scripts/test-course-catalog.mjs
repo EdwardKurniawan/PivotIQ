@@ -134,9 +134,45 @@ function testDataCampWinsWhenItIsBetterMatch() {
   assert.equal(match.entry.title, 'Intermediate SQL');
 }
 
+function testAgenticAiMatchesAgentCourseOverGenericAiLiteracy() {
+  const match = buildCatalogMatch(
+    {
+      skill_name: 'AI agent workflows',
+      category: 'technical',
+      gap_priority: 'critical',
+      how_to_close_gap: 'Build tool-using agent workflows for multi-step automation.',
+    },
+    {
+      title: 'AI Workflow Automation Specialist',
+      decision_frame: 'highest upside',
+    },
+    [
+      entry({
+        provider: 'Google',
+        title: 'AI Essentials',
+        summary: 'General workplace AI productivity and prompting course.',
+        skills: ['ai productivity', 'prompting', 'responsible ai'],
+        tags: ['workplace ai'],
+        role_families: ['strategy', 'operations'],
+      }),
+      entry({
+        provider: 'DeepLearning.AI',
+        title: 'AI Agents in LangGraph',
+        summary: 'Build agentic AI workflows with LangGraph, stateful agents, tool use, and multi-step orchestration.',
+        skills: ['ai agents', 'langgraph', 'tool use', 'agent orchestration', 'workflow automation'],
+        tags: ['ai agents', 'agentic ai', 'hands-on ai'],
+        role_families: ['ai-automation', 'technical'],
+      }),
+    ]
+  );
+
+  assert.equal(match.entry.title, 'AI Agents in LangGraph');
+}
+
 testExactToolPhraseBeatsGenericReporting();
 testStrongCatalogMatchBeatsGenericAiFallbackShape();
 testWeakSemanticMatchIsFlagged();
 testDataCampWinsWhenItIsBetterMatch();
+testAgenticAiMatchesAgentCourseOverGenericAiLiteracy();
 
 console.log('Course catalog matching tests passed.');
