@@ -128,6 +128,26 @@ The catalog now also supports:
 - deterministic job-track filtering so polluted openings do not poison specialized-role grounding
 - a direct regeneration workflow that does not depend on `next dev`
 
+## Learning Course Catalog
+
+PivotIQ stores vetted learning resources in `public.course_catalog`, which full-report generation uses when replacing model-suggested course links.
+
+```bash
+npm run db:seed-courses
+npm run db:sync-coursera
+npm run db:sync-datacamp
+npm run db:verify-courses
+```
+
+DataCamp sync uses the LMS External Catalog API live courses endpoint:
+
+```bash
+DATACAMP_LMS_CATALOG_API_TOKEN=...
+npm run db:sync-datacamp
+```
+
+The DataCamp command upserts live courses into Supabase with provider `DataCamp`, normalized skills/tags, role families, outcome types, and `Included with DataCamp for Business` pricing metadata.
+
 ---
 
 ## Cost Per Report

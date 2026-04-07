@@ -376,6 +376,13 @@ Homepage elegance pass:
 - Removed the standalone role-guides block while preserving key role-guide links as compact pills in the closing CTA.
 - Cleaned up unused homepage responsive selectors for deleted sections.
 
+Learning catalog update:
+
+- Added `npm run db:sync-datacamp`.
+- The script pulls DataCamp live courses from the LMS External Catalog API and upserts them into `public.course_catalog`.
+- It expects `DATACAMP_LMS_CATALOG_API_TOKEN` in `.env.local`; `DATACAMP_LMS_API_TOKEN` and `DATACAMP_API_TOKEN` are accepted as compatibility aliases.
+- Learning-resource normalization now lets strong Supabase catalog matches beat hard-coded fallback links, so synced DataCamp courses can actually appear in generated report recommendations.
+
 ## Low-priority follow-up
 
 - Legal report content quality can still improve even though grounding and plan coherence are now better.

@@ -17,6 +17,7 @@
     "db:sync-job-openings": "node --env-file=.env.local scripts/sync-job-openings.mjs",
     "db:verify-courses": "node --env-file=.env.local scripts/verify-course-catalog.mjs",
     "db:sync-coursera": "node --env-file=.env.local scripts/sync-coursera-catalog.mjs",
+    "db:sync-datacamp": "node --env-file=.env.local scripts/sync-datacamp-catalog.mjs",
     "reports:regenerate": "node --env-file=.env.local scripts/regenerate-reports.mjs",
     "test:market-ranking": "node scripts/test-live-market-ranking.mjs",
     "test:job-grounding": "node scripts/test-job-grounding.mjs"
