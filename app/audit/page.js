@@ -38,6 +38,7 @@ const palette = {
   textSoft: '#6D7A84',
   cream: '#FFF9F2',
   orange: '#F28A43',
+  red: '#B54A35',
   teal: '#1B6F63',
   navy: '#13202A',
 };
@@ -54,10 +55,16 @@ function panelStyle({ accent = 'rgba(143, 162, 179, 0.12)', background = palette
 
 function taskSignal(task) {
   const category = String(task.category || '').toLowerCase();
-  if (category.includes('soft')) return { tone: palette.teal, width: '48%' };
-  if (category.includes('analysis')) return { tone: palette.navy, width: '72%' };
-  if (category.includes('management')) return { tone: palette.orange, width: '68%' };
-  return { tone: palette.orange, width: '58%' };
+  if (category.includes('communication') || category.includes('leadership') || category.includes('management') || category.includes('soft')) {
+    return { tone: palette.teal, width: '42%', label: 'Low exposure' };
+  }
+  if (category.includes('operations') || category.includes('process') || category.includes('custom')) {
+    return { tone: palette.orange, width: '64%', label: 'Medium exposure' };
+  }
+  if (category.includes('analysis') || category.includes('writing') || category.includes('documentation') || category.includes('technical')) {
+    return { tone: palette.red, width: '84%', label: 'High exposure' };
+  }
+  return { tone: palette.orange, width: '58%', label: 'Medium exposure' };
 }
 
 function TaskCard({ task, onClick, selected = false, subtle = false }) {
@@ -92,11 +99,11 @@ function TaskCard({ task, onClick, selected = false, subtle = false }) {
           <div style={{ width: signal.width, height: '100%', borderRadius: '999px', background: signal.tone }} />
         </div>
         <span style={{ color: signal.tone, fontSize: '10px', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-          {selected ? 'Live' : 'Fit'}
+          {selected ? 'Selected' : signal.label}
         </span>
       </div>
       <span style={{ color: palette.text, fontSize: '14px', fontWeight: 700, lineHeight: 1.4, letterSpacing: '-0.02em' }}>{task.label}</span>
-      <span style={{ color: selected ? '#9A5727' : '#1B6F63', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{task.category}</span>
+      <span style={{ color: selected ? '#9A5727' : signal.tone, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{task.category}</span>
     </button>
   );
 }
@@ -729,9 +736,16 @@ export default function AuditPage() {
                     </p>
                   </div>
 
-                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '14px' }}>
-                    {[palette.orange, palette.navy, palette.teal].map((tone, index) => (
-                      <div key={tone} style={{ width: index === 2 ? '28px' : '10px', height: '10px', borderRadius: '999px', background: tone, opacity: index === 1 ? 0.85 : 1 }} />
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap' }}>
+                    {[
+                      ['High exposure', palette.red],
+                      ['Medium', palette.orange],
+                      ['Low', palette.teal],
+                    ].map(([label, tone]) => (
+                      <span key={label} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: palette.textSoft, fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                        <span style={{ width: '10px', height: '10px', borderRadius: '999px', background: tone }} />
+                        {label}
+                      </span>
                     ))}
                   </div>
 
