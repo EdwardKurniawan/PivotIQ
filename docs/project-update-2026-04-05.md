@@ -390,6 +390,19 @@ Learning catalog update:
 - Expanded AI learning coverage with current provider-owned resources from OpenAI Academy / Cookbook, Anthropic Academy / docs / GitHub tutorials, Google Cloud Skills Boost, Google AI Essentials, Kaggle's 5-Day Gen AI Intensive, Microsoft's Generative AI for Beginners, and DeepLearning.AI's AI Agents in LangGraph. Added a course-catalog regression check so agentic-AI gaps prefer hands-on agent workflow resources over generic AI-literacy courses.
 - Report UI now makes learning recommendations more transparent: skill-gap cards show `Free` / `Paid`, `Affiliate partner` / `Trusted vendor`, and `Catalog-verified` badges where possible, and the Plan tab includes a compact three-step learning path (`Start here`, `Build proof`, `Go deeper`) before the detailed gap cards.
 
+Latest account test run:
+
+- Regenerated the three seeded full reports for `edward.hardrianto@live.com` with `npm run reports:regenerate -- --ids=075b8ed5-0b26-4d1c-b904-5f886329d262,30be2b01-c0a5-4cca-a70e-1a017339896c,98172726-3059-412b-869e-119bff813e4a`.
+- Current saved top pivots:
+  - Procurement Analyst: `Procurement Intelligence Manager`
+  - Customer Education Manager: `Portfolio Operations Manager`
+  - Legal Operations Manager: `Contract Operations Strategist`
+- Learning recommendations are now flowing into saved reports from the expanded catalog. Examples from the test run:
+  - Customer Education uses Coursera `Instructional Design Foundations and Applications` for enablement/curriculum gaps.
+  - Procurement uses DeepLearning.AI `AI Python for Beginners` and Ironclad `Digital Contracting Academy` alongside paid Coursera resources.
+  - Legal uses Ironclad `Digital Contracting Academy` as a free trusted vendor resource.
+- Quality note from the run: the learning catalog is working, but pivot/skill prioritization still deserves a follow-up pass. Customer Education drifted to `Portfolio Operations Manager`, Procurement starts with `Change management`, and Legal remains mostly model-led with `0` close openings for the top pivot.
+
 ## Low-priority follow-up
 
 - Legal report content quality can still improve even though grounding and plan coherence are now better.
