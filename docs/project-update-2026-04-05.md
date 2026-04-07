@@ -388,6 +388,7 @@ Learning catalog update:
 - Added curated seed coverage for the previously weak probes: Microsoft Learn Power BI, Ironclad Digital Contracting Academy, Coursera Global Procurement and Sourcing, and Coursera Instructional Design Foundations. After reseeding, `npm run db:audit-courses -- --limit=100` reports `44` active catalog entries and `0` weak recommendation probes.
 - Added a non-affiliate trusted vendor resource layer in the seed catalog: Microsoft Learn, Salesforce Trailhead, HubSpot Academy, Atlassian University, Google Skillshop, and AWS Skill Builder. These are tagged as `trusted free vendor resource` so PivotIQ can recommend credible free resources alongside affiliate providers when they are the better skill match.
 - Expanded AI learning coverage with current provider-owned resources from OpenAI Academy / Cookbook, Anthropic Academy / docs / GitHub tutorials, Google Cloud Skills Boost, Google AI Essentials, Kaggle's 5-Day Gen AI Intensive, Microsoft's Generative AI for Beginners, and DeepLearning.AI's AI Agents in LangGraph. Added a course-catalog regression check so agentic-AI gaps prefer hands-on agent workflow resources over generic AI-literacy courses.
+- Report UI now makes learning recommendations more transparent: skill-gap cards show `Free` / `Paid`, `Affiliate partner` / `Trusted vendor`, and `Catalog-verified` badges where possible, and the Plan tab includes a compact three-step learning path (`Start here`, `Build proof`, `Go deeper`) before the detailed gap cards.
 
 ## Low-priority follow-up
 

@@ -68,6 +68,111 @@ function getPivotIcon(index) {
   return pivotIcons[index % pivotIcons.length];
 }
 
+const affiliateLearningProviders = ['Coursera', 'Udemy', 'edX', 'DataCamp', 'Pluralsight', 'Skillshare'];
+const trustedLearningProviders = [
+  'Anthropic',
+  'Anthropic Academy',
+  'Atlassian University',
+  'AWS Skill Builder',
+  'DeepLearning.AI',
+  'Google Cloud Skills Boost',
+  'Google Skillshop',
+  'HubSpot Academy',
+  'Ironclad',
+  'Kaggle / Google',
+  'Microsoft',
+  'Microsoft Learn',
+  'OpenAI',
+  'OpenAI Academy',
+  'Salesforce Trailhead',
+];
+
+function getLearningResourceBadges(skill) {
+  const provider = String(skill?.resource_provider || '');
+  const badges = [];
+
+  if (skill?.resource_access) {
+    badges.push({
+      label: skill.resource_access === 'paid' ? 'Paid' : 'Free',
+      tone: skill.resource_access === 'paid' ? 'paid' : 'free',
+    });
+  }
+
+  if (affiliateLearningProviders.some((item) => provider.toLowerCase().includes(item.toLowerCase()))) {
+    badges.push({ label: 'Affiliate partner', tone: 'affiliate' });
+  } else if (trustedLearningProviders.some((item) => provider.toLowerCase().includes(item.toLowerCase()))) {
+    badges.push({ label: 'Trusted vendor', tone: 'trusted' });
+  }
+
+  if (skill?.resource_verified) {
+    badges.push({ label: 'Catalog-verified', tone: 'verified' });
+  }
+
+  if (skill?.resource_level) {
+    badges.push({ label: skill.resource_level, tone: 'neutral' });
+  }
+
+  if (skill?.resource_duration_label) {
+    badges.push({ label: skill.resource_duration_label, tone: 'neutral' });
+  }
+
+  return badges;
+}
+
+function resourceBadgeStyle(tone) {
+  const styles = {
+    affiliate: { bg: 'rgba(242,138,67,0.11)', border: 'rgba(242,138,67,0.22)', color: '#8B4A1B' },
+    free: { bg: 'rgba(27,111,99,0.10)', border: 'rgba(27,111,99,0.20)', color: palette.teal },
+    paid: { bg: 'rgba(242,138,67,0.11)', border: 'rgba(242,138,67,0.22)', color: '#8B4A1B' },
+    trusted: { bg: 'rgba(19,32,42,0.07)', border: 'rgba(19,32,42,0.14)', color: palette.navy },
+    verified: { bg: 'rgba(65,194,174,0.12)', border: 'rgba(65,194,174,0.24)', color: palette.teal },
+    neutral: { bg: 'rgba(255,255,255,0.72)', border: palette.border, color: palette.textMuted },
+  };
+
+  return styles[tone] || styles.neutral;
+}
+
+function LearningResourceBadges({ skill }) {
+  const badges = getLearningResourceBadges(skill);
+  if (!badges.length) return null;
+
+  return (
+    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+      {badges.map((badge) => {
+        const style = resourceBadgeStyle(badge.tone);
+        return (
+          <span key={`${badge.label}-${badge.tone}`} style={{ borderRadius: '999px', padding: '5px 10px', background: style.bg, border: `1px solid ${style.border}`, color: style.color, fontSize: '11px', fontWeight: 800 }}>
+            {badge.label}
+          </span>
+        );
+      })}
+    </div>
+  );
+}
+
+function buildLearningPathSteps(skillGaps = []) {
+  const withResources = (skillGaps || []).filter((skill) => skill?.resource_title && skill?.resource_url);
+  if (!withResources.length) return [];
+
+  const critical = withResources.find((skill) => skill.gap_priority === 'critical') || withResources[0];
+  const proof = withResources.find((skill) => skill !== critical && /portfolio|proof|dashboard|workflow|prototype|build|artifact|case study/i.test([
+    skill?.how_to_close_gap,
+    skill?.skill_name,
+    skill?.resource_title,
+  ].join(' '))) || withResources.find((skill) => skill !== critical) || critical;
+  const deeper = withResources.find((skill) => skill !== critical && skill !== proof && /intermediate|advanced|agent|automation|governance|strategy|specialization/i.test([
+    skill?.resource_level,
+    skill?.resource_title,
+    skill?.skill_name,
+  ].join(' '))) || withResources.find((skill) => skill !== critical && skill !== proof) || proof;
+
+  return [
+    { label: 'Start here', helper: 'Close the most important gap first.', skill: critical },
+    { label: 'Build proof', helper: 'Turn learning into a visible work sample.', skill: proof },
+    { label: 'Go deeper', helper: 'Add depth once the first proof is moving.', skill: deeper },
+  ].filter((step, index, steps) => step.skill && steps.findIndex((item) => item.label === step.label && item.skill?.resource_title === step.skill?.resource_title) === index);
+}
+
 function IconGlyph({ name, color }) {
   const common = {
     width: '64%',
@@ -756,25 +861,54 @@ function SkillGapCard({ skill, color, messages }) {
         {messages.report.learnWith} {skill.resource_title} →
       </a>
 
-      {(skill.resource_provider || skill.resource_access || skill.resource_price_label) && (
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-          {skill.resource_provider && (
-            <span style={{ borderRadius: '999px', padding: '5px 10px', background: 'rgba(255,255,255,0.72)', border: `1px solid ${palette.border}`, color: palette.textMuted, fontSize: '11px', fontWeight: 700 }}>
-              {skill.resource_provider}
-            </span>
-          )}
-          {skill.resource_access && (
-            <span style={{ borderRadius: '999px', padding: '5px 10px', background: skill.resource_access === 'paid' ? 'rgba(242,138,67,0.10)' : 'rgba(27,111,99,0.10)', border: `1px solid ${skill.resource_access === 'paid' ? 'rgba(242,138,67,0.18)' : 'rgba(27,111,99,0.18)'}`, color: skill.resource_access === 'paid' ? '#8B4A1B' : '#1B6F63', fontSize: '11px', fontWeight: 700, textTransform: 'capitalize' }}>
-              {skill.resource_access}
-            </span>
-          )}
-          {skill.resource_price_label && (
-            <span style={{ borderRadius: '999px', padding: '5px 10px', background: 'rgba(255,255,255,0.72)', border: `1px solid ${palette.border}`, color: palette.textMuted, fontSize: '11px', fontWeight: 700 }}>
-              {skill.resource_price_label}
-            </span>
-          )}
+      <LearningResourceBadges skill={skill} />
+      {skill.resource_provider && (
+        <div style={{ color: palette.textSoft, fontSize: '12px', lineHeight: 1.55 }}>
+          {skill.resource_provider}{skill.resource_price_label ? ` · ${skill.resource_price_label}` : ''}
         </div>
       )}
+    </div>
+  );
+}
+
+function LearningPathCard({ path, color }) {
+  const steps = buildLearningPathSteps(path?.skill_gaps || []);
+  if (!steps.length) return null;
+
+  return (
+    <div className="piq-card" style={{ padding: '24px', marginBottom: '18px', background: `linear-gradient(135deg, ${color}12 0%, rgba(255,255,255,0.92) 58%, rgba(255,249,242,0.9) 100%)`, border: `1px solid ${color}28`, boxShadow: '0 22px 46px rgba(19, 32, 42, 0.08)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', alignItems: 'end', flexWrap: 'wrap', marginBottom: '18px' }}>
+        <div>
+          <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1.4px', textTransform: 'uppercase', marginBottom: '8px' }}>Learning path</div>
+          <h3 style={{ color: palette.text, fontSize: '22px', fontWeight: 950, letterSpacing: '-0.04em', margin: '0 0 6px' }}>The fastest credible learning sequence</h3>
+          <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.7, margin: 0, maxWidth: '720px' }}>
+            Start with the highest-priority gap, turn it into proof, then go deeper only after you have a visible artifact.
+          </p>
+        </div>
+        <span style={{ borderRadius: '999px', padding: '7px 12px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}`, color: palette.textMuted, fontSize: '12px', fontWeight: 850 }}>
+          {steps.length} recommended steps
+        </span>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '12px' }} className="two-col">
+        {steps.map((step, index) => (
+          <div key={`${step.label}-${step.skill.skill_name}`} style={{ position: 'relative', padding: '18px', borderRadius: '22px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}`, overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', right: '-18px', top: '-24px', color: `${color}14`, fontSize: '96px', fontWeight: 950, lineHeight: 1 }}>{index + 1}</div>
+            <div style={{ position: 'relative', zIndex: 1 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                <span style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase' }}>{step.label}</span>
+                <span style={{ color: palette.textSoft, fontSize: '11px', fontWeight: 800, textTransform: 'uppercase' }}>{step.skill.gap_priority || 'skill'}</span>
+              </div>
+              <div style={{ color: palette.text, fontSize: '16px', fontWeight: 900, lineHeight: 1.25, marginBottom: '6px' }}>{step.skill.skill_name}</div>
+              <p style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6, margin: '0 0 12px' }}>{step.helper}</p>
+              <a href={step.skill.resource_url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', color, fontSize: '13px', fontWeight: 850, textDecoration: 'none', marginBottom: '12px' }}>
+                {step.skill.resource_title} →
+              </a>
+              <LearningResourceBadges skill={step.skill} />
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -2071,6 +2205,7 @@ export default function ReportExperience({ payload, embedded = false }) {
                   </div>
                 </div>
               </div>
+              <LearningPathCard path={activePath} color={planColor} />
               <div style={{ display: 'grid', gap: '14px' }}>
                 {(activePath.skill_gaps || []).map((skill) => (
                   <SkillGapCard key={`${activePath.id}-${skill.skill_name}`} skill={skill} color={planColor} messages={messages} />
