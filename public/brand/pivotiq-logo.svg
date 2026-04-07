@@ -1,0 +1,32 @@
+<svg width="720" height="220" viewBox="0 0 720 220" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">PivotIQ logo</title>
+  <desc id="desc">PivotIQ wordmark with a rounded navy mark, warm orange pivot line, and teal intelligence loop.</desc>
+  <defs>
+    <linearGradient id="markGlow" x1="24" y1="18" x2="188" y2="194" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1B2E3D"/>
+      <stop offset="1" stop-color="#101923"/>
+    </linearGradient>
+    <linearGradient id="accentArc" x1="78" y1="56" x2="178" y2="158" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F28A43"/>
+      <stop offset="1" stop-color="#F6C06D"/>
+    </linearGradient>
+    <filter id="softShadow" x="0" y="0" width="220" height="220" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#13202A" flood-opacity="0.16"/>
+    </filter>
+  </defs>
+
+  <rect width="720" height="220" rx="44" fill="#FFF9F2"/>
+  <g filter="url(#softShadow)">
+    <rect x="42" y="38" width="144" height="144" rx="42" fill="url(#markGlow)"/>
+    <path d="M72 150V70H102C117.464 70 130 82.536 130 98C130 113.464 117.464 126 102 126H88" stroke="#FFF9F2" stroke-width="7.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M118 76V144" stroke="url(#accentArc)" stroke-width="5.4" stroke-linecap="round"/>
+    <circle cx="151" cy="101" r="22" stroke="#1B6F63" stroke-width="6"/>
+    <path d="M164 116L176 128" stroke="#1B6F63" stroke-width="5.4" stroke-linecap="round"/>
+  </g>
+
+  <path d="M218 61H632" stroke="#13202A" stroke-opacity="0.08" stroke-width="1"/>
+  <text x="218" y="119" fill="#13202A" font-family="Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif" font-size="70" font-weight="700" letter-spacing="-4.5">PivotIQ</text>
+  <text x="222" y="154" fill="#5D6A74" font-family="Avenir Next, Inter, Segoe UI, sans-serif" font-size="20" font-weight="700" letter-spacing="1.8">AI CAREER TRANSITION INTELLIGENCE</text>
+  <path d="M222 173H458" stroke="#F28A43" stroke-width="5" stroke-linecap="round"/>
+  <path d="M474 173H570" stroke="#1B6F63" stroke-width="5" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,26 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">PivotIQ brand mark</title>
+  <desc id="desc">Rounded navy PivotIQ monogram with a cream P, orange pivot line, and teal IQ loop.</desc>
+  <defs>
+    <linearGradient id="markBg" x1="76" y1="56" x2="428" y2="444" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1B2E3D"/>
+      <stop offset="1" stop-color="#101923"/>
+    </linearGradient>
+    <linearGradient id="pivotLine" x1="236" y1="132" x2="236" y2="374" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F28A43"/>
+      <stop offset="1" stop-color="#F6C06D"/>
+    </linearGradient>
+    <filter id="shadow" x="0" y="0" width="512" height="512" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="32" stdDeviation="32" flood-color="#13202A" flood-opacity="0.20"/>
+    </filter>
+  </defs>
+
+  <rect width="512" height="512" rx="120" fill="#FFF9F2"/>
+  <g filter="url(#shadow)">
+    <rect x="74" y="74" width="364" height="364" rx="108" fill="url(#markBg)"/>
+    <path d="M151 354V158H226C263.555 158 294 188.445 294 226C294 263.555 263.555 294 226 294H188" stroke="#FFF9F2" stroke-width="21" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M260 172V342" stroke="url(#pivotLine)" stroke-width="16" stroke-linecap="round"/>
+    <circle cx="344" cy="234" r="55" stroke="#1B6F63" stroke-width="18"/>
+    <path d="M378 270L411 303" stroke="#1B6F63" stroke-width="16" stroke-linecap="round"/>
+  </g>
+</svg>
