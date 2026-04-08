@@ -1035,5 +1035,22 @@
     "role_families": ["legal", "ai-automation", "operations"],
     "pivot_frames": ["safest transition", "strongest leverage fit"],
     "outcome_types": ["technical-skill", "portfolio"]
+  },
+  {
+    "slug": "google-grow-learn-skills",
+    "provider": "Grow with Google",
+    "title": "Free Online Skills Training for Career Growth",
+    "url": "https://grow.google/intl/en_in/learn-skills/",
+    "summary": "Grow with Google skills hub for free online training that helps learners build digital skills, career confidence, and job-ready foundations.",
+    "skills": ["digital skills", "career growth", "online learning", "job readiness", "professional development"],
+    "tags": ["trusted free vendor resource", "google", "career growth", "digital skills"],
+    "is_paid": false,
+    "price_label": "Free",
+    "level": "Beginner",
+    "duration_label": "Learning hub",
+    "resource_type": "pathway",
+    "role_families": ["operations", "marketing", "analytics", "ai-automation", "general"],
+    "pivot_frames": ["safest transition", "strongest leverage fit"],
+    "outcome_types": ["general-upskilling", "credential"]
   }
 ]
