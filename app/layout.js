@@ -12,7 +12,7 @@ export const metadata = {
     default: 'PivotIQ | AI Career Risk Scanner and Pivot Planner',
     template: '%s | PivotIQ',
   },
-  description: 'PivotIQ helps white-collar professionals see which parts of their job are most exposed to AI, identify believable adjacent pivots, and follow a practical career transition plan.',
+  description: 'PivotIQ helps white-collar professionals see which parts of their job are most exposed to AI, identify credible adjacent pivots, and follow a practical career transition plan.',
   keywords: [
     'AI career risk',
     'job automation risk',

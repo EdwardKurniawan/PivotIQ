@@ -137,7 +137,7 @@ export default function Home() {
       priceCurrency: 'USD',
     },
     description:
-      'PivotIQ helps white-collar professionals understand AI career risk at the task level, discover believable adjacent pivots, and follow a transition roadmap.',
+      'PivotIQ helps white-collar professionals understand AI career risk at the task level, discover credible adjacent pivots, and follow a transition roadmap.',
     url: siteUrl,
   };
   const faqSchema = {

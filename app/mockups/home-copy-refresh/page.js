@@ -11,7 +11,7 @@ const problems = [
   },
   {
     title: 'A good pivot plan should feel cared for',
-    body: 'If someone pays, the output needs to connect the problem to a believable next move, a skill gap, and a milestone they can actually complete.',
+    body: 'If someone pays, the output needs to connect the problem to a credible next move, a skill gap, and a milestone they can actually complete.',
   },
 ];
 

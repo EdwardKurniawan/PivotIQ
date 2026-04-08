@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 const highlights = [
   'Free task-level scan',
-  'Believable adjacent pivots',
+  'Credible adjacent pivots',
   'One-time roadmap upgrade',
 ];
 
@@ -68,7 +68,7 @@ const roadmapSteps = [
   },
   {
     number: '02',
-    title: 'Pick the believable pivot',
+    title: 'Pick the strongest next move',
     body: 'Choose the role direction that preserves your context while increasing defensibility.',
   },
   {
