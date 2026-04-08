@@ -170,11 +170,53 @@ function testProcurementTopSkillUsesProcurementResource() {
   assert.match(normalized.paid_value_summary.first_learning_step, /Global Procurement and Sourcing Specialization/i);
 }
 
+function testStayAdvanceLearningPathDoesNotInheritPivotCourse() {
+  const report = buildDemoReportData(
+    'Procurement Analyst',
+    'Manufacturing',
+    ['Vendor performance reporting', 'Sourcing analysis'],
+    {
+      selected_tasks: [{ label: 'Vendor performance reporting' }],
+      primary_tasks: ['Vendor performance reporting'],
+      domain_focus: 'supplier performance and spend analytics',
+    }
+  );
+  report.pivots[0] = {
+    ...report.pivots[0],
+    id: 'procurement-intelligence-manager',
+    title: 'Procurement Intelligence Manager',
+    skill_gaps: [
+      {
+        skill_name: 'Procurement analytics',
+        category: 'market demand',
+        current_strength: 'Some vendor workflow exposure.',
+        required_level: 'Can manage supplier decisions with data.',
+        gap_priority: 'critical',
+        why_it_matters: 'Procurement roles need supplier data fluency.',
+        evidence_to_build: 'Build a supplier scorecard.',
+        how_to_close_gap: 'Study procurement operations.',
+        resource_title: 'Global Procurement and Sourcing Specialization',
+        resource_provider: 'Coursera',
+        resource_url: 'https://www.coursera.org/specializations/procurement-sourcing',
+      },
+    ],
+  };
+
+  const normalized = normalizeReportData(report);
+  const stayGaps = normalized.stay_path.skill_gaps || [];
+
+  assert.equal(stayGaps[0].skill_name, 'AI workflow design');
+  assert.equal(stayGaps[0].resource_title, 'OpenAI Academy');
+  assert.notEqual(stayGaps[0].resource_title, 'Global Procurement and Sourcing Specialization');
+  assert.equal(stayGaps[1].resource_title, 'Google AI Essentials');
+}
+
 testTopPivotFamilyRepairAndCopy();
 testGenericAiResourceRemovedFromNonAiGap();
 testFirst30DaysReferencesFinalPivot();
 testProofAssetBuilderAndPaidSummaryArePresent();
 testEmailHtmlStartsWithActionPlan();
 testProcurementTopSkillUsesProcurementResource();
+testStayAdvanceLearningPathDoesNotInheritPivotCourse();
 
 console.log('Report quality tests passed.');

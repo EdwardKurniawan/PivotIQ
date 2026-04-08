@@ -309,6 +309,41 @@ function testComplianceKpisPreferGovernanceOverGenericAi() {
   assert.equal(match.entry.title, 'NIST AI Risk Management Framework');
 }
 
+function testAiWorkflowGapBeatsRoleDomainCourse() {
+  const match = buildCatalogMatch(
+    {
+      skill_name: 'AI workflow design',
+      category: 'workflow',
+      gap_priority: 'critical',
+      how_to_close_gap: 'Build one AI-assisted procurement workflow and document the before/after impact.',
+    },
+    {
+      title: 'Procurement Intelligence Manager',
+      decision_frame: 'stay and advance',
+    },
+    [
+      entry({
+        provider: 'Coursera',
+        title: 'Global Procurement and Sourcing Specialization',
+        summary: 'Procurement and sourcing specialization covering supplier selection and category strategy.',
+        skills: ['procurement', 'sourcing', 'supplier management', 'spend analysis'],
+        tags: ['procurement analytics', 'supplier strategy', 'sourcing'],
+        role_families: ['operations', 'analytics', 'procurement'],
+      }),
+      entry({
+        provider: 'DataCamp',
+        title: 'Introduction to AI Agents',
+        summary: 'Design AI agent workflows and automation systems for business processes.',
+        skills: ['ai agents', 'workflow design', 'automation mapping', 'agent systems'],
+        tags: ['workflow design', 'automation', 'hands-on ai'],
+        role_families: ['ai-automation', 'technical'],
+      }),
+    ]
+  );
+
+  assert.equal(match.entry.title, 'Introduction to AI Agents');
+}
+
 testExactToolPhraseBeatsGenericReporting();
 testStrongCatalogMatchBeatsGenericAiFallbackShape();
 testWeakSemanticMatchIsFlagged();
@@ -318,5 +353,6 @@ testLegalClauseGapMatchesContractResource();
 testProcurementForecastingRejectsEducationMatch();
 testLegalRiskRejectsMarketingMatch();
 testComplianceKpisPreferGovernanceOverGenericAi();
+testAiWorkflowGapBeatsRoleDomainCourse();
 
 console.log('Course catalog matching tests passed.');
