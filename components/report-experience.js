@@ -121,15 +121,22 @@ function getLearningResourceBadges(skill) {
 
 function resourceBadgeStyle(tone) {
   const styles = {
-    affiliate: { bg: 'rgba(242,138,67,0.11)', border: 'rgba(242,138,67,0.22)', color: '#8B4A1B' },
-    free: { bg: 'rgba(27,111,99,0.10)', border: 'rgba(27,111,99,0.20)', color: palette.teal },
-    paid: { bg: 'rgba(242,138,67,0.11)', border: 'rgba(242,138,67,0.22)', color: '#8B4A1B' },
-    trusted: { bg: 'rgba(19,32,42,0.07)', border: 'rgba(19,32,42,0.14)', color: palette.navy },
-    verified: { bg: 'rgba(65,194,174,0.12)', border: 'rgba(65,194,174,0.24)', color: palette.teal },
+    affiliate: { bg: 'rgba(19,32,42,0.045)', border: 'rgba(19,32,42,0.10)', color: palette.textMuted },
+    free: { bg: 'rgba(19,32,42,0.045)', border: 'rgba(19,32,42,0.10)', color: palette.textMuted },
+    paid: { bg: 'rgba(19,32,42,0.045)', border: 'rgba(19,32,42,0.10)', color: palette.textMuted },
+    trusted: { bg: 'rgba(19,32,42,0.045)', border: 'rgba(19,32,42,0.10)', color: palette.textMuted },
+    verified: { bg: 'rgba(19,32,42,0.045)', border: 'rgba(19,32,42,0.10)', color: palette.textMuted },
     neutral: { bg: 'rgba(255,255,255,0.72)', border: palette.border, color: palette.textMuted },
   };
 
   return styles[tone] || styles.neutral;
+}
+
+function skillPriorityColor(priority, fallback = palette.orange) {
+  if (priority === 'critical') return '#FF8F4D';
+  if (priority === 'medium') return '#A7602E';
+  if (priority === 'low') return '#1B6F63';
+  return fallback;
 }
 
 function LearningResourceBadges({ skill }) {
@@ -880,12 +887,7 @@ function ProofAssetBuilderCard({ builder, color }) {
 }
 
 function SkillGapCard({ skill, color, messages }) {
-  const priorityColors = {
-    critical: '#FF8F4D',
-    medium: '#F4E4C7',
-    low: '#41C2AE',
-  };
-  const priorityColor = priorityColors[skill.gap_priority] || color;
+  const priorityColor = skillPriorityColor(skill.gap_priority, color);
 
   return (
     <div className="piq-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px', background: palette.panel, border: `1px solid ${palette.border}`, borderRadius: '26px' }}>
@@ -897,7 +899,7 @@ function SkillGapCard({ skill, color, messages }) {
         <span style={{
           background: `${priorityColor}18`,
           color: priorityColor,
-          border: `1px solid ${priorityColor}33`,
+          border: `1px solid ${priorityColor}4D`,
           borderRadius: '999px',
           padding: '4px 10px',
           fontSize: '11px',
@@ -910,8 +912,8 @@ function SkillGapCard({ skill, color, messages }) {
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: '10px', alignItems: 'center' }}>
         <div style={{ background: 'rgba(10, 16, 24, 0.9)', border: `1px solid ${palette.border}`, borderRadius: '16px', padding: '13px' }}>
-          <div style={{ color: palette.textSoft, fontSize: '11px', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '6px' }}>{messages.report.currentLeverage}</div>
-          <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{skill.current_strength}</div>
+          <div style={{ color: 'rgba(244,239,231,0.72)', fontSize: '11px', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '6px' }}>{messages.report.currentLeverage}</div>
+          <div style={{ color: '#F4EFE7', fontSize: '13px', lineHeight: 1.6 }}>{skill.current_strength}</div>
         </div>
         <MonoIcon name="next-first" tone="orange" size={24} />
         <div style={{ background: `${color}0F`, border: `1px solid ${color}22`, borderRadius: '16px', padding: '13px' }}>
@@ -924,7 +926,7 @@ function SkillGapCard({ skill, color, messages }) {
         <div style={{
           width: skill.gap_priority === 'critical' ? '78%' : skill.gap_priority === 'medium' ? '54%' : '30%',
           height: '100%',
-          background: `linear-gradient(90deg, ${priorityColor}, ${color})`,
+          background: priorityColor,
           borderRadius: '999px',
         }} />
       </div>
@@ -1001,7 +1003,7 @@ function LearningPathCard({ path, color }) {
             <div style={{ position: 'relative', zIndex: 1 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
                 <span style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase' }}>{step.label}</span>
-                <span style={{ color: palette.textSoft, fontSize: '11px', fontWeight: 800, textTransform: 'uppercase' }}>{step.skill.gap_priority || 'skill'}</span>
+                <span style={{ color: skillPriorityColor(step.skill.gap_priority, color), fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{step.skill.gap_priority || 'skill'}</span>
               </div>
               <div style={{ color: palette.text, fontSize: '16px', fontWeight: 900, lineHeight: 1.25, marginBottom: '6px' }}>{step.skill.skill_name}</div>
               <p style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6, margin: '0 0 12px' }}>{step.helper}</p>
