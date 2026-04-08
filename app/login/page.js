@@ -16,6 +16,9 @@ const palette = {
   text: '#131B23',
   textMuted: '#50606B',
   textSoft: '#6D7A84',
+  textOnDark: '#F4EFE7',
+  textMutedOnDark: '#D8E2E0',
+  textSoftOnDark: '#AFC2BE',
   cream: '#FFF9F2',
   orange: '#F28A43',
   teal: '#1B6F63',
@@ -233,16 +236,16 @@ export default function LoginPage() {
         >
           <div>
             <div style={{ marginBottom: '28px' }}>
-              <BrandLogo subtitle={messages.login.subtitle} textColor="white" subColor={palette.textSoft} />
+              <BrandLogo subtitle={messages.login.subtitle} textColor={palette.cream} subColor={palette.textSoftOnDark} />
             </div>
 
             <div style={{ color: '#9FD6CE', fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '14px' }}>
               {messages.login.eyebrow}
             </div>
-            <h1 className="auth-title" style={{ color: 'white', fontSize: 'clamp(34px, 6vw, 56px)', fontWeight: 900, letterSpacing: '-0.05em', lineHeight: 0.96, margin: '0 0 14px', fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif' }}>
+            <h1 className="auth-title" style={{ color: palette.cream, fontSize: 'clamp(34px, 6vw, 56px)', fontWeight: 900, letterSpacing: '-0.05em', lineHeight: 0.96, margin: '0 0 14px', fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif' }}>
               {messages.login.title}
             </h1>
-            <p className="auth-copy" style={{ color: palette.textMuted, fontSize: '16px', lineHeight: 1.76, margin: 0 }}>
+            <p className="auth-copy" style={{ color: palette.textMutedOnDark, fontSize: '16px', lineHeight: 1.76, margin: 0 }}>
               {messages.login.body}
             </p>
           </div>
@@ -258,14 +261,14 @@ export default function LoginPage() {
                   borderRadius: '18px',
                   padding: '14px 16px',
                   background: 'rgba(255,255,255,0.06)',
-                  border: `1px solid ${palette.border}`,
-                  color: '#E7EDF0',
+                  border: '1px solid rgba(244, 239, 231, 0.14)',
+                  color: palette.textOnDark,
                   fontSize: '14px',
                   fontWeight: 700,
                 }}
               >
-                <span style={{ width: '24px', height: '24px', borderRadius: '10px', background: 'rgba(27, 111, 99, 0.14)', color: '#1B6F63', border: '1px solid rgba(27, 111, 99, 0.16)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1B6F63" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <span style={{ width: '24px', height: '24px', borderRadius: '10px', background: 'rgba(159, 214, 206, 0.14)', color: '#9FD6CE', border: '1px solid rgba(159, 214, 206, 0.24)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9FD6CE" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                     <path d="M6.5 12.5L10.2 16L17.5 8.7" />
                   </svg>
                 </span>
