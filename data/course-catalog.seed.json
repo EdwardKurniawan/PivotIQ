@@ -701,9 +701,9 @@
     "provider": "Ironclad",
     "title": "Digital Contracting Academy",
     "url": "https://academy.ironcladapp.com/",
-    "summary": "Contract lifecycle management academy focused on digital contracting, CLM workflows, legal operations, and contract process governance.",
-    "skills": ["contract lifecycle management", "clm", "legal operations", "contract workflow"],
-    "tags": ["contract lifecycle", "legal workflow", "contract operations"],
+    "summary": "Contract lifecycle management academy focused on digital contracting, CLM workflows, legal operations, clause libraries, contract drafting, and contract process governance.",
+    "skills": ["contract lifecycle management", "clm", "legal operations", "contract workflow", "clause library", "contract drafting", "approval routing"],
+    "tags": ["contract lifecycle", "legal workflow", "contract operations", "clause mapping"],
     "is_paid": false,
     "price_label": "Free",
     "level": "Beginner to intermediate",
@@ -1018,5 +1018,22 @@
     "role_families": ["ai-automation", "technical"],
     "pivot_frames": ["highest upside", "long-term platform bet"],
     "outcome_types": ["ai-execution", "technical-skill", "portfolio"]
+  },
+  {
+    "slug": "nist-ai-risk-management-framework",
+    "provider": "NIST",
+    "title": "NIST AI Risk Management Framework",
+    "url": "https://www.nist.gov/itl/ai-risk-management-framework",
+    "summary": "Official NIST framework for AI risk management, governance, compliance evaluation, measurement, and trustworthy AI operating practices.",
+    "skills": ["risk assessment", "ai governance", "compliance evaluation", "regulatory workflow", "trustworthy ai"],
+    "tags": ["trusted free vendor resource", "risk framework", "governance", "compliance"],
+    "is_paid": false,
+    "price_label": "Free",
+    "level": "Intermediate",
+    "duration_label": "Framework",
+    "resource_type": "resource",
+    "role_families": ["legal", "ai-automation", "operations"],
+    "pivot_frames": ["safest transition", "strongest leverage fit"],
+    "outcome_types": ["technical-skill", "portfolio"]
   }
 ]

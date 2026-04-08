@@ -429,3 +429,45 @@ Latest account test run:
 - `1c13855` Harden job grounding for specialized roles
 - `ef8bc84` Add report regeneration and catalog audit tooling
 - `a7fe15d` Separate engineering from product grounding
+
+## 2026-04-08 specialized ranking and learning-resource guardrails
+
+Latest build pass focused on preventing specialized-role reports from drifting into plausible-sounding but weakly aligned titles or learning links after market grounding.
+
+Code changes made in this pass:
+
+- Added stronger specialized-role title penalties in `lib/job-gap-analysis.js` so broad/off-family titles do not outrank role-native legal, procurement, or education pivots unless the live-market evidence is much stronger.
+- Added an architect seniority penalty so analyst-level profiles are not pushed into `Architect` titles as the featured pivot.
+- Added post-market skill-gap sanitation for specialized roles so legal pivots cannot inherit gaps like sales enablement, consultative selling, or platform architecture.
+- Added final ranking-copy refresh in `lib/report-data.js` so the active pivot gets positive, accurate `Why this ranks first` language after all downstream reranking/normalization.
+- Added role-native tie-breakers so conventional titles like `Legal Operations Analyst` can beat equally scored but less direct variants.
+- Hardened course matching in `lib/course-catalog.js` so generic AI resources and off-domain token matches do not beat specific legal/procurement/education resources.
+- Added NIST AI Risk Management Framework as a trusted free course/resource seed for compliance, governance, and AI-risk learning gaps.
+- Added course-catalog regression tests for legal risk, legal clause drafting, procurement forecasting, and compliance KPI matching.
+
+Current seeded report state after regeneration:
+
+- Procurement Analyst `075b8ed5-0b26-4d1c-b904-5f886329d262`
+  - active pivot: `Procurement Intelligence Manager`
+  - live evidence: `5` matched openings, `42` profile fit
+  - current top learning resources include Ironclad Digital Contracting Academy, Coursera Global Procurement and Sourcing, Google Project Management, and Coursera Digital Transformation
+- Customer Education Manager `30be2b01-c0a5-4cca-a70e-1a017339896c`
+  - active pivot: `Learning Operations Manager`
+  - live evidence: `0` matched openings, so this remains mostly model-led but role-native
+  - current top learning resources include Google Data Analytics Certificate and SQL for Data Science
+- Legal Operations Manager `98172726-3059-412b-869e-119bff813e4a`
+  - active pivot: `Legal Operations Analyst`
+  - live evidence: `2` matched openings, `13` profile fit
+  - current top learning resources include Ironclad Digital Contracting Academy, OpenAI Cookbook, Google Data Analytics Certificate, and Zapier Learn
+
+Current quality read:
+
+1. Procurement is the strongest fixture after this pass because the top title is role-native and market-backed.
+2. Legal is much safer than before because it now lands on a conventional legal-ops title instead of synthetic strategy/AI titles, but live evidence is still thin.
+3. Customer Education is coherent but still the most model-led because role-pure market coverage is sparse.
+
+Remaining high-priority product work:
+
+1. Improve role-pure Customer Education / Learning Operations job coverage so education reports do not depend as heavily on model-led fallback ranking.
+2. Keep adding deterministic course/resource rules for domain-specific gaps that are too broad for generic catalog search.
+3. Add a fixture-level report audit script that can fail on off-family top titles, generic AI resources for non-AI gaps, and stale/negative top-pivot ranking copy.

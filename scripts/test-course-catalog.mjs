@@ -169,10 +169,154 @@ function testAgenticAiMatchesAgentCourseOverGenericAiLiteracy() {
   assert.equal(match.entry.title, 'AI Agents in LangGraph');
 }
 
+function testLegalClauseGapMatchesContractResource() {
+  const match = buildCatalogMatch(
+    {
+      skill_name: 'AI contract clause drafting',
+      category: 'legal operations',
+      gap_priority: 'critical',
+      how_to_close_gap: 'Build a clause mapping workflow for contract review and approval routing.',
+    },
+    {
+      title: 'Contract Operations Strategist',
+      decision_frame: 'safest transition',
+    },
+    [
+      entry({
+        provider: 'Udemy',
+        title: 'The Complete SQL Bootcamp',
+        summary: 'SQL course for relational databases and query analysis.',
+        skills: ['sql', 'queries', 'database analysis'],
+        tags: ['analytics'],
+        role_families: ['analytics'],
+      }),
+      entry({
+        provider: 'Ironclad',
+        title: 'Digital Contracting Academy',
+        summary: 'Contract lifecycle workflows, clause libraries, contract drafting, CLM governance, and legal operations.',
+        skills: ['contract lifecycle management', 'clause library', 'contract drafting', 'clm', 'legal operations'],
+        tags: ['clause mapping', 'contract operations', 'legal workflow'],
+        role_families: ['operations', 'legal'],
+      }),
+    ]
+  );
+
+  assert.equal(match.entry.title, 'Digital Contracting Academy');
+}
+
+function testProcurementForecastingRejectsEducationMatch() {
+  const match = buildCatalogMatch(
+    {
+      skill_name: 'Forecasting',
+      category: 'technical',
+      gap_priority: 'critical',
+      how_to_close_gap: 'Build spend forecasts for procurement operations.',
+    },
+    {
+      title: 'Procurement Operations Manager',
+      decision_frame: 'strongest leverage fit',
+    },
+    [
+      entry({
+        provider: 'Coursera',
+        title: 'Instructional Design Foundations and Applications',
+        summary: 'Instructional design course for curriculum planning and learning programs.',
+        skills: ['instructional design', 'curriculum design', 'learning programs'],
+        tags: ['customer education', 'learning operations'],
+        role_families: ['education', 'operations'],
+      }),
+      entry({
+        provider: 'Coursera',
+        title: 'Global Procurement and Sourcing Specialization',
+        summary: 'Procurement and sourcing specialization covering supplier selection, spend context, and category strategy.',
+        skills: ['procurement', 'sourcing', 'supplier management', 'spend analysis'],
+        tags: ['procurement analytics', 'supplier strategy', 'sourcing'],
+        role_families: ['operations', 'analytics', 'procurement'],
+      }),
+    ]
+  );
+
+  assert.equal(match.entry.title, 'Global Procurement and Sourcing Specialization');
+}
+
+function testLegalRiskRejectsMarketingMatch() {
+  const match = buildCatalogMatch(
+    {
+      skill_name: 'Risk Assessment Framework Application',
+      category: 'legal operations',
+      gap_priority: 'critical',
+      how_to_close_gap: 'Apply risk assessment frameworks in compliance workflows.',
+    },
+    {
+      title: 'Compliance Evaluation Manager',
+      decision_frame: 'safest transition',
+    },
+    [
+      entry({
+        provider: 'Udemy',
+        title: 'The Complete Digital Marketing Course',
+        summary: 'Broad digital marketing course covering traffic, conversion channels, analytics, and growth tactics.',
+        skills: ['digital marketing', 'seo', 'campaign analytics'],
+        tags: ['marketing'],
+        role_families: ['marketing'],
+      }),
+      entry({
+        provider: 'NIST',
+        title: 'NIST AI Risk Management Framework',
+        summary: 'Risk management framework for AI governance, compliance, and risk assessment.',
+        skills: ['risk assessment', 'governance', 'compliance'],
+        tags: ['risk framework', 'ai governance'],
+        role_families: ['legal', 'ai-automation'],
+      }),
+    ]
+  );
+
+  assert.equal(match.entry.title, 'NIST AI Risk Management Framework');
+}
+
+function testComplianceKpisPreferGovernanceOverGenericAi() {
+  const match = buildCatalogMatch(
+    {
+      skill_name: 'Develop and report on compliance and customer trust KPIs',
+      category: 'legal operations',
+      gap_priority: 'medium',
+      how_to_close_gap: 'Measure compliance workflow quality and trust reporting.',
+    },
+    {
+      title: 'Compliance Automation Specialist',
+      decision_frame: 'safest transition',
+    },
+    [
+      entry({
+        provider: 'Microsoft Learn',
+        title: 'Microsoft Learn: AI and Copilot learning paths',
+        summary: 'AI productivity and Copilot learning for workplace productivity.',
+        skills: ['copilot', 'ai productivity', 'prompting'],
+        tags: ['trusted free vendor resource', 'ai'],
+        role_families: ['ai-automation', 'operations'],
+      }),
+      entry({
+        provider: 'NIST',
+        title: 'NIST AI Risk Management Framework',
+        summary: 'Risk management framework for AI governance, compliance evaluation, and trustworthy AI operating practices.',
+        skills: ['risk assessment', 'ai governance', 'compliance evaluation', 'regulatory workflow'],
+        tags: ['risk framework', 'governance', 'compliance'],
+        role_families: ['legal', 'ai-automation', 'operations'],
+      }),
+    ]
+  );
+
+  assert.equal(match.entry.title, 'NIST AI Risk Management Framework');
+}
+
 testExactToolPhraseBeatsGenericReporting();
 testStrongCatalogMatchBeatsGenericAiFallbackShape();
 testWeakSemanticMatchIsFlagged();
 testDataCampWinsWhenItIsBetterMatch();
 testAgenticAiMatchesAgentCourseOverGenericAiLiteracy();
+testLegalClauseGapMatchesContractResource();
+testProcurementForecastingRejectsEducationMatch();
+testLegalRiskRejectsMarketingMatch();
+testComplianceKpisPreferGovernanceOverGenericAi();
 
 console.log('Course catalog matching tests passed.');

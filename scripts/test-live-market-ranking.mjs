@@ -90,6 +90,37 @@ function testRepeatedMissingSkillsCreatePenalty() {
   );
 }
 
+function testSpecializedRoleNeedsRoleNativeTitleEvidence() {
+  const broadButThin = rankPivotWithMarketSignal(
+    { title: 'Portfolio Operations Manager', match_score: 90 },
+    {
+      matched_openings_count: 1,
+      profile_fit_score: 75,
+      overlap_skills: ['Enablement', 'Stakeholder Management'],
+      missing_required_skills: [],
+      model_only_skill_gaps: ['Curriculum Quality Assurance', 'Learning Operations Analytics'],
+    },
+    { job_title: 'Customer Education Manager' }
+  );
+
+  const roleNative = rankPivotWithMarketSignal(
+    { title: 'Learning Operations Manager', match_score: 55 },
+    {
+      matched_openings_count: 0,
+      profile_fit_score: 0,
+      overlap_skills: [],
+      missing_required_skills: [],
+      model_only_skill_gaps: ['Enablement Program Design'],
+    },
+    { job_title: 'Customer Education Manager' }
+  );
+
+  assert.ok(
+    roleNative.ranking_score > broadButThin.ranking_score,
+    'A broad off-family title with one opening should not outrank a role-native education pivot.'
+  );
+}
+
 try {
   testMarketFitCanBeatRawModelScore();
   console.log('PASS 1: market fit can outrank a higher raw model score');
@@ -99,6 +130,9 @@ try {
 
   testRepeatedMissingSkillsCreatePenalty();
   console.log('PASS 3: missing market-required skills penalize stretched pivots');
+
+  testSpecializedRoleNeedsRoleNativeTitleEvidence();
+  console.log('PASS 4: specialized roles require role-native market evidence');
 } catch (error) {
   console.error(error.message);
   process.exit(1);
