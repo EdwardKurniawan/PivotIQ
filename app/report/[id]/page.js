@@ -24,6 +24,7 @@ async function loadPersistedReport(id) {
       tasks,
       report_data,
       created_at,
+      updated_at,
       access_tier,
       active_pivot_id,
       roadmap_start_date,
@@ -39,7 +40,11 @@ async function loadPersistedReport(id) {
 
   if (error || !report) return null;
 
-  const reportData = normalizeReportData(report.report_data, {
+  const persistedTimestamp = report.updated_at || report.created_at;
+  const reportData = normalizeReportData({
+    ...(report.report_data || {}),
+    generated_at: persistedTimestamp,
+  }, {
     job_title: report.job_title,
     industry: report.industry,
     tasks: report.tasks || [],
@@ -50,7 +55,7 @@ async function loadPersistedReport(id) {
     reportSlug: report.slug,
     locale: report.report_data?.locale || report.report_data?.profile?.locale || 'en',
     reportData,
-    generatedAt: report.created_at,
+    generatedAt: persistedTimestamp,
     jobTitle: report.job_title,
     industry: report.industry,
     tasks: report.tasks || [],
