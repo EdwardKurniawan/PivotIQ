@@ -101,6 +101,7 @@ export default function Home() {
   const locale = getServerLocale();
   const messages = getMessages(locale);
   const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.pivotiq.app';
+  const isEnglish = locale === 'en';
   const metrics = [
     { label: messages.home.metrics[0], value: messages.home.metricValues[0], tone: '#F28A43' },
     { label: messages.home.metrics[1], value: messages.home.metricValues[1], tone: '#15384B' },
@@ -125,6 +126,72 @@ export default function Home() {
     { label: 'Leverage', value: '61', tone: '#13202A' },
     { label: 'Pivot fit', value: '74', tone: '#1B6F63' },
   ];
+  const offerHighlights = isEnglish
+    ? [
+      'Your strongest next move, not just a risk score',
+      'Market-backed guidance where live evidence exists',
+      'A proof asset to make the transition visible',
+      'A practical learning path and action plan',
+    ]
+    : [
+      'A stronger next move, not just a score',
+      'Live market signals where evidence exists',
+      'A proof asset to make the transition visible',
+      'A practical learning path and action plan',
+    ];
+  const freePreviewItems = isEnglish
+    ? [
+      'AI exposure snapshot',
+      'Top exposed tasks',
+      'Top leverage tasks',
+      'One best-move teaser',
+    ]
+    : [
+      'AI exposure snapshot',
+      'Top exposed tasks',
+      'Top leverage tasks',
+      'One best-move teaser',
+    ];
+  const fullReportItems = isEnglish
+    ? [
+      'Everything in preview',
+      'Full next-move recommendation',
+      'Detailed skill gaps',
+      '3-step learning path',
+      'Proof asset builder',
+      '30-day and 12-week plan',
+      'Email summary you can come back to',
+    ]
+    : [
+      'Everything in preview',
+      'Full next-move recommendation',
+      'Detailed skill gaps',
+      '3-step learning path',
+      'Proof asset builder',
+      '30-day and 12-week plan',
+      'Email summary',
+    ];
+  const trustPanels = isEnglish
+    ? [
+      {
+        label: 'What PivotIQ is',
+        body: 'A practical career decision tool for professionals navigating AI change. It helps you see what is weakening in your role, what still gives you leverage, and which next move looks most credible from where you are now.',
+      },
+      {
+        label: 'What PivotIQ is not',
+        body: 'Not a job guarantee, not a panic-driven automation quiz, and not generic one-size-fits-all advice. It is a structured report designed to help you make a clearer, more practical next move.',
+      },
+    ]
+    : [
+      {
+        label: 'What PivotIQ is',
+        body: 'A practical career decision tool for professionals navigating AI change.',
+      },
+      {
+        label: 'What PivotIQ is not',
+        body: 'Not a panic-driven quiz or generic one-size-fits-all advice.',
+      },
+    ];
   const softwareSchema = {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
@@ -749,6 +816,188 @@ export default function Home() {
           ))}
           </div>
         </ScrollReveal>
+      </ScrollReveal>
+
+      <ScrollReveal
+        as="section"
+        className="home-offer-section"
+        style={{
+          position: 'relative',
+          zIndex: 2,
+          maxWidth: '1220px',
+          margin: '0 auto',
+          padding: '0 28px 54px',
+        }}
+      >
+        <div
+          style={{
+            ...shellCardStyle(),
+            borderRadius: '36px',
+            padding: '30px',
+            background: 'linear-gradient(135deg, rgba(255,255,255,0.86), rgba(244,239,231,0.96))',
+          }}
+        >
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'minmax(0, 0.95fr) minmax(320px, 1.05fr)',
+              gap: '22px',
+              alignItems: 'start',
+              marginBottom: '22px',
+            }}
+            className="two-col"
+          >
+            <div>
+              <div style={{ fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6A7882', marginBottom: '10px', fontWeight: 800 }}>
+                Launch offer
+              </div>
+              <div
+                style={{
+                  fontSize: 'clamp(34px, 4.8vw, 56px)',
+                  lineHeight: 0.98,
+                  letterSpacing: '-0.055em',
+                  fontWeight: 700,
+                  fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif',
+                  marginBottom: '14px',
+                  maxWidth: '620px',
+                }}
+              >
+                Get the plan, not just the diagnosis.
+              </div>
+              <p style={{ fontSize: '17px', lineHeight: 1.72, color: '#495863', maxWidth: '640px', margin: '0 0 20px' }}>
+                PivotIQ turns AI uncertainty into a practical next move with market-backed guidance, a proof asset to build, and a roadmap you can actually follow.
+              </p>
+              <div style={{ display: 'grid', gap: '10px' }}>
+                {offerHighlights.map((item) => (
+                  <div
+                    key={item}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'start',
+                      gap: '10px',
+                      padding: '13px 14px',
+                      borderRadius: '18px',
+                      background: 'rgba(255,255,255,0.58)',
+                      border: `1px solid ${palette.border}`,
+                    }}
+                  >
+                    <span style={{ color: palette.teal, fontWeight: 900, lineHeight: 1.2 }}>+</span>
+                    <span style={{ color: '#42505C', fontSize: '14px', lineHeight: 1.6 }}>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div
+              style={{
+                borderRadius: '28px',
+                background: palette.navy,
+                color: palette.cream,
+                padding: '24px',
+                boxShadow: '0 24px 64px rgba(19, 32, 42, 0.18)',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', gap: '12px', flexWrap: 'wrap', marginBottom: '14px' }}>
+                <div>
+                  <div style={{ color: '#9DADB7', fontSize: '11px', fontWeight: 900, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '8px' }}>
+                    Full report
+                  </div>
+                  <div style={{ fontSize: '40px', fontWeight: 800, letterSpacing: '-0.06em' }}>$29.99</div>
+                </div>
+                <div style={{ padding: '8px 12px', borderRadius: '999px', background: 'rgba(242, 138, 67, 0.14)', color: '#FFB686', fontSize: '12px', fontWeight: 800 }}>
+                  One-time unlock
+                </div>
+              </div>
+              <p style={{ color: '#C3CFD5', fontSize: '14px', lineHeight: 1.65, margin: '0 0 16px' }}>
+                Unlock your best next step, skill gaps, learning path, proof asset, and action plan.
+              </p>
+              <Link
+                href="/audit"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '100%',
+                  padding: '16px 18px',
+                  borderRadius: '999px',
+                  background: 'linear-gradient(135deg, #F28A43, #F6C06D)',
+                  color: '#13202A',
+                  border: '1px solid rgba(242, 138, 67, 0.34)',
+                  fontWeight: 800,
+                  boxShadow: '0 18px 40px rgba(242, 138, 67, 0.24)',
+                  textDecoration: 'none',
+                  marginBottom: '14px',
+                }}
+              >
+                Unlock full report
+              </Link>
+              <div style={{ color: '#9DADB7', fontSize: '12px', lineHeight: 1.55 }}>
+                One payment. Instant access. Saved to your account and emailed to you.
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '14px', marginBottom: '16px' }} className="two-col">
+            {[
+              {
+                label: 'Free preview',
+                body: 'Useful before you pay',
+                items: freePreviewItems,
+                tone: palette.teal,
+              },
+              {
+                label: 'Full report',
+                body: 'What the paid unlock adds',
+                items: fullReportItems,
+                tone: palette.orange,
+              },
+            ].map((column) => (
+              <div
+                key={column.label}
+                style={{
+                  borderRadius: '24px',
+                  padding: '22px',
+                  background: 'rgba(255,255,255,0.58)',
+                  border: `1px solid ${palette.border}`,
+                }}
+              >
+                <div style={{ color: column.tone, fontSize: '11px', fontWeight: 900, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '8px' }}>
+                  {column.label}
+                </div>
+                <div style={{ fontSize: '22px', lineHeight: 1.05, letterSpacing: '-0.04em', fontWeight: 700, fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif', marginBottom: '8px' }}>
+                  {column.body}
+                </div>
+                <div style={{ display: 'grid', gap: '10px' }}>
+                  {column.items.map((item) => (
+                    <div key={item} style={{ display: 'flex', alignItems: 'start', gap: '10px' }}>
+                      <span style={{ color: column.tone, fontWeight: 900, lineHeight: 1.2 }}>•</span>
+                      <span style={{ color: '#50606B', fontSize: '14px', lineHeight: 1.6 }}>{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '14px' }} className="two-col">
+            {trustPanels.map((panel) => (
+              <div
+                key={panel.label}
+                style={{
+                  borderRadius: '22px',
+                  padding: '20px 22px',
+                  background: 'rgba(255,255,255,0.52)',
+                  border: `1px solid ${palette.border}`,
+                }}
+              >
+                <div style={{ fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6A7882', marginBottom: '10px', fontWeight: 800 }}>
+                  {panel.label}
+                </div>
+                <p style={{ margin: 0, fontSize: '15px', lineHeight: 1.72, color: '#495863' }}>{panel.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       </ScrollReveal>
 
       <ScrollReveal
