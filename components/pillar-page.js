@@ -39,14 +39,65 @@ function primaryLinkStyle(fullWidth = false) {
 
 export function PillarPage({ locale, page, relatedPages, rolePages = [], path }) {
   const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.pivotiq.app';
-  const schema = {
+  const pageUrl = `${siteUrl}${path}`;
+  const webpageSchema = {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
     name: page.title,
     description: page.intro,
-    url: `${siteUrl}${path}`,
+    url: pageUrl,
     inLanguage: locale,
   };
+  const articleSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: page.title,
+    description: page.intro,
+    mainEntityOfPage: pageUrl,
+    url: pageUrl,
+    author: {
+      '@type': 'Organization',
+      name: 'PivotIQ',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'PivotIQ',
+      url: siteUrl,
+    },
+    articleSection: [page.eyebrow, page.sectionsTitle].filter(Boolean),
+    keywords: [page.navSubtitle, page.eyebrow, ...(relatedPages || []).map((item) => item.label)].filter(Boolean).join(', '),
+    inLanguage: locale,
+  };
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: siteUrl,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: page.navSubtitle || page.eyebrow || page.title,
+        item: pageUrl,
+      },
+    ],
+  };
+  const relatedLinksSchema = relatedPages.length || rolePages.length
+    ? {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      itemListElement: [...relatedPages, ...rolePages].slice(0, 8).map((item, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        url: `${siteUrl}${item.href}`,
+        name: item.label || item.title,
+      })),
+    }
+    : null;
 
   return (
     <main
@@ -59,8 +110,22 @@ export function PillarPage({ locale, page, relatedPages, rolePages = [], path })
     >
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webpageSchema) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      {relatedLinksSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(relatedLinksSchema) }}
+        />
+      )}
 
       <nav
         className="pillar-nav"
