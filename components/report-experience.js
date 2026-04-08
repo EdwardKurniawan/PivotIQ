@@ -68,6 +68,47 @@ function getPivotIcon(index) {
   return pivotIcons[index % pivotIcons.length];
 }
 
+function marketDemandBarValue(openings, maxOpenings) {
+  if (!openings || !maxOpenings) return 0;
+  return Math.round((Number(openings) / Number(maxOpenings)) * 100);
+}
+
+function marketDemandLabel(openings) {
+  const count = Number(openings || 0);
+  if (!count) return 'No close openings';
+  if (count === 1) return '1 matched opening';
+  return `${count} matched openings`;
+}
+
+function evidenceBarRows({ matchScore = 0, profileFit = 0, openings = 0, maxOpenings = 0 }) {
+  return [
+    {
+      key: 'model-confidence',
+      label: 'Model confidence',
+      value: Number(matchScore || 0),
+      tone: palette.navy,
+      valueLabel: `${Number(matchScore || 0)}%`,
+      helper: 'How strongly the model likes this pivot.',
+    },
+    {
+      key: 'current-fit',
+      label: 'Current fit',
+      value: Number(profileFit || 0),
+      tone: palette.teal,
+      valueLabel: `${Number(profileFit || 0)}%`,
+      helper: 'How much of the market signal you already cover.',
+    },
+    {
+      key: 'market-demand',
+      label: 'Market demand',
+      value: marketDemandBarValue(openings, maxOpenings),
+      tone: palette.orange,
+      valueLabel: marketDemandLabel(openings),
+      helper: 'Relative demand within this chart, not an overall sitewide score.',
+    },
+  ];
+}
+
 const affiliateLearningProviders = ['Coursera', 'Udemy', 'edX', 'DataCamp', 'Pluralsight', 'Skillshare'];
 const trustedLearningProviders = [
   'Anthropic',
@@ -518,13 +559,16 @@ function PivotMarketComparison({ pivots = [] }) {
         <div>
           <div style={{ color: palette.teal, fontSize: '11px', fontWeight: 900, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '8px' }}>Pivot evidence map</div>
           <div style={{ color: palette.text, fontSize: '26px', fontWeight: 950, letterSpacing: '-0.05em', lineHeight: 1.05, fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif' }}>
-            Compare model fit against live market evidence.
+            Compare confidence, current fit, and demand at a glance.
+          </div>
+          <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6, marginTop: '8px', maxWidth: '720px' }}>
+            Longer bars are better. Model confidence and current fit are percentages. Market demand compares the visible pivots against each other, so a longer orange bar means stronger demand in this chart.
           </div>
         </div>
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', color: palette.textSoft, fontSize: '11px', fontWeight: 900, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-          <span>Match score</span>
-          <span style={{ color: palette.teal }}>Profile fit</span>
-          <span style={{ color: palette.orange }}>Openings</span>
+          <span style={{ color: palette.navy }}>Model confidence</span>
+          <span style={{ color: palette.teal }}>Current fit</span>
+          <span style={{ color: palette.orange }}>Market demand</span>
         </div>
       </div>
       <div style={{ display: 'grid', gap: '14px' }}>
@@ -532,30 +576,31 @@ function PivotMarketComparison({ pivots = [] }) {
           const openings = Number(pivot.live_market_signal?.matched_openings_count || 0);
           const profileFit = Number(pivot.live_market_signal?.profile_fit_score || 0);
           const matchScore = Number(pivot.match_score || 0);
+          const evidenceRows = evidenceBarRows({ matchScore, profileFit, openings, maxOpenings });
           return (
             <div key={pivot.id || pivot.title} style={{ display: 'grid', gridTemplateColumns: 'minmax(190px, 0.72fr) minmax(0, 1fr)', gap: '14px', alignItems: 'center' }} className="two-col">
               <div>
                 <div style={{ color: palette.text, fontSize: '14px', fontWeight: 900, lineHeight: 1.35 }}>{index + 1}. {pivot.title}</div>
-                <div style={{ color: palette.textSoft, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: '4px' }}>{openings ? `${openings} live openings` : 'model-led'}</div>
+                <div style={{ color: palette.textSoft, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: '4px' }}>{openings ? marketDemandLabel(openings) : 'Model-led recommendation'}</div>
               </div>
               <div style={{ display: 'grid', gap: '7px' }}>
-                {[
-                  ['Model match', matchScore, getPivotColor(index)],
-                  ['Profile fit', profileFit, palette.teal],
-                  ['Live openings', Math.round((openings / maxOpenings) * 100), palette.orange, openings],
-                ].map(([label, value, color, rawValue]) => (
-                  <div key={label} style={{ display: 'grid', gridTemplateColumns: '92px minmax(0, 1fr) 42px', gap: '10px', alignItems: 'center' }}>
-                    <span style={{ color: palette.textSoft, fontSize: '11px', fontWeight: 800 }}>{label}</span>
+                {evidenceRows.map((item) => (
+                  <div key={item.key} style={{ display: 'grid', gridTemplateColumns: '108px minmax(0, 1fr) 110px', gap: '10px', alignItems: 'center' }}>
+                    <span title={item.helper} style={{ color: palette.textSoft, fontSize: '11px', fontWeight: 800 }}>{item.label}</span>
                     <div style={{ height: '8px', borderRadius: '999px', background: 'rgba(19,27,35,0.08)', overflow: 'hidden' }}>
-                      <div style={{ width: `${Math.max(Number(value) ? 6 : 0, Math.min(100, Number(value) || 0))}%`, height: '100%', borderRadius: '999px', background: color }} />
+                      <div style={{ width: `${Math.max(Number(item.value) ? 6 : 0, Math.min(100, Number(item.value) || 0))}%`, height: '100%', borderRadius: '999px', background: item.tone }} />
                     </div>
-                    <span style={{ color, fontSize: '12px', fontWeight: 900, textAlign: 'right' }}>{rawValue ?? value}</span>
+                    <span style={{ color: item.tone, fontSize: '12px', fontWeight: 900, textAlign: 'right' }}>{item.valueLabel}</span>
                   </div>
                 ))}
               </div>
             </div>
           );
         })}
+      </div>
+
+      <div style={{ marginTop: '14px', color: palette.textSoft, fontSize: '12px', lineHeight: 1.55 }}>
+        Longer is better. Orange bars show relative demand only among these pivots, while the other two bars are direct percentage scores.
       </div>
     </div>
   );
@@ -707,6 +752,7 @@ function RecommendationWhyCard({ pivot, color, first30Days }) {
   const matchedOpenings = Number(signal.matched_openings_count || 0);
   const profileFit = Number(signal.profile_fit_score || 0);
   const matchScore = Number(pivot.match_score || 0);
+  const evidenceRows = evidenceBarRows({ matchScore, profileFit, openings: matchedOpenings, maxOpenings: Math.max(matchedOpenings, 1) });
 
   const columns = [
     {
@@ -764,21 +810,21 @@ function RecommendationWhyCard({ pivot, color, first30Days }) {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '10px' }} className="three-col">
-        {[
-          ['Model match', matchScore, color],
-          ['Profile fit', profileFit, palette.teal],
-          ['Live openings', Math.min(100, matchedOpenings * 12), palette.orange, matchedOpenings],
-        ].map(([label, value, tone, rawValue]) => (
-          <div key={label} style={{ display: 'grid', gap: '7px' }}>
+        {evidenceRows.map((item) => (
+          <div key={item.key} style={{ display: 'grid', gap: '7px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', color: palette.textSoft, fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-              <span>{label}</span>
-              <span style={{ color: tone }}>{rawValue ?? `${Number(value) || 0}%`}</span>
+              <span>{item.label}</span>
+              <span style={{ color: item.tone }}>{item.valueLabel}</span>
             </div>
             <div style={{ height: '8px', borderRadius: '999px', background: 'rgba(19,27,35,0.08)', overflow: 'hidden' }}>
-              <div style={{ width: `${Math.max(Number(value) ? 8 : 0, Math.min(100, Number(value) || 0))}%`, height: '100%', background: tone, borderRadius: '999px' }} />
+              <div style={{ width: `${Math.max(Number(item.value) ? 8 : 0, Math.min(100, Number(item.value) || 0))}%`, height: '100%', background: item.tone, borderRadius: '999px' }} />
             </div>
           </div>
         ))}
+      </div>
+
+      <div style={{ marginTop: '12px', color: palette.textSoft, fontSize: '12px', lineHeight: 1.55 }}>
+        Longer bars are better. Market demand here reflects relative evidence volume for this recommendation, not a universal score across every role.
       </div>
     </div>
   );
