@@ -121,12 +121,12 @@ function getLearningResourceBadges(skill) {
 
 function resourceBadgeStyle(tone) {
   const styles = {
-    affiliate: { bg: 'rgba(19,32,42,0.045)', border: 'rgba(19,32,42,0.10)', color: palette.textMuted },
-    free: { bg: 'rgba(19,32,42,0.045)', border: 'rgba(19,32,42,0.10)', color: palette.textMuted },
-    paid: { bg: 'rgba(19,32,42,0.045)', border: 'rgba(19,32,42,0.10)', color: palette.textMuted },
-    trusted: { bg: 'rgba(19,32,42,0.045)', border: 'rgba(19,32,42,0.10)', color: palette.textMuted },
-    verified: { bg: 'rgba(19,32,42,0.045)', border: 'rgba(19,32,42,0.10)', color: palette.textMuted },
-    neutral: { bg: 'rgba(255,255,255,0.72)', border: palette.border, color: palette.textMuted },
+    affiliate: { color: palette.textSoft },
+    free: { color: palette.textSoft },
+    paid: { color: palette.textSoft },
+    trusted: { color: palette.textSoft },
+    verified: { color: palette.textSoft },
+    neutral: { color: palette.textSoft },
   };
 
   return styles[tone] || styles.neutral;
@@ -144,15 +144,17 @@ function LearningResourceBadges({ skill }) {
   if (!badges.length) return null;
 
   return (
-    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+    <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
       {badges.map((badge) => {
         const style = resourceBadgeStyle(badge.tone);
         return (
-          <span key={`${badge.label}-${badge.tone}`} style={{ borderRadius: '999px', padding: '5px 10px', background: style.bg, border: `1px solid ${style.border}`, color: style.color, fontSize: '11px', fontWeight: 800 }}>
+          <span key={`${badge.label}-${badge.tone}`} style={{ color: style.color, fontSize: '11px', fontWeight: 750, letterSpacing: '0.02em' }}>
             {badge.label}
           </span>
         );
-      })}
+      }).reduce((items, item, index) => (
+        index === 0 ? [item] : [...items, <span key={`separator-${index}`} style={{ color: 'rgba(80,96,107,0.42)', fontSize: '11px' }}>·</span>, item]
+      ), [])}
     </div>
   );
 }
