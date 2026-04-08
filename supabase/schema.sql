@@ -14,11 +14,15 @@ create table if not exists public.reports (
   access_tier text not null default 'free',
   active_pivot_id text,
   roadmap_start_date date,
-  created_at timestamptz not null default now()
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
 );
 
 alter table public.reports
   add column if not exists access_tier text not null default 'free';
+
+alter table public.reports
+  add column if not exists updated_at timestamptz not null default now();
 
 update public.reports
 set access_tier = 'free'

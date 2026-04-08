@@ -66,6 +66,7 @@ async function maybePersistReport(reportData) {
       risk_level: summary.risk_level || 'MODERATE',
       access_tier: 'free',
       active_pivot_id: defaultPivot?.id || null,
+      updated_at: new Date().toISOString(),
     };
 
     const { data, error } = await supabase

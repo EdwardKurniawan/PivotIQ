@@ -76,6 +76,7 @@ export async function POST(_request, { params }) {
         risk_score: reportData?.summary?.overall_score || report.risk_score || 0,
         risk_level: reportData?.summary?.risk_level || report.risk_level || 'MODERATE',
         active_pivot_id: reportData?.pivots?.[0]?.id || report.active_pivot_id || null,
+        updated_at: new Date().toISOString(),
       })
       .eq('id', report.id)
       .eq('user_id', user.id)

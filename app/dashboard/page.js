@@ -41,6 +41,7 @@ async function loadDashboardData() {
       risk_score,
       risk_level,
       created_at,
+      updated_at,
       active_pivot_id,
       roadmap_start_date,
       report_data,
@@ -51,6 +52,7 @@ async function loadDashboardData() {
       )
     `)
     .eq('user_id', user.id)
+    .order('updated_at', { ascending: false })
     .order('created_at', { ascending: false });
 
   if (error) {
@@ -271,7 +273,7 @@ export default async function DashboardPage() {
                       <div>
                         <div style={{ color: palette.text, fontSize: '20px', fontWeight: 800, marginBottom: '6px', letterSpacing: '-0.03em' }}>{report.job_title}</div>
                         <div style={{ color: palette.textSoft, fontSize: '13px', marginBottom: '12px' }}>
-                          {report.industry} · {new Date(report.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                          {report.industry} · Updated {new Date(report.updated_at || report.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                         </div>
                         <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65, marginBottom: '12px', maxWidth: '700px' }}>
                           {snapshot.nextIncompleteWeek?.title
