@@ -471,3 +471,56 @@ Remaining high-priority product work:
 1. Improve role-pure Customer Education / Learning Operations job coverage so education reports do not depend as heavily on model-led fallback ranking.
 2. Keep adding deterministic course/resource rules for domain-specific gaps that are too broad for generic catalog search.
 3. Add a fixture-level report audit script that can fail on off-family top titles, generic AI resources for non-AI gaps, and stale/negative top-pivot ranking copy.
+
+## 2026-04-08 paid report value upgrade
+
+Latest build pass focused on making the paid report feel immediately worth the `29.99` unlock.
+
+What shipped:
+
+- Added derived `paid_value_summary` data to full reports with a sharper `Your best move` headline, recommended move, confidence label, market evidence, first proof asset, first learning step, and one thing to avoid.
+- Added deterministic `proof_asset_builder` data to full reports with artifact title, target role, objective, outline sections, checklist, first 60-minute action, and outreach/interview sharing prompt.
+- Added `lib/report-quality.js` as a report quality gate that repairs off-family featured pivots when a better family-native pivot exists, stale first-30-days references, negative ranking language, confusing secondary ranking copy, generic AI resources on non-AI gaps, overlong skill names, and missing first-30-days proof assets.
+- Added `npm run test:report-quality` in `scripts/test-report-quality.mjs`.
+- Updated the full report UI in `components/report-experience.js` with a top `Your Best Move` card and a `Proof Asset Builder` card in the Plan tab.
+- Updated the preview unlock block so the paid/free contrast explicitly names market-grounded pivot ranking, proof asset builder, learning path + emailed action plan, and 12-week roadmap.
+- Updated `/api/send-report` email content indirectly through `reportDataToEmailHtml` so full-report emails start with a concise action-plan summary before the broader report details.
+- Moved full-report email sending out of the success page. Full-tier action-plan email now sends from `ReportExperience` only after `generation_stage === 'full_complete'`, with a local/session idempotency key to prevent duplicate sends.
+- Preserved local/demo email behavior: when `RESEND_API_KEY` is missing, `/api/send-report` returns `{ success: true, demoMode: true }`.
+
+Verification completed:
+
+- `npm run test:report-quality`
+- `npm run test:course-catalog`
+- `npm run test:market-ranking`
+- `npm run test:job-grounding`
+- `npm run build`
+- `git diff --check`
+- Local demo email route check through Next dev on port `3005`: `POST /api/send-report` returned `200` with `demoMode: true`.
+- Regenerated the seeded reports for the user account and inspected `paid_value_summary`, `proof_asset_builder`, and `quality_audit` in Supabase.
+
+Current seeded report state after the paid-value regeneration:
+
+- Procurement Analyst `075b8ed5-0b26-4d1c-b904-5f886329d262`
+  - active pivot: `Digital Procurement Specialist`
+  - paid learning step: `Procurement analytics: Global Procurement and Sourcing Specialization (Coursera)`
+  - proof asset builder target: `Digital Procurement Specialist`
+  - quality audit: `repaired`, including role-native procurement analytics replacement and secondary ranking-copy cleanup
+- Customer Education Manager `30be2b01-c0a5-4cca-a70e-1a017339896c`
+  - active pivot: `Learning Experience Architect`
+  - paid learning step: `Learning Analytics: Google Data Analytics Certificate (Coursera)`
+  - proof asset builder target: `Learning Experience Architect`
+  - quality audit: `repaired`, due to secondary ranking-copy cleanup
+- Legal Operations Manager `98172726-3059-412b-869e-119bff813e4a`
+  - active pivot: `Contract Management Specialist`
+  - paid learning step: `Contract lifecycle management: Digital Contracting Academy (Ironclad)`
+  - proof asset builder target: `Contract Management Specialist`
+  - quality audit: `repaired`, due to secondary ranking-copy cleanup and overlong skill-name simplification
+
+Current quality read:
+
+1. The paid value packaging is now much clearer: the top of the report tells the user what to do, why, what to learn first, and what proof artifact to build.
+2. The email timing bug is addressed: full emails wait for full generation instead of being sent from the success page with preview/stale data.
+3. Procurement is cleaner after replacing a contract-lifecycle first step with procurement analytics.
+4. Customer Education is still the fixture most likely to drift because role-pure market coverage remains thin; `Learning Experience Architect` is coherent but should be watched.
+5. Legal is credible but still mostly needs richer legal-ops market coverage over time.

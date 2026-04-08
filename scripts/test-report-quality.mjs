@@ -1,0 +1,180 @@
+import assert from 'node:assert/strict';
+import { buildDemoReportData, normalizeReportData, reportDataToEmailHtml } from '../lib/report-data.js';
+
+function clone(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function buildLegalFixture() {
+  const report = buildDemoReportData(
+    'Legal Operations Manager',
+    'Healthcare',
+    ['Contract intake triage', 'Policy workflow management', 'Vendor agreement review'],
+    {
+      selected_tasks: [
+        { label: 'Contract intake triage' },
+        { label: 'Policy workflow management' },
+        { label: 'Vendor agreement review' },
+      ],
+      primary_tasks: ['Contract intake triage'],
+      domain_focus: 'commercial contracts and legal operations',
+      decision_scope: 'workflow owner',
+      core_systems: 'CLM, ticketing, document management',
+    }
+  );
+
+  report.pivots[0] = {
+    ...report.pivots[0],
+    id: 'customer-success-manager',
+    title: 'Customer Success Manager',
+    ranking_reason: 'This pivot is being pushed down because the market signal is thin.',
+    live_market_signal: {
+      ...(report.pivots[0].live_market_signal || {}),
+      ranking_reason: 'This pivot is being pushed down because the market signal is thin.',
+      matched_openings_count: 0,
+      profile_fit_score: 0,
+    },
+    skill_gaps: [
+      {
+        skill_name: 'Contract lifecycle management',
+        category: 'domain',
+        current_strength: 'Understands intake and routing.',
+        required_level: 'Can manage CLM workflows and governance.',
+        gap_priority: 'critical',
+        why_it_matters: 'Contract roles need visible CLM fluency.',
+        evidence_to_build: 'Build a contract intake and clause-routing map.',
+        how_to_close_gap: 'Practice CLM workflow mapping on one real contract process.',
+        resource_title: 'AI For Everyone',
+        resource_provider: 'Coursera',
+        resource_url: 'https://www.coursera.org/learn/ai-for-everyone',
+        resource_access: 'paid',
+        resource_verified: true,
+      },
+    ],
+  };
+
+  report.pivots[1] = {
+    ...report.pivots[1],
+    id: 'legal-operations-analyst',
+    title: 'Legal Operations Analyst',
+    skill_gaps: report.pivots[0].skill_gaps,
+  };
+
+  report.first_30_days = {
+    next_7_days: ['Review 12 live job descriptions for AI Operations Analyst.'],
+    next_30_days: ['Build one proof asset for AI Operations Analyst.'],
+    avoid: ['Do not learn everything at once.'],
+    proof_asset: {
+      title: 'AI Operations Analyst proof asset',
+      description: 'Build a generic AI workflow artifact.',
+      why_it_matters: 'It shows action.',
+    },
+  };
+
+  delete report.proof_asset_builder;
+  delete report.paid_value_summary;
+  return report;
+}
+
+function assertNoNegativeTopCopy(report) {
+  const topPivot = report.pivots[0];
+  const copy = `${topPivot.ranking_reason || ''} ${topPivot.live_market_signal?.ranking_reason || ''}`.toLowerCase();
+  assert.equal(copy.includes('pushed down'), false);
+  assert.equal(copy.includes('penalized'), false);
+}
+
+function testTopPivotFamilyRepairAndCopy() {
+  const normalized = normalizeReportData(buildLegalFixture());
+
+  assert.equal(normalized.pivots[0].title, 'Legal Operations Analyst');
+  assert.equal(normalized.active_pivot_id, 'legal-operations-analyst');
+  assertNoNegativeTopCopy(normalized);
+  assert.equal(normalized.quality_audit.status, 'repaired');
+  assert.ok(normalized.quality_audit.repairs.some((item) => item.includes('Moved Legal Operations Analyst')));
+}
+
+function testGenericAiResourceRemovedFromNonAiGap() {
+  const normalized = normalizeReportData(buildLegalFixture());
+  const resourceTitles = (normalized.pivots[0].skill_gaps || []).map((skill) => skill.resource_title);
+
+  assert.equal(resourceTitles.includes('AI For Everyone'), false);
+  assert.equal(normalized.pivots[0].skill_gaps[0].resource_verification_status, 'quality-gate-removed');
+}
+
+function testFirst30DaysReferencesFinalPivot() {
+  const normalized = normalizeReportData(buildLegalFixture());
+  const first30Text = [
+    ...(normalized.first_30_days.next_7_days || []),
+    ...(normalized.first_30_days.next_30_days || []),
+    normalized.first_30_days.proof_asset?.title,
+  ].join(' ');
+
+  assert.match(first30Text, /Legal Operations Analyst/i);
+  assert.doesNotMatch(first30Text, /AI Operations Analyst/i);
+}
+
+function testProofAssetBuilderAndPaidSummaryArePresent() {
+  const normalized = normalizeReportData(buildLegalFixture());
+
+  assert.equal(normalized.proof_asset_builder.target_role, normalized.pivots[0].title);
+  assert.ok(normalized.proof_asset_builder.title);
+  assert.ok(normalized.proof_asset_builder.sections.length >= 3);
+  assert.ok(normalized.proof_asset_builder.checklist.length >= 3);
+  assert.match(normalized.paid_value_summary.headline, /Legal Operations Analyst/i);
+}
+
+function testEmailHtmlStartsWithActionPlan() {
+  const html = reportDataToEmailHtml(clone(buildLegalFixture()));
+
+  assert.match(html, /YOUR ACTION PLAN/);
+  assert.match(html, /PROOF ASSET BUILDER/);
+  assert.match(html, /Legal Operations Analyst/);
+}
+
+function testProcurementTopSkillUsesProcurementResource() {
+  const report = buildDemoReportData(
+    'Procurement Analyst',
+    'Manufacturing',
+    ['Vendor performance reporting', 'Sourcing analysis'],
+    {
+      selected_tasks: [{ label: 'Vendor performance reporting' }],
+      primary_tasks: ['Vendor performance reporting'],
+      domain_focus: 'supplier performance and spend analytics',
+    }
+  );
+  report.pivots[0] = {
+    ...report.pivots[0],
+    id: 'procurement-intelligence-manager',
+    title: 'Procurement Intelligence Manager',
+    skill_gaps: [
+      {
+        skill_name: 'Contract lifecycle management',
+        category: 'domain',
+        current_strength: 'Some vendor workflow exposure.',
+        required_level: 'Can manage supplier decisions with data.',
+        gap_priority: 'critical',
+        why_it_matters: 'Procurement roles need supplier data fluency.',
+        evidence_to_build: 'Build a supplier scorecard.',
+        how_to_close_gap: 'Study procurement operations.',
+        resource_title: 'Digital Contracting Academy',
+        resource_provider: 'Ironclad',
+        resource_url: 'https://academy.ironcladapp.com/',
+      },
+    ],
+  };
+
+  const normalized = normalizeReportData(report);
+  assert.equal(normalized.pivots[0].skill_gaps[0].skill_name, 'Procurement analytics');
+  assert.equal(normalized.pivots[0].skill_gaps[0].resource_title, 'Global Procurement and Sourcing Specialization');
+  assert.match(normalized.first_30_days.next_7_days.join(' '), /Procurement analytics/i);
+  assert.match(normalized.paid_value_summary.first_learning_step, /Global Procurement and Sourcing Specialization/i);
+}
+
+testTopPivotFamilyRepairAndCopy();
+testGenericAiResourceRemovedFromNonAiGap();
+testFirst30DaysReferencesFinalPivot();
+testProofAssetBuilderAndPaidSummaryArePresent();
+testEmailHtmlStartsWithActionPlan();
+testProcurementTopSkillUsesProcurementResource();
+
+console.log('Report quality tests passed.');

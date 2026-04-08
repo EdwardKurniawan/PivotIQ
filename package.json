@@ -22,7 +22,8 @@
     "reports:regenerate": "node --env-file=.env.local scripts/regenerate-reports.mjs",
     "test:market-ranking": "node scripts/test-live-market-ranking.mjs",
     "test:job-grounding": "node scripts/test-job-grounding.mjs",
-    "test:course-catalog": "node scripts/test-course-catalog.mjs"
+    "test:course-catalog": "node scripts/test-course-catalog.mjs",
+    "test:report-quality": "node scripts/test-report-quality.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.9.0",

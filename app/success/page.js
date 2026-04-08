@@ -24,7 +24,6 @@ function SuccessContent() {
   const [locale, setLocale] = useState('en');
   const [status, setStatus] = useState('loading');
   const [tier, setTier] = useState('full');
-  const [emailStatus, setEmailStatus] = useState('idle');
   const [persistStatus, setPersistStatus] = useState('idle');
   const [destination, setDestination] = useState('/report');
   const messages = getMessages(locale);
@@ -42,27 +41,8 @@ function SuccessContent() {
     let persistedReportId = reportIdFromUrl || '';
     if (raw) {
       try {
-        const { reportData, email, jobTitle, industry, reportId } = JSON.parse(raw);
+        const { reportId } = JSON.parse(raw);
         persistedReportId = persistedReportId || reportId || '';
-
-        if (email && reportData && urlTier === 'full') {
-          fetch('/api/send-report', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, jobTitle, industry, tier: urlTier, reportData }),
-          })
-            .then((r) => r.json())
-            .then((d) => {
-              if (d.success && !d.demoMode) {
-                setEmailStatus('sent');
-              } else if (d.demoMode) {
-                setEmailStatus('unavailable');
-              } else {
-                setEmailStatus('failed');
-              }
-            })
-            .catch(() => { setEmailStatus('failed'); });
-        }
       } catch {}
     }
 
@@ -177,24 +157,6 @@ function SuccessContent() {
                   {item}
                 </span>
               ))}
-            </div>
-          )}
-
-          {emailStatus === 'sent' && (
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(27,111,99,0.10)', border: '1px solid rgba(27,111,99,0.18)', borderRadius: '14px', padding: '11px 16px', color: '#1B6F63', fontSize: '13px', fontWeight: 700, marginBottom: '14px' }}>
-              {messages.success.emailSent}
-            </div>
-          )}
-
-          {emailStatus === 'unavailable' && (
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(242,138,67,0.10)', border: '1px solid rgba(242,138,67,0.18)', borderRadius: '14px', padding: '11px 16px', color: '#8B4A1B', fontSize: '13px', fontWeight: 700, marginBottom: '14px' }}>
-              {messages.success.emailUnavailable}
-            </div>
-          )}
-
-          {emailStatus === 'failed' && (
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(242,138,67,0.10)', border: '1px solid rgba(242,138,67,0.18)', borderRadius: '14px', padding: '11px 16px', color: '#8B4A1B', fontSize: '13px', fontWeight: 700, marginBottom: '14px' }}>
-              {messages.success.emailFailed}
             </div>
           )}
 

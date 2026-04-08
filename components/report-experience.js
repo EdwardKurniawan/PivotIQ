@@ -775,6 +775,110 @@ function RecommendationWhyCard({ pivot, color, first30Days }) {
   );
 }
 
+function PaidValueSummaryCard({ summary, pivot, color, emailStatus }) {
+  if (!summary?.headline && !pivot?.title) return null;
+
+  const items = [
+    ['Recommended move', summary?.recommended_move || `Move toward ${pivot?.title || 'the strongest path'}`],
+    ['Market evidence', summary?.market_evidence || pivot?.ranking_reason || 'Market evidence is still being validated.'],
+    ['First proof asset', summary?.first_proof_asset || 'Build one visible proof asset.'],
+    ['Start learning here', summary?.first_learning_step || 'Close the first skill gap before adding more courses.'],
+  ];
+
+  return (
+    <div className="piq-card" style={{ marginBottom: '16px', padding: '24px', background: `linear-gradient(135deg, ${color}18 0%, rgba(255,255,255,0.94) 52%, rgba(255,249,242,0.94) 100%)`, border: `1px solid ${color}30`, boxShadow: '0 24px 58px rgba(19, 32, 42, 0.09)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', gap: '18px', flexWrap: 'wrap', marginBottom: '18px' }}>
+        <div style={{ maxWidth: '720px' }}>
+          <div style={{ color, fontSize: '11px', fontWeight: 950, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: '8px' }}>Your Best Move</div>
+          <h2 style={{ color: palette.text, fontSize: 'clamp(26px, 4vw, 38px)', fontWeight: 950, letterSpacing: '-0.055em', lineHeight: 1, margin: '0 0 10px', fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif' }}>
+            {summary?.headline || `Your best move: ${pivot?.title || 'build visible proof'}`}
+          </h2>
+          <p style={{ color: palette.textMuted, fontSize: '15px', lineHeight: 1.75, margin: 0 }}>
+            {summary?.why_this_move || pivot?.fit_summary || 'The paid plan turns the diagnosis into a concrete next move, skill sequence, and proof asset.'}
+          </p>
+        </div>
+        <div style={{ padding: '12px 14px', borderRadius: '18px', background: 'rgba(255,255,255,0.72)', border: `1px solid ${color}24`, minWidth: '190px' }}>
+          <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '5px' }}>Confidence</div>
+          <div style={{ color: palette.text, fontSize: '16px', fontWeight: 900 }}>{summary?.confidence_label || 'Market-informed'}</div>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '12px' }} className="two-col">
+        {items.map(([label, value]) => (
+          <div key={label} style={{ borderRadius: '18px', padding: '16px', background: 'rgba(255,255,255,0.74)', border: `1px solid ${palette.border}` }}>
+            <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '0.09em', textTransform: 'uppercase', marginBottom: '8px' }}>{label}</div>
+            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{value}</div>
+          </div>
+        ))}
+      </div>
+
+      {summary?.avoid && (
+        <div style={{ marginTop: '14px', padding: '13px 15px', borderRadius: '16px', background: 'rgba(19, 32, 42, 0.06)', border: `1px solid ${palette.border}`, color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>
+          <strong style={{ color: palette.text }}>Avoid:</strong> {summary.avoid}
+        </div>
+      )}
+
+      {emailStatus !== 'idle' && (
+        <div style={{ marginTop: '12px', color: emailStatus === 'failed' ? '#8B4A1B' : palette.textSoft, fontSize: '12px', lineHeight: 1.55 }}>
+          {emailStatus === 'sent' && 'Action-plan email sent.'}
+          {emailStatus === 'unavailable' && 'Action-plan email is configured for production; local demo mode skipped the real send.'}
+          {emailStatus === 'failed' && 'Action-plan email could not be sent automatically. Your report is still saved here.'}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ProofAssetBuilderCard({ builder, color }) {
+  if (!builder?.title) return null;
+
+  return (
+    <div className="piq-card" style={{ padding: '24px', marginBottom: '18px', background: `linear-gradient(135deg, rgba(255,255,255,0.94), ${color}12)`, border: `1px solid ${color}26`, boxShadow: '0 22px 46px rgba(19, 32, 42, 0.08)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', gap: '16px', flexWrap: 'wrap', marginBottom: '18px' }}>
+        <div>
+          <div style={{ color, fontSize: '11px', fontWeight: 950, letterSpacing: '1.4px', textTransform: 'uppercase', marginBottom: '8px' }}>Proof Asset Builder</div>
+          <h3 style={{ color: palette.text, fontSize: '24px', fontWeight: 950, letterSpacing: '-0.045em', margin: '0 0 6px' }}>{builder.title}</h3>
+          <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.7, margin: 0, maxWidth: '760px' }}>{builder.objective}</p>
+        </div>
+        <span style={{ borderRadius: '999px', padding: '7px 12px', background: `${color}12`, border: `1px solid ${color}28`, color, fontSize: '12px', fontWeight: 900 }}>
+          {builder.target_role || 'Target role'}
+        </span>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.1fr) minmax(280px, 0.9fr)', gap: '14px' }} className="two-col">
+        <div style={{ padding: '18px', borderRadius: '20px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
+          <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Artifact outline</div>
+          <div style={{ display: 'grid', gap: '10px' }}>
+            {(builder.sections || []).map((section) => (
+              <div key={section} style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{section}</div>
+            ))}
+          </div>
+        </div>
+        <div style={{ padding: '18px', borderRadius: '20px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
+          <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Quality checklist</div>
+          <div style={{ display: 'grid', gap: '9px', marginBottom: '14px' }}>
+            {(builder.checklist || []).map((item) => (
+              <div key={item} style={{ display: 'flex', gap: '8px', color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>
+                <span style={{ color, fontWeight: 950 }}>✓</span>
+                <span>{item}</span>
+              </div>
+            ))}
+          </div>
+          <div style={{ padding: '12px 13px', borderRadius: '16px', background: `${color}10`, border: `1px solid ${color}22`, color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>
+            <strong style={{ color: palette.text }}>First 60 minutes:</strong> {builder.first_action}
+          </div>
+        </div>
+      </div>
+
+      {builder.share_prompt && (
+        <div style={{ marginTop: '14px', padding: '14px 16px', borderRadius: '18px', background: 'rgba(19,32,42,0.06)', border: `1px solid ${palette.border}`, color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>
+          <strong style={{ color: palette.text }}>Use this in outreach:</strong> {builder.share_prompt}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function SkillGapCard({ skill, color, messages }) {
   const priorityColors = {
     critical: '#FF8F4D',
@@ -1179,6 +1283,12 @@ function TeaserView({ payload, onCheckout, loading }) {
   const bestPivot = pivots[0];
   const interpretation = reportData.interpretation || {};
   const messages = getMessages(payload.uiLocale || payload.locale || getBrowserLocale() || reportData.locale);
+  const fullUnlocks = [
+    'Market-grounded pivot ranking',
+    'Proof asset builder',
+    'Learning path + emailed action plan',
+    '12-week roadmap',
+  ];
 
   return (
     <div style={{ minHeight: '100vh', background: palette.bg, paddingBottom: '90px', position: 'relative', overflow: 'hidden' }}>
@@ -1338,6 +1448,13 @@ function TeaserView({ payload, onCheckout, loading }) {
               <p style={{ color: 'var(--text-muted)', fontSize: '13px', lineHeight: 1.6, margin: 0 }}>
                 {messages.report.unlockBody}
               </p>
+              <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', flexWrap: 'wrap', marginTop: '14px' }}>
+                {fullUnlocks.map((item) => (
+                  <span key={item} style={{ borderRadius: '999px', padding: '7px 10px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.14)', color: '#F4EFE7', fontSize: '11px', fontWeight: 800 }}>
+                    {item}
+                  </span>
+                ))}
+              </div>
               <div className="upgrade-btns">
                 <button className="btn-full-upgrade" style={{ background: 'linear-gradient(135deg, #FF8F4D, #FFC66C)', color: '#14181F', boxShadow: '0 18px 40px rgba(255, 143, 77, 0.25)' }} disabled={!!loading} onClick={() => onCheckout('full')}>
                   {loading === 'full' ? messages.report.redirectingCheckout : messages.report.unlockButton}
@@ -1362,6 +1479,7 @@ export default function ReportExperience({ payload, embedded = false }) {
   const [completedWeeks, setCompletedWeeks] = useState(payload.completedWeeks || []);
   const [weekNotes, setWeekNotes] = useState(payload.weekNotes || {});
   const [reportData, setReportData] = useState(payload.reportData);
+  const [actionEmailStatus, setActionEmailStatus] = useState('idle');
   const [generationStatus, setGenerationStatus] = useState(
     payload.tier === 'full' && payload.reportData?.generation_stage !== 'full_complete' ? 'loading' : 'idle'
   );
@@ -1377,6 +1495,8 @@ export default function ReportExperience({ payload, embedded = false }) {
   const stayAndAdvance = reportData.stay_and_advance || {};
   const stayPath = reportData.stay_path || null;
   const first30Days = reportData.first_30_days || {};
+  const paidValueSummary = reportData.paid_value_summary || {};
+  const proofAssetBuilder = reportData.proof_asset_builder || {};
   const storageScope = useMemo(() => getStorageScope(reportData, payload.reportId), [reportData, payload.reportId]);
   const messages = getMessages(payload.uiLocale || payload.locale || getBrowserLocale() || reportData.locale);
   const reportPaths = useMemo(() => (tier === 'full' && stayPath ? [stayPath, ...pivots] : pivots), [tier, stayPath, pivots]);
@@ -1502,6 +1622,62 @@ export default function ReportExperience({ payload, embedded = false }) {
     profile.industry,
     profile.job_title,
     profile.tasks,
+    reportData?.generation_stage,
+    tier,
+  ]);
+
+  useEffect(() => {
+    if (embedded || tier !== 'full' || reportData?.generation_stage !== 'full_complete' || !payload.email) return;
+
+    const emailKey = `pivotiq_action_email_sent_${payload.reportId || reportData.generated_at || 'latest'}`;
+    if (localStorage.getItem(emailKey) || sessionStorage.getItem(emailKey)) return;
+    sessionStorage.setItem(emailKey, 'pending');
+
+    let cancelled = false;
+
+    async function sendActionPlanEmail() {
+      try {
+        const response = await fetch('/api/send-report', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: payload.email,
+            jobTitle: payload.jobTitle || profile.job_title,
+            industry: payload.industry || profile.industry,
+            tier: 'full',
+            reportData,
+          }),
+        });
+        const json = await response.json().catch(() => ({}));
+        if (!response.ok || (!json.success && !json.demoMode)) {
+          throw new Error(json.error || 'Action-plan email failed.');
+        }
+        if (!cancelled) {
+          setActionEmailStatus(json.demoMode ? 'unavailable' : 'sent');
+          localStorage.setItem(emailKey, '1');
+          sessionStorage.setItem(emailKey, '1');
+        }
+      } catch (error) {
+        sessionStorage.removeItem(emailKey);
+        if (!cancelled) setActionEmailStatus('failed');
+        console.warn('Action-plan email was not sent:', error);
+      }
+    }
+
+    sendActionPlanEmail();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    embedded,
+    payload.email,
+    payload.industry,
+    payload.jobTitle,
+    payload.reportId,
+    profile.industry,
+    profile.job_title,
+    reportData,
     reportData?.generation_stage,
     tier,
   ]);
@@ -1802,6 +1978,7 @@ export default function ReportExperience({ payload, embedded = false }) {
 
         {tier === 'full' && (
           <div style={{ marginBottom: '20px' }}>
+            <PaidValueSummaryCard summary={paidValueSummary} pivot={pivot} color={pColor} emailStatus={actionEmailStatus} />
             <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.1fr) repeat(3, minmax(160px, 0.63fr))', gap: '12px' }} className="two-col">
               <div className="piq-card" style={{ padding: '20px', background: `linear-gradient(145deg, ${pColor}12, rgba(255,255,255,0.92) 60%)`, border: `1px solid ${pColor}28` }}>
                 <div style={{ color: pColor, fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>
@@ -2205,6 +2382,7 @@ export default function ReportExperience({ payload, embedded = false }) {
                   </div>
                 </div>
               </div>
+              {!isStayPlan && <ProofAssetBuilderCard builder={proofAssetBuilder} color={planColor} />}
               <LearningPathCard path={activePath} color={planColor} />
               <div style={{ display: 'grid', gap: '14px' }}>
                 {(activePath.skill_gaps || []).map((skill) => (
