@@ -53,6 +53,81 @@ create table if not exists public.reminder_events (
   created_at timestamptz not null default now()
 );
 
+alter table public.reports enable row level security;
+alter table public.week_progress enable row level security;
+
+drop policy if exists reports_select_own on public.reports;
+create policy reports_select_own
+  on public.reports
+  for select
+  to authenticated
+  using (auth.uid() = user_id);
+
+drop policy if exists reports_insert_own on public.reports;
+create policy reports_insert_own
+  on public.reports
+  for insert
+  to authenticated
+  with check (auth.uid() = user_id);
+
+drop policy if exists reports_update_own on public.reports;
+create policy reports_update_own
+  on public.reports
+  for update
+  to authenticated
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+drop policy if exists week_progress_select_own_report on public.week_progress;
+create policy week_progress_select_own_report
+  on public.week_progress
+  for select
+  to authenticated
+  using (
+    exists (
+      select 1
+      from public.reports
+      where reports.id = week_progress.report_id
+        and reports.user_id = auth.uid()
+    )
+  );
+
+drop policy if exists week_progress_insert_own_report on public.week_progress;
+create policy week_progress_insert_own_report
+  on public.week_progress
+  for insert
+  to authenticated
+  with check (
+    exists (
+      select 1
+      from public.reports
+      where reports.id = week_progress.report_id
+        and reports.user_id = auth.uid()
+    )
+  );
+
+drop policy if exists week_progress_update_own_report on public.week_progress;
+create policy week_progress_update_own_report
+  on public.week_progress
+  for update
+  to authenticated
+  using (
+    exists (
+      select 1
+      from public.reports
+      where reports.id = week_progress.report_id
+        and reports.user_id = auth.uid()
+    )
+  )
+  with check (
+    exists (
+      select 1
+      from public.reports
+      where reports.id = week_progress.report_id
+        and reports.user_id = auth.uid()
+    )
+  );
+
 create table if not exists public.course_catalog (
   id uuid primary key default gen_random_uuid(),
   slug text not null unique,
