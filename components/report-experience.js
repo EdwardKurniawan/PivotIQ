@@ -4,6 +4,17 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { BrandLogo, BrandMarkBadge } from './brand-logo';
 import { getBrowserLocale, getMessages } from '../lib/i18n';
+import {
+  ACTION_STATE_OPTIONS,
+  PROOF_ASSET_STATUS_OPTIONS,
+  MANAGER_CONVERSATION_STATUS_OPTIONS,
+  buildExecutionSummary,
+  buildDefaultWeekProgressEntry,
+  getCompletedWeeks,
+  getWeekNotes,
+  getWeekProgressEntry,
+  hydrateLegacyWeekProgress,
+} from '../lib/progress-tracking';
 
 function riskColor(score) {
   return score >= 70 ? '#C86A2C' : score >= 40 ? '#8B6B2E' : '#1B6F63';
@@ -1711,6 +1722,66 @@ function statusStyles(status, color) {
   return { bg: 'rgba(80,96,107,0.10)', fg: '#50606B', border: 'rgba(80,96,107,0.18)' };
 }
 
+function progressOptionLabel(options, value) {
+  return options.find((item) => item.value === value)?.label || value;
+}
+
+function updateWeekProgressState(map, weekNumber, patch) {
+  const current = getWeekProgressEntry(map, weekNumber);
+  return {
+    ...map,
+    [weekNumber]: {
+      ...current,
+      ...patch,
+    },
+  };
+}
+
+function ExecutionLoopCard({ summary, planColor, progressPercent }) {
+  if (!summary) return null;
+
+  return (
+    <div className="piq-card" style={{ padding: '22px', marginBottom: '18px', background: `linear-gradient(145deg, ${planColor}12 0%, rgba(255,255,255,0.94) 62%)`, border: `1px solid ${planColor}24`, boxShadow: '0 22px 46px rgba(19, 32, 42, 0.08)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', alignItems: 'end', flexWrap: 'wrap', marginBottom: '16px' }}>
+        <div>
+          <div style={{ color: planColor, fontSize: '11px', fontWeight: 900, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '8px' }}>Next best action</div>
+          <div style={{ color: palette.text, fontSize: '24px', fontWeight: 900, letterSpacing: '-0.04em', marginBottom: '6px' }}>{summary.title}</div>
+          <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.7, maxWidth: '760px' }}>{summary.body}</div>
+        </div>
+        <div style={{ display: 'grid', gap: '8px', minWidth: '220px' }}>
+          <span style={{ padding: '7px 11px', borderRadius: '999px', background: `${planColor}12`, border: `1px solid ${planColor}22`, color: planColor, fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.08em', justifySelf: 'start' }}>
+            {summary.statusLabel}
+          </span>
+          <div style={{ color: palette.textSoft, fontSize: '12px', lineHeight: 1.55 }}>
+            {summary.nextWeek ? `Week ${summary.nextWeek.week_number}` : 'Current roadmap'}
+          </div>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.1fr) repeat(3, minmax(140px, 0.7fr))', gap: '12px' }} className="two-col">
+        <div style={{ padding: '14px 16px', borderRadius: '18px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
+          <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Why this matters now</div>
+          <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>
+            The report should keep turning into proof, conversation signal, and visible momentum instead of sitting as a static plan.
+          </div>
+        </div>
+        <div style={{ padding: '14px 16px', borderRadius: '18px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
+          <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Roadmap progress</div>
+          <div style={{ color: palette.text, fontSize: '20px', fontWeight: 900 }}>{progressPercent}%</div>
+        </div>
+        <div style={{ padding: '14px 16px', borderRadius: '18px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
+          <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Proof assets ready</div>
+          <div style={{ color: palette.text, fontSize: '20px', fontWeight: 900 }}>{summary.proofReadyCount}</div>
+        </div>
+        <div style={{ padding: '14px 16px', borderRadius: '18px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
+          <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Manager conversations</div>
+          <div style={{ color: palette.text, fontSize: '20px', fontWeight: 900 }}>{summary.managerDoneCount}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 async function syncProgress(reportId, payload) {
   if (!reportId) return;
 
@@ -1925,8 +1996,9 @@ export default function ReportExperience({ payload, embedded = false }) {
   const [selectedPlanPath, setSelectedPlanPath] = useState(0);
   const [expandedWeeks, setExpandedWeeks] = useState([1]);
   const [startDate, setStartDate] = useState(payload.startDate || '');
-  const [completedWeeks, setCompletedWeeks] = useState(payload.completedWeeks || []);
-  const [weekNotes, setWeekNotes] = useState(payload.weekNotes || {});
+  const [weekProgressState, setWeekProgressState] = useState(
+    hydrateLegacyWeekProgress(payload.completedWeeks || [], payload.weekNotes || {}, payload.weekProgress || {})
+  );
   const [reportData, setReportData] = useState(payload.reportData);
   const [actionEmailStatus, setActionEmailStatus] = useState('idle');
   const [generationStatus, setGenerationStatus] = useState(
@@ -1953,6 +2025,8 @@ export default function ReportExperience({ payload, embedded = false }) {
   const promotionConversationPack = stayAndAdvance.promotion_conversation_pack || {};
   const storageScope = useMemo(() => getStorageScope(reportData, payload.reportId), [reportData, payload.reportId]);
   const messages = getMessages(payload.uiLocale || payload.locale || getBrowserLocale() || reportData.locale);
+  const completedWeeks = useMemo(() => getCompletedWeeks(weekProgressState), [weekProgressState]);
+  const weekNotes = useMemo(() => getWeekNotes(weekProgressState), [weekProgressState]);
   const reportPaths = useMemo(() => (tier === 'full' && stayPath ? [stayPath, ...pivots] : pivots), [tier, stayPath, pivots]);
   const activePath = reportPaths[selectedPlanPath] || reportPaths[0] || pivot || {};
   const isStayPlan = tier === 'full' && Boolean(stayPath) && selectedPlanPath === 0;
@@ -1961,6 +2035,8 @@ export default function ReportExperience({ payload, embedded = false }) {
 
   useEffect(() => {
     setReportData(payload.reportData);
+    setWeekProgressState(hydrateLegacyWeekProgress(payload.completedWeeks || [], payload.weekNotes || {}, payload.weekProgress || {}));
+    setStartDate(payload.startDate || '');
     if (payload.tier === 'full' && payload.reportData?.generation_stage !== 'full_complete') {
       setGenerationStatus('loading');
     } else {
@@ -1984,8 +2060,7 @@ export default function ReportExperience({ payload, embedded = false }) {
       try {
         const parsed = JSON.parse(rawProgress);
         if (parsed.startDate) setStartDate(parsed.startDate);
-        if (Array.isArray(parsed.completedWeeks)) setCompletedWeeks(parsed.completedWeeks);
-        if (parsed.weekNotes && typeof parsed.weekNotes === 'object') setWeekNotes(parsed.weekNotes);
+        setWeekProgressState(hydrateLegacyWeekProgress(parsed.completedWeeks || [], parsed.weekNotes || {}, parsed.weekProgress || {}));
       } catch {}
     }
   }, [payload.tier, storageScope]);
@@ -1995,8 +2070,9 @@ export default function ReportExperience({ payload, embedded = false }) {
       startDate,
       completedWeeks,
       weekNotes,
+      weekProgress: weekProgressState,
     }));
-  }, [storageScope, startDate, completedWeeks, weekNotes]);
+  }, [storageScope, startDate, completedWeeks, weekNotes, weekProgressState]);
 
   useEffect(() => {
     if (embedded || tier !== 'full' || reportData?.generation_stage === 'full_complete') return;
@@ -2188,6 +2264,11 @@ export default function ReportExperience({ payload, embedded = false }) {
 
   const completedCount = completedWeeks.filter((weekNumber) => (activePath.roadmap?.weeks || []).some((week) => week.week_number === weekNumber)).length;
   const progressPercent = Math.round((completedCount / Math.max(activePath.roadmap?.weeks?.length || 1, 1)) * 100);
+  const executionSummary = buildExecutionSummary({
+    roadmapWeeks: activePath.roadmap?.weeks || [],
+    weekProgressMap: weekProgressState,
+    startDate,
+  });
 
   const toggleExpandedWeek = (weekNumber) => {
     setExpandedWeeks((prev) => (
@@ -2198,15 +2279,21 @@ export default function ReportExperience({ payload, embedded = false }) {
   };
 
   const toggleWeekComplete = async (weekNumber) => {
-    const next = completedWeeks.includes(weekNumber)
-      ? completedWeeks.filter((value) => value !== weekNumber)
-      : [...completedWeeks, weekNumber].sort((a, b) => a - b);
-    setCompletedWeeks(next);
+    const current = getWeekProgressEntry(weekProgressState, weekNumber);
+    const completed = !current.completed;
+    setWeekProgressState((prev) => updateWeekProgressState(prev, weekNumber, {
+      completed,
+      completed_at: completed ? new Date().toISOString() : null,
+    }));
     await syncProgress(payload.reportId, {
       start_date: startDate || null,
       week_number: weekNumber,
-      completed: next.includes(weekNumber),
-      notes: weekNotes[weekNumber] || '',
+      completed,
+      notes: current.notes || '',
+      action_state: current.action_state,
+      proof_asset_status: current.proof_asset_status,
+      manager_conversation_status: current.manager_conversation_status,
+      last_active_step: current.last_active_step,
     });
   };
 
@@ -2216,13 +2303,36 @@ export default function ReportExperience({ payload, embedded = false }) {
   };
 
   const saveWeekNote = async (weekNumber, note) => {
-    const nextNotes = { ...weekNotes, [weekNumber]: note };
-    setWeekNotes(nextNotes);
+    const current = getWeekProgressEntry(weekProgressState, weekNumber);
+    setWeekProgressState((prev) => updateWeekProgressState(prev, weekNumber, { notes: note }));
     await syncProgress(payload.reportId, {
       start_date: startDate || null,
       week_number: weekNumber,
-      completed: completedWeeks.includes(weekNumber),
+      completed: current.completed,
       notes: note,
+      action_state: current.action_state,
+      proof_asset_status: current.proof_asset_status,
+      manager_conversation_status: current.manager_conversation_status,
+      last_active_step: current.last_active_step,
+    });
+  };
+
+  const saveWeekProgressField = async (weekNumber, patch) => {
+    const current = getWeekProgressEntry(weekProgressState, weekNumber);
+    const nextEntry = {
+      ...current,
+      ...patch,
+    };
+    setWeekProgressState((prev) => updateWeekProgressState(prev, weekNumber, patch));
+    await syncProgress(payload.reportId, {
+      start_date: startDate || null,
+      week_number: weekNumber,
+      completed: nextEntry.completed,
+      notes: nextEntry.notes || '',
+      action_state: nextEntry.action_state,
+      proof_asset_status: nextEntry.proof_asset_status,
+      manager_conversation_status: nextEntry.manager_conversation_status,
+      last_active_step: nextEntry.last_active_step,
     });
   };
 
@@ -2817,6 +2927,7 @@ export default function ReportExperience({ payload, embedded = false }) {
             />
 
             <div style={{ marginBottom: '28px' }}>
+              <ExecutionLoopCard summary={executionSummary} planColor={planColor} progressPercent={progressPercent} />
               {activeMarketSignal && <MarketSignalCard signal={activeMarketSignal} color={planColor} />}
               {!activeMarketSignal && isStayPlan && (
                 <div className="piq-card" style={{ padding: '20px', marginBottom: '24px', background: 'linear-gradient(180deg, rgba(27,111,99,0.08), rgba(255,255,255,0.92))', border: `1px solid ${palette.teal}22` }}>
@@ -2864,6 +2975,7 @@ export default function ReportExperience({ payload, embedded = false }) {
                 const isExpanded = expandedWeeks.includes(week.week_number);
                 const styles = statusStyles(status, planColor);
                 const note = weekNotes[week.week_number] || '';
+                const progressEntry = getWeekProgressEntry(weekProgressState, week.week_number);
 
                 return (
                   <div key={`${activePath.id}-week-${week.week_number}`} className="piq-card" style={{ padding: '20px', border: `1px solid ${styles.border}` }}>
@@ -2910,6 +3022,51 @@ export default function ReportExperience({ payload, embedded = false }) {
 
                         {isExpanded && (
                           <div style={{ display: 'grid', gap: '12px' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '12px' }} className="two-col">
+                              <label style={{ display: 'grid', gap: '6px', padding: '14px', borderRadius: '14px', background: 'var(--bg)', border: '1px solid var(--border)' }}>
+                                <span style={{ color: palette.text, fontSize: '12px', fontWeight: 800 }}>Execution stage</span>
+                                <select
+                                  className="piq-input"
+                                  value={progressEntry.action_state}
+                                  onChange={(event) => saveWeekProgressField(week.week_number, { action_state: event.target.value })}
+                                >
+                                  {ACTION_STATE_OPTIONS.map((option) => (
+                                    <option key={option.value} value={option.value}>{option.label}</option>
+                                  ))}
+                                </select>
+                              </label>
+                              <label style={{ display: 'grid', gap: '6px', padding: '14px', borderRadius: '14px', background: 'var(--bg)', border: '1px solid var(--border)' }}>
+                                <span style={{ color: palette.text, fontSize: '12px', fontWeight: 800 }}>Proof asset</span>
+                                <select
+                                  className="piq-input"
+                                  value={progressEntry.proof_asset_status}
+                                  onChange={(event) => saveWeekProgressField(week.week_number, { proof_asset_status: event.target.value })}
+                                >
+                                  {PROOF_ASSET_STATUS_OPTIONS.map((option) => (
+                                    <option key={option.value} value={option.value}>{option.label}</option>
+                                  ))}
+                                </select>
+                              </label>
+                              <label style={{ display: 'grid', gap: '6px', padding: '14px', borderRadius: '14px', background: 'var(--bg)', border: '1px solid var(--border)' }}>
+                                <span style={{ color: palette.text, fontSize: '12px', fontWeight: 800 }}>Manager conversation</span>
+                                <select
+                                  className="piq-input"
+                                  value={progressEntry.manager_conversation_status}
+                                  onChange={(event) => saveWeekProgressField(week.week_number, { manager_conversation_status: event.target.value })}
+                                >
+                                  {MANAGER_CONVERSATION_STATUS_OPTIONS.map((option) => (
+                                    <option key={option.value} value={option.value}>{option.label}</option>
+                                  ))}
+                                </select>
+                              </label>
+                              <div style={{ display: 'grid', gap: '6px', padding: '14px', borderRadius: '14px', background: 'var(--bg)', border: '1px solid var(--border)' }}>
+                                <span style={{ color: palette.text, fontSize: '12px', fontWeight: 800 }}>Milestone read</span>
+                                <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.55 }}>
+                                  {progressOptionLabel(ACTION_STATE_OPTIONS, progressEntry.action_state)} · {progressOptionLabel(PROOF_ASSET_STATUS_OPTIONS, progressEntry.proof_asset_status)} · {progressOptionLabel(MANAGER_CONVERSATION_STATUS_OPTIONS, progressEntry.manager_conversation_status)}
+                                </div>
+                              </div>
+                            </div>
+
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }} className="two-col">
                               <div style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '14px', padding: '14px' }}>
                                 <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>{messages.report.whyThisWeekMatters}</div>
@@ -2962,6 +3119,17 @@ export default function ReportExperience({ payload, embedded = false }) {
                             <div style={{ background: 'rgba(99,102,241,0.10)', border: '1px solid rgba(99,102,241,0.22)', borderRadius: '14px', padding: '14px' }}>
                               <div style={{ color: '#5B65C6', fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>{messages.report.encouragement}</div>
                               <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7 }}>{week.encouragement}</div>
+                            </div>
+
+                            <div style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '14px', padding: '14px' }}>
+                              <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>Last active step</div>
+                              <input
+                                className="piq-input"
+                                placeholder="Write the one concrete step you last took here..."
+                                value={progressEntry.last_active_step}
+                                onChange={(event) => setWeekProgressState((prev) => updateWeekProgressState(prev, week.week_number, { last_active_step: event.target.value }))}
+                                onBlur={(event) => saveWeekProgressField(week.week_number, { last_active_step: event.target.value })}
+                              />
                             </div>
 
                             <div style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '14px', padding: '14px' }}>

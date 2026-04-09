@@ -38,6 +38,18 @@ create table if not exists public.week_progress (
   unique(report_id, week_number)
 );
 
+alter table public.week_progress
+  add column if not exists action_state text not null default 'not_started';
+
+alter table public.week_progress
+  add column if not exists proof_asset_status text not null default 'not_started';
+
+alter table public.week_progress
+  add column if not exists manager_conversation_status text not null default 'not_started';
+
+alter table public.week_progress
+  add column if not exists last_active_step text not null default '';
+
 create table if not exists public.reminder_events (
   id uuid primary key default gen_random_uuid(),
   report_id uuid references public.reports(id) on delete cascade,

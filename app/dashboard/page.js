@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { createSupabaseServerClient } from '../../lib/supabase/server';
 import { isSupabaseConfigured } from '../../lib/supabase/config';
 import { normalizeReportData } from '../../lib/report-data';
+import { buildExecutionSummary, buildWeekProgressMap, getCompletedWeeks } from '../../lib/progress-tracking';
 import { BrandLogo } from '../../components/brand-logo';
 import LanguageSwitcher from '../../components/language-switcher';
 import { getMessages } from '../../lib/i18n';
@@ -48,7 +49,12 @@ async function loadDashboardData() {
       week_progress (
         week_number,
         completed_at,
-        notes
+        notes,
+        action_state,
+        proof_asset_status,
+        manager_conversation_status,
+        last_active_step,
+        updated_at
       )
     `)
     .eq('user_id', user.id)
@@ -84,10 +90,16 @@ function buildCoachingSnapshot(report, messages, locale) {
   const pivots = normalized?.pivots || [];
   const activePivot = pivots.find((pivot) => pivot.id === report.active_pivot_id) || pivots[0] || null;
   const roadmapWeeks = activePivot?.roadmap?.weeks || normalized?.roadmap?.weeks || [];
-  const completedWeeks = (report.week_progress || []).filter((item) => item.completed_at).map((item) => item.week_number);
+  const weekProgressMap = buildWeekProgressMap(report.week_progress || []);
+  const completedWeeks = getCompletedWeeks(weekProgressMap);
   const completedCount = completedWeeks.filter((weekNumber) => roadmapWeeks.some((week) => week.week_number === weekNumber)).length;
   const progressPercent = Math.round((completedCount / Math.max(roadmapWeeks.length || 1, 1)) * 100);
   const nextIncompleteWeek = roadmapWeeks.find((week) => !completedWeeks.includes(week.week_number)) || roadmapWeeks[roadmapWeeks.length - 1] || null;
+  const executionSummary = buildExecutionSummary({
+    roadmapWeeks,
+    weekProgressMap,
+    startDate: report.roadmap_start_date || '',
+  });
   const nextWeekStart = report.roadmap_start_date && nextIncompleteWeek
     ? addDays(report.roadmap_start_date, (nextIncompleteWeek.week_number - 1) * 7)
     : null;
@@ -118,6 +130,7 @@ function buildCoachingSnapshot(report, messages, locale) {
     progressPercent,
     completedCount,
     totalWeeks: roadmapWeeks.length,
+    executionSummary,
     currentLabel,
     dateLabel,
   };
@@ -226,6 +239,13 @@ export default async function DashboardPage() {
                     <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.72, marginBottom: '14px', maxWidth: '720px' }}>
                       {latestSnapshot.nextIncompleteWeek?.goal || messages.dashboard.latestReportFallback}
                     </div>
+                    {latestSnapshot.executionSummary?.title && (
+                      <div style={{ marginBottom: '14px', padding: '13px 14px', borderRadius: '16px', background: 'rgba(255,255,255,0.7)', border: `1px solid ${palette.border}`, maxWidth: '760px' }}>
+                        <div style={{ color: '#A7602E', fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Next best action</div>
+                        <div style={{ color: palette.text, fontSize: '14px', fontWeight: 800, marginBottom: '4px' }}>{latestSnapshot.executionSummary.title}</div>
+                        <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{latestSnapshot.executionSummary.body}</div>
+                      </div>
+                    )}
                     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                       <span style={{ background: 'rgba(27,111,99,0.12)', border: '1px solid rgba(27,111,99,0.18)', color: '#1B6F63', borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 800 }}>
                         {latestSnapshot.currentLabel}
@@ -238,6 +258,12 @@ export default async function DashboardPage() {
                       </span>
                       <span style={{ background: 'rgba(255,255,255,0.58)', border: `1px solid ${palette.border}`, color: palette.text, borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 700 }}>
                         {latestSnapshot.dateLabel}
+                      </span>
+                      <span style={{ background: 'rgba(255,255,255,0.58)', border: `1px solid ${palette.border}`, color: palette.text, borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 700 }}>
+                        {latestSnapshot.executionSummary?.proofReadyCount || 0} proof ready
+                      </span>
+                      <span style={{ background: 'rgba(255,255,255,0.58)', border: `1px solid ${palette.border}`, color: palette.text, borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 700 }}>
+                        {latestSnapshot.executionSummary?.managerDoneCount || 0} manager conversations
                       </span>
                     </div>
                   </div>
@@ -280,6 +306,13 @@ export default async function DashboardPage() {
                             ? `${snapshot.currentLabel}. ${snapshot.nextIncompleteWeek.title}`
                             : messages.dashboard.latestReportFallback}
                         </div>
+                        {snapshot.executionSummary?.title && (
+                          <div style={{ marginBottom: '12px', padding: '12px 13px', borderRadius: '14px', background: 'rgba(255,255,255,0.66)', border: `1px solid ${palette.border}`, maxWidth: '760px' }}>
+                            <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '5px' }}>Next best action</div>
+                            <div style={{ color: palette.text, fontSize: '13px', fontWeight: 800, marginBottom: '4px' }}>{snapshot.executionSummary.title}</div>
+                            <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.55 }}>{snapshot.executionSummary.body}</div>
+                          </div>
+                        )}
                         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                           {index === 0 && (
                               <span style={{ background: 'rgba(27,111,99,0.12)', border: '1px solid rgba(27,111,99,0.18)', color: '#1B6F63', borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 800 }}>
@@ -291,6 +324,9 @@ export default async function DashboardPage() {
                           </span>
                           <span style={{ background: 'rgba(255,255,255,0.58)', border: `1px solid ${palette.border}`, color: palette.text, borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 700 }}>
                             {snapshot.dateLabel}
+                          </span>
+                          <span style={{ background: 'rgba(255,255,255,0.58)', border: `1px solid ${palette.border}`, color: palette.text, borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 700 }}>
+                            {snapshot.executionSummary?.proofReadyCount || 0} proof ready
                           </span>
                           <span style={{ background: tone.bg, border: `1px solid ${tone.border}`, color: tone.fg, borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 800 }}>
                             {report.risk_score} {messages.dashboard.riskScoreSuffix}

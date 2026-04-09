@@ -23,7 +23,8 @@
     "test:market-ranking": "node scripts/test-live-market-ranking.mjs",
     "test:job-grounding": "node scripts/test-job-grounding.mjs",
     "test:course-catalog": "node scripts/test-course-catalog.mjs",
-    "test:report-quality": "node scripts/test-report-quality.mjs"
+    "test:report-quality": "node scripts/test-report-quality.mjs",
+    "test:progress": "node scripts/test-progress-tracking.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.9.0",

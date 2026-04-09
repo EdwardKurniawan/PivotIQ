@@ -45,7 +45,16 @@ export async function PATCH(request, { params }) {
       return Response.json({ success: false, error: 'Unauthorized.' }, { status: 401 });
     }
 
-    const { week_number, completed, notes, start_date } = await request.json();
+    const {
+      week_number,
+      completed,
+      notes,
+      start_date,
+      action_state,
+      proof_asset_status,
+      manager_conversation_status,
+      last_active_step,
+    } = await request.json();
 
     const { data: fullReport } = await admin
       .from('reports')
@@ -89,6 +98,11 @@ export async function PATCH(request, { params }) {
         week_number,
         notes: notes || null,
         completed_at: completed ? new Date().toISOString() : null,
+        action_state: action_state || 'not_started',
+        proof_asset_status: proof_asset_status || 'not_started',
+        manager_conversation_status: manager_conversation_status || 'not_started',
+        last_active_step: last_active_step || '',
+        updated_at: new Date().toISOString(),
       };
 
       const { error: progressError } = await admin
