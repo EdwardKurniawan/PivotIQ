@@ -45,6 +45,34 @@ This means the current product direction is:
 - capture what really happened
 - refresh the plan around real-world signal
 
+## Next recommendation-quality spec
+
+The next major product-quality priority is intake quality, not just model prompting.
+
+See:
+
+- [docs/intake-upgrade-spec-2026-04-09.md](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/docs/intake-upgrade-spec-2026-04-09.md)
+
+Core conclusion:
+
+- recommendation quality should improve next through better user-state inputs
+- the first fields to add are:
+  - `goal_now`
+  - `timeline_urgency`
+  - `years_experience_band`
+  - `location_preference`
+  - `ai_maturity`
+- these should be followed by:
+  - `technical_capability`
+  - `salary_tolerance`
+  - `proof_state`
+
+Important product stance:
+
+- do not add a long form up front
+- use progressive disclosure
+- make every new field affect ranking, confidence, learning, or proof generation
+
 ## Current direction
 
 PivotIQ now does more than generate model-only pivots. It:
