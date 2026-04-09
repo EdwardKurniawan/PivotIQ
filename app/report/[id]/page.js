@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import ReportExperience from '../../../components/report-experience';
 import { normalizeReportData } from '../../../lib/report-data';
+import { normalizeOutcomeEntry } from '../../../lib/outcome-tracking';
 import { buildWeekProgressMap } from '../../../lib/progress-tracking';
 import { createSupabaseServerClient } from '../../../lib/supabase/server';
 import { getServerLocale } from '../../../lib/i18n-server';
@@ -38,6 +39,14 @@ async function loadPersistedReport(id) {
         manager_conversation_status,
         last_active_step,
         updated_at
+      ),
+      report_outcomes (
+        built_proof_asset,
+        manager_conversation_done,
+        traction_status,
+        usefulness_rating,
+        notes,
+        updated_at
       )
     `)
     .eq('id', id)
@@ -69,6 +78,7 @@ async function loadPersistedReport(id) {
     tier: report.access_tier || 'free',
     startDate: report.roadmap_start_date || '',
     weekProgress: buildWeekProgressMap(report.week_progress || []),
+    outcome: normalizeOutcomeEntry(Array.isArray(report.report_outcomes) ? report.report_outcomes[0] : report.report_outcomes),
     completedWeeks: (report.week_progress || []).filter((item) => item.completed_at).map((item) => item.week_number),
     weekNotes: Object.fromEntries((report.week_progress || []).filter((item) => item.notes).map((item) => [item.week_number, item.notes])),
   };

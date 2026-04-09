@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { createSupabaseServerClient } from '../../lib/supabase/server';
 import { isSupabaseConfigured } from '../../lib/supabase/config';
+import { buildOutcomeSummary } from '../../lib/outcome-tracking';
 import { normalizeReportData } from '../../lib/report-data';
 import { buildExecutionSummary, buildWeekProgressMap, getCompletedWeeks } from '../../lib/progress-tracking';
 import { BrandLogo } from '../../components/brand-logo';
@@ -55,6 +56,14 @@ async function loadDashboardData() {
         manager_conversation_status,
         last_active_step,
         updated_at
+      ),
+      report_outcomes (
+        built_proof_asset,
+        manager_conversation_done,
+        traction_status,
+        usefulness_rating,
+        notes,
+        updated_at
       )
     `)
     .eq('user_id', user.id)
@@ -100,6 +109,7 @@ function buildCoachingSnapshot(report, messages, locale) {
     weekProgressMap,
     startDate: report.roadmap_start_date || '',
   });
+  const outcomeSummary = buildOutcomeSummary(Array.isArray(report.report_outcomes) ? report.report_outcomes[0] : report.report_outcomes);
   const nextWeekStart = report.roadmap_start_date && nextIncompleteWeek
     ? addDays(report.roadmap_start_date, (nextIncompleteWeek.week_number - 1) * 7)
     : null;
@@ -131,6 +141,7 @@ function buildCoachingSnapshot(report, messages, locale) {
     completedCount,
     totalWeeks: roadmapWeeks.length,
     executionSummary,
+    outcomeSummary,
     currentLabel,
     dateLabel,
   };
@@ -246,6 +257,11 @@ export default async function DashboardPage() {
                         <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{latestSnapshot.executionSummary.body}</div>
                       </div>
                     )}
+                    <div style={{ marginBottom: '14px', padding: '13px 14px', borderRadius: '16px', background: 'rgba(255,255,255,0.7)', border: `1px solid ${palette.border}`, maxWidth: '760px' }}>
+                      <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Outcome signal</div>
+                      <div style={{ color: palette.text, fontSize: '14px', fontWeight: 800, marginBottom: '4px' }}>{latestSnapshot.outcomeSummary.title}</div>
+                      <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{latestSnapshot.outcomeSummary.body}</div>
+                    </div>
                     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                       <span style={{ background: 'rgba(27,111,99,0.12)', border: '1px solid rgba(27,111,99,0.18)', color: '#1B6F63', borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 800 }}>
                         {latestSnapshot.currentLabel}
@@ -264,6 +280,9 @@ export default async function DashboardPage() {
                       </span>
                       <span style={{ background: 'rgba(255,255,255,0.58)', border: `1px solid ${palette.border}`, color: palette.text, borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 700 }}>
                         {latestSnapshot.executionSummary?.managerDoneCount || 0} manager conversations
+                      </span>
+                      <span style={{ background: 'rgba(255,255,255,0.58)', border: `1px solid ${palette.border}`, color: palette.text, borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 700 }}>
+                        {latestSnapshot.outcomeSummary.traction_label}
                       </span>
                     </div>
                   </div>
@@ -313,6 +332,11 @@ export default async function DashboardPage() {
                             <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.55 }}>{snapshot.executionSummary.body}</div>
                           </div>
                         )}
+                        <div style={{ marginBottom: '12px', padding: '12px 13px', borderRadius: '14px', background: 'rgba(255,255,255,0.66)', border: `1px solid ${palette.border}`, maxWidth: '760px' }}>
+                          <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '5px' }}>Outcome signal</div>
+                          <div style={{ color: palette.text, fontSize: '13px', fontWeight: 800, marginBottom: '4px' }}>{snapshot.outcomeSummary.title}</div>
+                          <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.55 }}>{snapshot.outcomeSummary.body}</div>
+                        </div>
                         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                           {index === 0 && (
                               <span style={{ background: 'rgba(27,111,99,0.12)', border: '1px solid rgba(27,111,99,0.18)', color: '#1B6F63', borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 800 }}>
@@ -327,6 +351,9 @@ export default async function DashboardPage() {
                           </span>
                           <span style={{ background: 'rgba(255,255,255,0.58)', border: `1px solid ${palette.border}`, color: palette.text, borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 700 }}>
                             {snapshot.executionSummary?.proofReadyCount || 0} proof ready
+                          </span>
+                          <span style={{ background: 'rgba(255,255,255,0.58)', border: `1px solid ${palette.border}`, color: palette.text, borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 700 }}>
+                            {snapshot.outcomeSummary.traction_label}
                           </span>
                           <span style={{ background: tone.bg, border: `1px solid ${tone.border}`, color: tone.fg, borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 800 }}>
                             {report.risk_score} {messages.dashboard.riskScoreSuffix}

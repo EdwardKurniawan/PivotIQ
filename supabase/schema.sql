@@ -50,6 +50,53 @@ alter table public.week_progress
 alter table public.week_progress
   add column if not exists last_active_step text not null default '';
 
+create table if not exists public.report_outcomes (
+  id uuid primary key default gen_random_uuid(),
+  report_id uuid not null references public.reports(id) on delete cascade,
+  user_id uuid not null,
+  built_proof_asset boolean not null default false,
+  manager_conversation_done boolean not null default false,
+  traction_status text not null default 'no_signal',
+  usefulness_rating integer,
+  notes text not null default '',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique(report_id)
+);
+
+alter table public.report_outcomes
+  add column if not exists user_id uuid;
+
+alter table public.report_outcomes
+  add column if not exists built_proof_asset boolean not null default false;
+
+alter table public.report_outcomes
+  add column if not exists manager_conversation_done boolean not null default false;
+
+alter table public.report_outcomes
+  add column if not exists traction_status text not null default 'no_signal';
+
+alter table public.report_outcomes
+  add column if not exists usefulness_rating integer;
+
+alter table public.report_outcomes
+  add column if not exists notes text not null default '';
+
+alter table public.report_outcomes
+  add column if not exists updated_at timestamptz not null default now();
+
+update public.report_outcomes
+set user_id = reports.user_id
+from public.reports
+where reports.id = report_outcomes.report_id
+  and report_outcomes.user_id is null;
+
+alter table public.report_outcomes
+  alter column user_id set not null;
+
+create index if not exists report_outcomes_user_idx on public.report_outcomes(user_id);
+create index if not exists report_outcomes_traction_idx on public.report_outcomes(traction_status);
+
 create table if not exists public.reminder_events (
   id uuid primary key default gen_random_uuid(),
   report_id uuid references public.reports(id) on delete cascade,
@@ -67,6 +114,7 @@ create table if not exists public.reminder_events (
 
 alter table public.reports enable row level security;
 alter table public.week_progress enable row level security;
+alter table public.report_outcomes enable row level security;
 
 drop policy if exists reports_select_own on public.reports;
 create policy reports_select_own
@@ -139,6 +187,28 @@ create policy week_progress_update_own_report
         and reports.user_id = auth.uid()
     )
   );
+
+drop policy if exists report_outcomes_select_own on public.report_outcomes;
+create policy report_outcomes_select_own
+  on public.report_outcomes
+  for select
+  to authenticated
+  using (auth.uid() = user_id);
+
+drop policy if exists report_outcomes_insert_own on public.report_outcomes;
+create policy report_outcomes_insert_own
+  on public.report_outcomes
+  for insert
+  to authenticated
+  with check (auth.uid() = user_id);
+
+drop policy if exists report_outcomes_update_own on public.report_outcomes;
+create policy report_outcomes_update_own
+  on public.report_outcomes
+  for update
+  to authenticated
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
 
 create table if not exists public.course_catalog (
   id uuid primary key default gen_random_uuid(),

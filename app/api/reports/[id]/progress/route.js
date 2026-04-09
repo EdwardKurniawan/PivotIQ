@@ -144,6 +144,12 @@ export async function PATCH(request, { params }) {
       }
     }
 
+    await admin
+      .from('reports')
+      .update({ updated_at: new Date().toISOString() })
+      .eq('id', params.id)
+      .eq('user_id', user.id);
+
     return Response.json({ success: true });
   } catch (error) {
     console.error('Progress update error:', error);

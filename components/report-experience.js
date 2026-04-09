@@ -5,6 +5,12 @@ import Link from 'next/link';
 import { BrandLogo, BrandMarkBadge } from './brand-logo';
 import { getBrowserLocale, getMessages } from '../lib/i18n';
 import {
+  TRACTION_STATUS_OPTIONS,
+  USEFULNESS_RATING_OPTIONS,
+  buildOutcomeSummary,
+  normalizeOutcomeEntry,
+} from '../lib/outcome-tracking';
+import {
   ACTION_STATE_OPTIONS,
   PROOF_ASSET_STATUS_OPTIONS,
   MANAGER_CONVERSATION_STATUS_OPTIONS,
@@ -1782,6 +1788,128 @@ function ExecutionLoopCard({ summary, planColor, progressPercent }) {
   );
 }
 
+function OutcomeTrackerCard({ outcome, summary, onSave, locale = 'en' }) {
+  if (!outcome || !summary || !onSave) return null;
+
+  const toneColor = summary.tone === 'strong'
+    ? palette.teal
+    : summary.tone === 'positive'
+      ? palette.orange
+      : palette.textSoft;
+
+  return (
+    <div className="piq-card" style={{ padding: '22px', marginBottom: '18px', background: `linear-gradient(145deg, ${toneColor}12 0%, rgba(255,255,255,0.94) 62%)`, border: `1px solid ${toneColor}24`, boxShadow: '0 22px 46px rgba(19, 32, 42, 0.08)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', alignItems: 'start', flexWrap: 'wrap', marginBottom: '16px' }}>
+        <div style={{ maxWidth: '760px' }}>
+          <div style={{ color: toneColor, fontSize: '11px', fontWeight: 900, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '8px' }}>Outcome tracker</div>
+          <div style={{ color: palette.text, fontSize: '24px', fontWeight: 900, letterSpacing: '-0.04em', marginBottom: '6px' }}>{summary.title}</div>
+          <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.7 }}>
+            {summary.body} This feeds future recommendation quality and keeps your own report honest about what is actually working.
+          </div>
+        </div>
+        <div style={{ minWidth: '220px', padding: '14px 16px', borderRadius: '18px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
+          <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Recommendation signal</div>
+          <div style={{ color: palette.text, fontSize: '22px', fontWeight: 900, marginBottom: '4px' }}>{summary.score}/100</div>
+          <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.55 }}>{summary.recommendation_quality_state}</div>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '12px', marginBottom: '14px' }} className="two-col">
+        <div style={{ padding: '14px', borderRadius: '16px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
+          <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '10px' }}>Proof asset shipped</div>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            {[false, true].map((value) => (
+              <button
+                key={`proof-${String(value)}`}
+                type="button"
+                className="btn-ghost"
+                onClick={() => onSave({ built_proof_asset: value })}
+                style={{
+                  width: 'auto',
+                  padding: '8px 12px',
+                  background: outcome.built_proof_asset === value ? `${palette.teal}14` : 'rgba(255,255,255,0.72)',
+                  borderColor: outcome.built_proof_asset === value ? `${palette.teal}35` : palette.border,
+                  color: outcome.built_proof_asset === value ? palette.teal : palette.textMuted,
+                }}
+              >
+                {value ? 'Built' : 'Not yet'}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div style={{ padding: '14px', borderRadius: '16px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
+          <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '10px' }}>Manager conversation</div>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            {[false, true].map((value) => (
+              <button
+                key={`manager-${String(value)}`}
+                type="button"
+                className="btn-ghost"
+                onClick={() => onSave({ manager_conversation_done: value })}
+                style={{
+                  width: 'auto',
+                  padding: '8px 12px',
+                  background: outcome.manager_conversation_done === value ? `${palette.orange}14` : 'rgba(255,255,255,0.72)',
+                  borderColor: outcome.manager_conversation_done === value ? `${palette.orange}35` : palette.border,
+                  color: outcome.manager_conversation_done === value ? '#8B4A1B' : palette.textMuted,
+                }}
+              >
+                {value ? 'Done' : 'Not yet'}
+              </button>
+            ))}
+          </div>
+        </div>
+        <label style={{ display: 'grid', gap: '6px', padding: '14px', borderRadius: '16px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
+          <span style={{ color: palette.text, fontSize: '12px', fontWeight: 800 }}>Traction so far</span>
+          <select className="piq-input" value={outcome.traction_status} onChange={(event) => onSave({ traction_status: event.target.value })}>
+            {TRACTION_STATUS_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>{option.label}</option>
+            ))}
+          </select>
+        </label>
+        <label style={{ display: 'grid', gap: '6px', padding: '14px', borderRadius: '16px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
+          <span style={{ color: palette.text, fontSize: '12px', fontWeight: 800 }}>How useful was this?</span>
+          <select
+            className="piq-input"
+            value={outcome.usefulness_rating || ''}
+            onChange={(event) => onSave({ usefulness_rating: event.target.value ? Number(event.target.value) : null })}
+          >
+            <option value="">Not rated yet</option>
+            {USEFULNESS_RATING_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>{option.label}</option>
+            ))}
+          </select>
+        </label>
+      </div>
+
+      <label style={{ display: 'grid', gap: '6px' }}>
+        <span style={{ color: palette.text, fontSize: '12px', fontWeight: 800 }}>What changed after you used this report?</span>
+        <textarea
+          className="piq-input"
+          rows={3}
+          value={outcome.notes}
+          onChange={(event) => onSave({ notes: event.target.value }, { immediate: false })}
+          onBlur={(event) => onSave({ notes: event.target.value })}
+          placeholder="Example: I showed the workflow map to my manager, got approval to test it on one recurring process, and now the team wants a second pass."
+          style={{ resize: 'vertical' }}
+        />
+      </label>
+
+      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '12px' }}>
+        <span style={{ color: palette.textSoft, fontSize: '11px', fontWeight: 800 }}>Traction: {summary.traction_label}</span>
+        <span style={{ color: 'rgba(80,96,107,0.42)', fontSize: '11px' }}>·</span>
+        <span style={{ color: palette.textSoft, fontSize: '11px', fontWeight: 800 }}>Usefulness: {summary.usefulness_label}</span>
+        {outcome.updated_at && (
+          <>
+            <span style={{ color: 'rgba(80,96,107,0.42)', fontSize: '11px' }}>·</span>
+            <span style={{ color: palette.textSoft, fontSize: '11px', fontWeight: 800 }}>Updated {formatDate(outcome.updated_at, locale)}</span>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 async function syncProgress(reportId, payload) {
   if (!reportId) return;
 
@@ -1793,6 +1921,28 @@ async function syncProgress(reportId, payload) {
     });
   } catch (error) {
     console.error('Progress sync failed', error);
+  }
+}
+
+async function syncOutcome(reportId, payload) {
+  if (!reportId) return null;
+
+  try {
+    const response = await fetch(`/api/reports/${reportId}/outcome`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const json = await response.json().catch(() => ({}));
+
+    if (!response.ok || !json.success) {
+      throw new Error(json.error || 'Outcome sync failed');
+    }
+
+    return json.outcome || null;
+  } catch (error) {
+    console.error('Outcome sync failed', error);
+    return null;
   }
 }
 
@@ -1999,6 +2149,7 @@ export default function ReportExperience({ payload, embedded = false }) {
   const [weekProgressState, setWeekProgressState] = useState(
     hydrateLegacyWeekProgress(payload.completedWeeks || [], payload.weekNotes || {}, payload.weekProgress || {})
   );
+  const [outcomeState, setOutcomeState] = useState(normalizeOutcomeEntry(payload.outcome));
   const [reportData, setReportData] = useState(payload.reportData);
   const [actionEmailStatus, setActionEmailStatus] = useState('idle');
   const [generationStatus, setGenerationStatus] = useState(
@@ -2027,15 +2178,18 @@ export default function ReportExperience({ payload, embedded = false }) {
   const messages = getMessages(payload.uiLocale || payload.locale || getBrowserLocale() || reportData.locale);
   const completedWeeks = useMemo(() => getCompletedWeeks(weekProgressState), [weekProgressState]);
   const weekNotes = useMemo(() => getWeekNotes(weekProgressState), [weekProgressState]);
+  const outcomeSummary = useMemo(() => buildOutcomeSummary(outcomeState), [outcomeState]);
   const reportPaths = useMemo(() => (tier === 'full' && stayPath ? [stayPath, ...pivots] : pivots), [tier, stayPath, pivots]);
   const activePath = reportPaths[selectedPlanPath] || reportPaths[0] || pivot || {};
   const isStayPlan = tier === 'full' && Boolean(stayPath) && selectedPlanPath === 0;
   const planColor = isStayPlan ? palette.teal : getPivotColor(Math.max(selectedPlanPath - (stayPath ? 1 : 0), 0)) || pColor;
   const activeMarketSignal = activePath.live_market_signal || null;
+  const showOutcomeTracker = tier === 'full' && Boolean(payload.reportId);
 
   useEffect(() => {
     setReportData(payload.reportData);
     setWeekProgressState(hydrateLegacyWeekProgress(payload.completedWeeks || [], payload.weekNotes || {}, payload.weekProgress || {}));
+    setOutcomeState(normalizeOutcomeEntry(payload.outcome));
     setStartDate(payload.startDate || '');
     if (payload.tier === 'full' && payload.reportData?.generation_stage !== 'full_complete') {
       setGenerationStatus('loading');
@@ -2334,6 +2488,23 @@ export default function ReportExperience({ payload, embedded = false }) {
       manager_conversation_status: nextEntry.manager_conversation_status,
       last_active_step: nextEntry.last_active_step,
     });
+  };
+
+  const saveOutcomePatch = async (patch, options = {}) => {
+    const { immediate = true } = options;
+    const nextOutcome = normalizeOutcomeEntry({
+      ...outcomeState,
+      ...patch,
+    });
+
+    setOutcomeState(nextOutcome);
+
+    if (!payload.reportId || !immediate) return;
+
+    const saved = await syncOutcome(payload.reportId, nextOutcome);
+    if (saved) {
+      setOutcomeState(normalizeOutcomeEntry(saved));
+    }
   };
 
   const handleCheckout = async (selectedTier) => {
@@ -2928,6 +3099,14 @@ export default function ReportExperience({ payload, embedded = false }) {
 
             <div style={{ marginBottom: '28px' }}>
               <ExecutionLoopCard summary={executionSummary} planColor={planColor} progressPercent={progressPercent} />
+              {showOutcomeTracker && (
+                <OutcomeTrackerCard
+                  outcome={outcomeState}
+                  summary={outcomeSummary}
+                  onSave={saveOutcomePatch}
+                  locale={payload.uiLocale || payload.locale || getBrowserLocale() || reportData.locale}
+                />
+              )}
               {activeMarketSignal && <MarketSignalCard signal={activeMarketSignal} color={planColor} />}
               {!activeMarketSignal && isStayPlan && (
                 <div className="piq-card" style={{ padding: '20px', marginBottom: '24px', background: 'linear-gradient(180deg, rgba(27,111,99,0.08), rgba(255,255,255,0.92))', border: `1px solid ${palette.teal}22` }}>
