@@ -905,3 +905,45 @@ Next best product move:
 1. Use the new fixture viewer to manually review and regenerate a few saved QA snapshots in-account.
 2. Add a second fixture catalog for higher-seniority roles so we can catch over-correction while broad-role defaults get safer.
 3. Use the fixture viewer findings to sharpen paid-report copy around “why not this pivot yet?” and “what would raise confidence next?”
+
+## 2026-04-09 senior-role fixtures and saved QA snapshots are live
+
+This pass completed the next QA loop: we now have a second fixture catalog for higher-seniority roles, and a scriptable way to push mixed QA snapshots into a real user account for dashboard/report review.
+
+What shipped:
+
+- Added a senior-role fixture catalog in [`data/senior-role-fixtures.js`](data/senior-role-fixtures.js)
+- Generalized fixture helpers in [`lib/broad-role-fixtures.js`](lib/broad-role-fixtures.js) so they now support:
+  - broad-role fixtures
+  - senior-role fixtures
+  - grouped snapshot summaries
+- Upgraded the internal QA viewer in [`app/internal/qa-fixtures/page.js`](app/internal/qa-fixtures/page.js) and JSON endpoint in [`app/api/qa-fixtures/route.js`](app/api/qa-fixtures/route.js) to show both fixture groups
+- Added a seeding script in [`scripts/save-qa-fixture-reports.mjs`](scripts/save-qa-fixture-reports.mjs)
+- Added `npm run reports:seed-qa-fixtures` in [`package.json`](package.json)
+- Expanded [`scripts/test-broad-role-regression.mjs`](scripts/test-broad-role-regression.mjs) so the fixture regression suite now covers both broad and senior catalogs
+- Tightened [`lib/report-quality.js`](lib/report-quality.js) so marketing and customer leadership roles do not get misclassified as finance-family reports during quality gating
+
+What changed in product behavior:
+
+- QA coverage now checks that safer broad-role defaults do not accidentally flatten more senior operators and leaders.
+- Internal QA can now be reviewed in two grouped lanes: broad roles and senior roles.
+- Fixture snapshots can now be pushed into a real account as full saved reports for true dashboard/report QA instead of only internal inspection.
+
+Saved QA snapshots pushed into `edward.hardrianto@live.com`:
+
+- `545898da-08ae-41df-9156-021a937ebe95` — `Data Analyst`
+- `28325476-caa6-4a7b-a95b-ecc0f2a7e897` — `Finance Manager`
+- `0eff2943-82e6-41c8-b10d-2dde56061df3` — `Customer Success Manager`
+- `231107f9-3a2a-4834-b67a-0b1a38ebdc71` — `Senior HR Business Partner`
+
+Verification completed:
+
+- `npm run test:broad-roles`
+- `npm run build`
+- `git diff --check`
+
+Next best product move:
+
+1. Open the saved QA snapshots in-account and do a qualitative review of the actual user-facing recommendation text.
+2. Tune the senior fixture defaults if the reports feel too flattened into stay-first language.
+3. Add one more fixture family for high-judgment executive-support / chief-of-staff type roles if that lane becomes important.

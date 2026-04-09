@@ -1,15 +1,21 @@
 import assert from 'node:assert/strict';
 import { BROAD_ROLE_FIXTURES } from '../data/broad-role-fixtures.js';
-import { buildBroadRoleFixtureReport, evaluateBroadRoleFixtureReport } from '../lib/broad-role-fixtures.js';
+import { SENIOR_ROLE_FIXTURES } from '../data/senior-role-fixtures.js';
+import {
+  buildBroadRoleFixtureReport,
+  buildSeniorRoleFixtureReport,
+  evaluateBroadRoleFixtureReport,
+} from '../lib/broad-role-fixtures.js';
 
-function testBroadRoleFixturesStaySane() {
-  for (const fixture of BROAD_ROLE_FIXTURES) {
-    const normalized = buildBroadRoleFixtureReport(fixture);
+function testFixtureCatalog(label, fixtures, buildReport) {
+  for (const fixture of fixtures) {
+    const normalized = buildReport(fixture);
     const evaluation = evaluateBroadRoleFixtureReport(fixture, normalized);
-    assert.ok(evaluation.passed, `${fixture.jobTitle}: ${evaluation.issues.join(' | ')}`);
+    assert.ok(evaluation.passed, `${label} / ${fixture.jobTitle}: ${evaluation.issues.join(' | ')}`);
   }
 }
 
-testBroadRoleFixturesStaySane();
+testFixtureCatalog('Broad roles', BROAD_ROLE_FIXTURES, buildBroadRoleFixtureReport);
+testFixtureCatalog('Senior roles', SENIOR_ROLE_FIXTURES, buildSeniorRoleFixtureReport);
 
-console.log('Broad role regression tests passed.');
+console.log('QA fixture regression tests passed.');

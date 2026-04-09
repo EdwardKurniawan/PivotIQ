@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { buildBroadRoleFixtureSnapshots, summarizeBroadRoleFixtureSnapshots } from '../../../lib/broad-role-fixtures.js';
+import { buildQaFixtureSnapshotGroups } from '../../../lib/broad-role-fixtures.js';
 
 export const dynamic = 'force-dynamic';
 
@@ -129,8 +129,12 @@ function FixtureCard({ snapshot }) {
 }
 
 export default async function QaFixturesPage() {
-  const snapshots = buildBroadRoleFixtureSnapshots();
-  const summary = summarizeBroadRoleFixtureSnapshots(snapshots);
+  const groups = buildQaFixtureSnapshotGroups();
+  const totalFixtures = groups.reduce((sum, group) => sum + Number(group.summary?.fixture_count || 0), 0);
+  const totalPassed = groups.reduce((sum, group) => sum + Number(group.summary?.passed_count || 0), 0);
+  const stayPrimaryCount = groups.reduce((sum, group) => sum + Number(group.summary?.stay_primary_count || 0), 0);
+  const lowConfidenceBackupCount = groups.reduce((sum, group) => sum + Number(group.summary?.low_confidence_backup_count || 0), 0);
+  const marketBackedPrimaryCount = groups.reduce((sum, group) => sum + Number(group.summary?.market_backed_primary_count || 0), 0);
 
   return (
     <main style={{ minHeight: '100vh', background: palette.bg, padding: '28px', position: 'relative', overflow: 'hidden' }}>
@@ -162,15 +166,35 @@ export default async function QaFixturesPage() {
         </Card>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '14px', marginBottom: '18px' }} className="fixture-grid">
-          <Stat label="Fixtures" value={summary.fixture_count} sublabel="Broad-role snapshots generated from the shared fixture catalog." />
-          <Stat label="Pass rate" value={`${summary.pass_rate}%`} sublabel={`${summary.passed_count} fixtures currently pass every guardrail check.`} />
-          <Stat label="Stay-first primaries" value={summary.stay_primary_count} sublabel="How often PivotIQ currently prefers safer current-lane leverage on these roles." />
-          <Stat label="Low-confidence backups" value={summary.low_confidence_backup_count} sublabel={`${summary.market_backed_primary_count} primaries are already market-backed in this fixture set.`} />
+          <Stat label="Fixtures" value={totalFixtures} sublabel="Broad and higher-seniority snapshots generated from the shared QA catalogs." />
+          <Stat label="Pass rate" value={`${totalFixtures ? Math.round((totalPassed / totalFixtures) * 100) : 0}%`} sublabel={`${totalPassed} fixtures currently pass every guardrail check.`} />
+          <Stat label="Stay-first primaries" value={stayPrimaryCount} sublabel="How often PivotIQ currently prefers safer current-lane leverage across these QA roles." />
+          <Stat label="Low-confidence backups" value={lowConfidenceBackupCount} sublabel={`${marketBackedPrimaryCount} primaries are already market-backed across the fixture set.`} />
         </div>
 
         <div style={{ display: 'grid', gap: '18px' }}>
-          {snapshots.map((snapshot) => (
-            <FixtureCard key={snapshot.fixture.jobTitle} snapshot={snapshot} />
+          {groups.map((group) => (
+            <Card key={group.key} style={{ padding: '24px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: '14px', alignItems: 'center', flexWrap: 'wrap', marginBottom: '18px' }}>
+                <div>
+                  <div style={{ color: palette.orange, fontSize: '11px', fontWeight: 900, letterSpacing: '0.09em', textTransform: 'uppercase', marginBottom: '6px' }}>{group.label}</div>
+                  <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.6 }}>
+                    {group.summary.passed_count} of {group.summary.fixture_count} fixtures pass. {group.summary.stay_primary_count} currently lean stay-first.
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  <Pill tone={group.summary.pass_rate >= 80 ? 'low' : group.summary.pass_rate >= 60 ? 'medium' : 'high'}>
+                    {group.summary.pass_rate}% pass rate
+                  </Pill>
+                  <Pill tone="neutral">{group.summary.market_backed_primary_count} market-backed primaries</Pill>
+                </div>
+              </div>
+              <div style={{ display: 'grid', gap: '18px' }}>
+                {group.snapshots.map((snapshot) => (
+                  <FixtureCard key={`${group.key}-${snapshot.fixture.jobTitle}`} snapshot={snapshot} />
+                ))}
+              </div>
+            </Card>
           ))}
         </div>
       </div>

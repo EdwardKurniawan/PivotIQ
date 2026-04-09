@@ -23,6 +23,20 @@ Branch: `main`
 
 ## Most Recent Shipped Work
 
+### `pending current commit` Add senior fixtures + save mixed QA snapshots
+- Added senior-role QA catalog in [`data/senior-role-fixtures.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/data/senior-role-fixtures.js)
+- Generalized fixture helpers in [`lib/broad-role-fixtures.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/lib/broad-role-fixtures.js) so they now support grouped broad + senior snapshot generation
+- Upgraded [`app/internal/qa-fixtures/page.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/internal/qa-fixtures/page.js) and [`app/api/qa-fixtures/route.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/api/qa-fixtures/route.js) to show both fixture groups
+- Added seeding script [`scripts/save-qa-fixture-reports.mjs`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/scripts/save-qa-fixture-reports.mjs)
+- Added `npm run reports:seed-qa-fixtures`
+- Expanded [`scripts/test-broad-role-regression.mjs`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/scripts/test-broad-role-regression.mjs) so the QA fixture regression now covers both broad and senior catalogs
+- Tightened [`lib/report-quality.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/lib/report-quality.js) so marketing/customer leadership no longer get misread as finance-family reports during quality gating
+- Saved mixed QA snapshots into `edward.hardrianto@live.com`:
+  - `545898da-08ae-41df-9156-021a937ebe95` `Data Analyst`
+  - `28325476-caa6-4a7b-a95b-ecc0f2a7e897` `Finance Manager`
+  - `0eff2943-82e6-41c8-b10d-2dde56061df3` `Customer Success Manager`
+  - `231107f9-3a2a-4834-b67a-0b1a38ebdc71` `Senior HR Business Partner`
+
 ### `pending current commit` Add QA fixture viewer + stronger confidence copy
 - Added shared broad-role fixture helpers in [`lib/broad-role-fixtures.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/lib/broad-role-fixtures.js)
 - Added inspectable internal QA fixture viewer in [`app/internal/qa-fixtures/page.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/internal/qa-fixtures/page.js)
@@ -113,11 +127,11 @@ Branch: `main`
 ## Recommended Next Move
 Highest-leverage next build:
 
-1. Use the new QA fixture viewer to generate and manually inspect saved QA snapshots
-- The fixture catalog is now inspectable in-product, but we still want to push a few snapshots into saved reports for account-level QA
+1. Review the new saved QA snapshots in-account
+- The reports now exist as real saved reports, so the next leverage is qualitative review of the actual recommendation language and pacing in the dashboard/report flow
 
-2. Add a second fixture catalog for higher-seniority roles
-- Broad-role defaults are safer now; the next protection is making sure we do not over-correct on senior operators and managers
+2. Tune senior-fixture behavior if needed
+- Senior catalogs are live, but we still need to watch for over-flattening into stay-first language on legitimately stronger managers/leads
 
 3. Sharpen “why not this pivot yet?” explanation in paid reports
 - Use the stronger confidence copy and fixture findings to explain what is missing before a riskier pivot becomes the main move
@@ -130,9 +144,11 @@ Highest-leverage next build:
 - [`lib/report-refresh.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/lib/report-refresh.js)
 - [`lib/recommendation-quality.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/lib/recommendation-quality.js)
 - [`data/broad-role-fixtures.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/data/broad-role-fixtures.js)
+- [`data/senior-role-fixtures.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/data/senior-role-fixtures.js)
 - [`lib/broad-role-fixtures.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/lib/broad-role-fixtures.js)
 - [`app/internal/recommendation-quality/page.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/internal/recommendation-quality/page.js)
 - [`app/internal/qa-fixtures/page.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/internal/qa-fixtures/page.js)
+- [`scripts/save-qa-fixture-reports.mjs`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/scripts/save-qa-fixture-reports.mjs)
 - [`scripts/test-broad-role-regression.mjs`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/scripts/test-broad-role-regression.mjs)
 - [`scripts/test-report-quality.mjs`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/scripts/test-report-quality.mjs)
 - [`docs/project-update-2026-04-05.md`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/docs/project-update-2026-04-05.md)
@@ -140,6 +156,7 @@ Highest-leverage next build:
 
 ## Verification State
 Latest verified before this memory update:
+- `npm run reports:seed-qa-fixtures -- --email=edward.hardrianto@live.com --catalog=mixed --limit=4`
 - `npm run test:broad-roles`
 - `npm run test:report-quality`
 - `npm run test:refresh`
@@ -150,4 +167,4 @@ Latest verified before this memory update:
 ## Clean Resume Prompt
 Use this at the start of the next session:
 
-`Pick up PivotIQ from /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app. First read /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/memory.md and /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/docs/project-update-2026-04-05.md. Continue from the highest-leverage next move: use the new QA fixture viewer to generate inspectable saved snapshots, then add a higher-seniority fixture catalog and sharpen “why not this pivot yet?” copy in paid reports. Keep OpenRouter on nvidia/nemotron-3-nano-30b-a3b:free. Commit and push after code changes.`
+`Pick up PivotIQ from /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app. First read /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/memory.md and /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/docs/project-update-2026-04-05.md. Continue from the highest-leverage next move: review the new saved QA snapshots in-account, then tune any senior-fixture over-correction and sharpen “why not this pivot yet?” copy in paid reports. Keep OpenRouter on nvidia/nemotron-3-nano-30b-a3b:free. Commit and push after code changes.`
