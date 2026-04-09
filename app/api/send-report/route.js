@@ -1,5 +1,7 @@
 import { Resend } from 'resend';
 import { normalizeReportData, reportDataToEmailHtml } from '../../../lib/report-data';
+import { createSupabaseAdminClient } from '../../../lib/supabase/admin';
+import { scheduleOutcomeFollowups } from '../../../lib/reminder-events';
 
 function buildEmailHTML({ reportData }) {
   const normalized = normalizeReportData(reportData);
@@ -42,17 +44,31 @@ function buildEmailHTML({ reportData }) {
 
 export async function POST(req) {
   try {
-    const { email, jobTitle, industry, tier, reportData } = await req.json();
+    const { email, jobTitle, industry, tier, reportId, reportData } = await req.json();
 
     if (!email || !reportData) {
       return Response.json({ error: 'Missing required fields: email, reportData' }, { status: 400 });
     }
 
     if (!process.env.RESEND_API_KEY) {
+      const admin = createSupabaseAdminClient();
+      if (admin && tier === 'full' && reportId) {
+        try {
+          await scheduleOutcomeFollowups(admin, {
+            reportId,
+            userEmail: email,
+            jobTitle,
+            industry,
+          });
+        } catch (scheduleError) {
+          console.warn('Failed to schedule outcome followups:', scheduleError);
+        }
+      }
       return Response.json({ success: true, demoMode: true, id: 'demo-email' });
     }
 
     const resend = new Resend(process.env.RESEND_API_KEY);
+    const admin = createSupabaseAdminClient();
     const normalized = normalizeReportData(reportData, {
       job_title: jobTitle,
       industry,
@@ -73,10 +89,22 @@ export async function POST(req) {
       return Response.json({ error: error.message }, { status: 500 });
     }
 
+    if (admin && tier === 'full' && reportId) {
+      try {
+        await scheduleOutcomeFollowups(admin, {
+          reportId,
+          userEmail: email,
+          jobTitle,
+          industry,
+        });
+      } catch (scheduleError) {
+        console.warn('Failed to schedule outcome followups:', scheduleError);
+      }
+    }
+
     return Response.json({ success: true, id: data?.id });
   } catch (err) {
     console.error('send-report error:', err);
     return Response.json({ error: err.message }, { status: 500 });
   }
 }
-

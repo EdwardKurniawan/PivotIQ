@@ -76,6 +76,7 @@ async function loadPersistedReport(id) {
     tasks: report.tasks || [],
     email: user.email || '',
     tier: report.access_tier || 'free',
+    createdAt: report.created_at || '',
     startDate: report.roadmap_start_date || '',
     weekProgress: buildWeekProgressMap(report.week_progress || []),
     outcome: normalizeOutcomeEntry(Array.isArray(report.report_outcomes) ? report.report_outcomes[0] : report.report_outcomes),

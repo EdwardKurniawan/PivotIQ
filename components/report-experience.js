@@ -7,6 +7,7 @@ import { getBrowserLocale, getMessages } from '../lib/i18n';
 import {
   TRACTION_STATUS_OPTIONS,
   USEFULNESS_RATING_OPTIONS,
+  buildOutcomeFollowupState,
   buildOutcomeSummary,
   normalizeOutcomeEntry,
 } from '../lib/outcome-tracking';
@@ -1788,7 +1789,7 @@ function ExecutionLoopCard({ summary, planColor, progressPercent }) {
   );
 }
 
-function OutcomeTrackerCard({ outcome, summary, onSave, locale = 'en' }) {
+function OutcomeTrackerCard({ outcome, summary, followup, onSave, locale = 'en' }) {
   if (!outcome || !summary || !onSave) return null;
 
   const toneColor = summary.tone === 'strong'
@@ -1806,6 +1807,13 @@ function OutcomeTrackerCard({ outcome, summary, onSave, locale = 'en' }) {
           <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.7 }}>
             {summary.body} This feeds future recommendation quality and keeps your own report honest about what is actually working.
           </div>
+          {followup?.is_due && (
+            <div style={{ marginTop: '12px', padding: '12px 14px', borderRadius: '14px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${toneColor}30`, maxWidth: '760px' }}>
+              <div style={{ color: toneColor, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '5px' }}>Follow-up due</div>
+              <div style={{ color: palette.text, fontSize: '13px', fontWeight: 800, marginBottom: '4px' }}>{followup.title}</div>
+              <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.55 }}>{followup.body}</div>
+            </div>
+          )}
         </div>
         <div style={{ minWidth: '220px', padding: '14px 16px', borderRadius: '18px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
           <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Recommendation signal</div>
@@ -2179,6 +2187,10 @@ export default function ReportExperience({ payload, embedded = false }) {
   const completedWeeks = useMemo(() => getCompletedWeeks(weekProgressState), [weekProgressState]);
   const weekNotes = useMemo(() => getWeekNotes(weekProgressState), [weekProgressState]);
   const outcomeSummary = useMemo(() => buildOutcomeSummary(outcomeState), [outcomeState]);
+  const outcomeFollowup = useMemo(() => buildOutcomeFollowupState({
+    createdAt: payload.createdAt || reportData.generated_at || '',
+    outcome: outcomeState,
+  }), [payload.createdAt, reportData.generated_at, outcomeState]);
   const reportPaths = useMemo(() => (tier === 'full' && stayPath ? [stayPath, ...pivots] : pivots), [tier, stayPath, pivots]);
   const activePath = reportPaths[selectedPlanPath] || reportPaths[0] || pivot || {};
   const isStayPlan = tier === 'full' && Boolean(stayPath) && selectedPlanPath === 0;
@@ -2329,6 +2341,7 @@ export default function ReportExperience({ payload, embedded = false }) {
             jobTitle: payload.jobTitle || profile.job_title,
             industry: payload.industry || profile.industry,
             tier: 'full',
+            reportId: payload.reportId,
             reportData,
           }),
         });
@@ -3103,6 +3116,7 @@ export default function ReportExperience({ payload, embedded = false }) {
                 <OutcomeTrackerCard
                   outcome={outcomeState}
                   summary={outcomeSummary}
+                  followup={outcomeFollowup}
                   onSave={saveOutcomePatch}
                   locale={payload.uiLocale || payload.locale || getBrowserLocale() || reportData.locale}
                 />

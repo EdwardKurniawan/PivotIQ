@@ -1,5 +1,6 @@
 import { createSupabaseServerClient } from '../../../../../lib/supabase/server';
 import { createSupabaseAdminClient } from '../../../../../lib/supabase/admin';
+import { queueReminderEvent } from '../../../../../lib/reminder-events';
 
 async function getAuthorizedReport(supabase, reportId) {
   const {
@@ -16,20 +17,6 @@ async function getAuthorizedReport(supabase, reportId) {
     .single();
 
   return { user, report };
-}
-
-async function queueReminderEvent(supabase, reportId, userEmail, type, weekNumber, jobTitle, industry, scheduledFor) {
-  if (!userEmail || !scheduledFor) return;
-
-  await supabase.from('reminder_events').insert({
-    report_id: reportId,
-    user_email: userEmail,
-    type,
-    current_week: weekNumber,
-    job_title: jobTitle || 'Career Pivot Plan',
-    industry: industry || 'General',
-    scheduled_for: scheduledFor,
-  });
 }
 
 export async function PATCH(request, { params }) {
@@ -81,13 +68,15 @@ export async function PATCH(request, { params }) {
         nextReminder.setHours(9, 0, 0, 0);
         await queueReminderEvent(
           admin,
-          params.id,
-          user.email,
-          'upcoming',
-          1,
-          fullReport?.job_title,
-          fullReport?.industry,
-          nextReminder.toISOString()
+          {
+            reportId: params.id,
+            userEmail: user.email,
+            type: 'upcoming',
+            currentWeek: 1,
+            jobTitle: fullReport?.job_title,
+            industry: fullReport?.industry,
+            scheduledFor: nextReminder.toISOString(),
+          }
         );
       }
     }
@@ -116,13 +105,15 @@ export async function PATCH(request, { params }) {
       if (completed) {
         await queueReminderEvent(
           admin,
-          params.id,
-          user.email,
-          'celebration',
-          week_number,
-          fullReport?.job_title,
-          fullReport?.industry,
-          new Date().toISOString()
+          {
+            reportId: params.id,
+            userEmail: user.email,
+            type: 'celebration',
+            currentWeek: week_number,
+            jobTitle: fullReport?.job_title,
+            industry: fullReport?.industry,
+            scheduledFor: new Date().toISOString(),
+          }
         );
 
         const baseDate = start_date || fullReport?.roadmap_start_date;
@@ -132,13 +123,15 @@ export async function PATCH(request, { params }) {
           nextReminder.setHours(9, 0, 0, 0);
           await queueReminderEvent(
             admin,
-            params.id,
-            user.email,
-            'upcoming',
-            week_number + 1,
-            fullReport?.job_title,
-            fullReport?.industry,
-            nextReminder.toISOString()
+            {
+              reportId: params.id,
+              userEmail: user.email,
+              type: 'upcoming',
+              currentWeek: week_number + 1,
+              jobTitle: fullReport?.job_title,
+              industry: fullReport?.industry,
+              scheduledFor: nextReminder.toISOString(),
+            }
           );
         }
       }

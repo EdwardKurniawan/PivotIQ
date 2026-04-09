@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { createSupabaseServerClient } from '../../lib/supabase/server';
 import { isSupabaseConfigured } from '../../lib/supabase/config';
-import { buildOutcomeSummary } from '../../lib/outcome-tracking';
+import { buildOutcomeFollowupState, buildOutcomeSummary } from '../../lib/outcome-tracking';
 import { normalizeReportData } from '../../lib/report-data';
 import { buildExecutionSummary, buildWeekProgressMap, getCompletedWeeks } from '../../lib/progress-tracking';
 import { BrandLogo } from '../../components/brand-logo';
@@ -109,7 +109,12 @@ function buildCoachingSnapshot(report, messages, locale) {
     weekProgressMap,
     startDate: report.roadmap_start_date || '',
   });
-  const outcomeSummary = buildOutcomeSummary(Array.isArray(report.report_outcomes) ? report.report_outcomes[0] : report.report_outcomes);
+  const outcomeEntry = Array.isArray(report.report_outcomes) ? report.report_outcomes[0] : report.report_outcomes;
+  const outcomeSummary = buildOutcomeSummary(outcomeEntry);
+  const outcomeFollowup = buildOutcomeFollowupState({
+    createdAt: report.created_at || report.updated_at || '',
+    outcome: outcomeEntry,
+  });
   const nextWeekStart = report.roadmap_start_date && nextIncompleteWeek
     ? addDays(report.roadmap_start_date, (nextIncompleteWeek.week_number - 1) * 7)
     : null;
@@ -142,6 +147,7 @@ function buildCoachingSnapshot(report, messages, locale) {
     totalWeeks: roadmapWeeks.length,
     executionSummary,
     outcomeSummary,
+    outcomeFollowup,
     currentLabel,
     dateLabel,
   };
@@ -159,6 +165,11 @@ export default async function DashboardPage() {
   const data = await loadDashboardData();
   const configured = isSupabaseConfigured();
   const latestSnapshot = data.mode === 'ready' && data.reports[0] ? buildCoachingSnapshot(data.reports[0], messages, locale) : null;
+  const dueOutcomeReports = data.mode === 'ready'
+    ? data.reports
+        .map((report) => ({ report, snapshot: buildCoachingSnapshot(report, messages, locale) }))
+        .filter((item) => item.snapshot?.outcomeFollowup?.is_due)
+    : [];
 
   return (
     <div style={{ minHeight: '100vh', background: palette.bg, padding: '24px', position: 'relative', overflow: 'hidden' }}>
@@ -196,6 +207,26 @@ export default async function DashboardPage() {
               {messages.dashboard.heroBody}
             </p>
           </div>
+
+          {data.mode === 'ready' && dueOutcomeReports.length > 0 && (
+            <div style={{ borderRadius: '24px', padding: '22px', background: palette.panel, border: `1px solid ${palette.orange}33`, boxShadow: '0 20px 60px rgba(19, 33, 45, 0.10)' }}>
+              <div style={{ color: '#8B4A1B', fontSize: '12px', fontWeight: 800, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Outcome feedback due</div>
+              <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.72, margin: '0 0 12px', maxWidth: '760px' }}>
+                {dueOutcomeReports.length} report{dueOutcomeReports.length === 1 ? '' : 's'} now need a real-world check-in. Logging proof, manager conversations, and traction is how PivotIQ gets sharper.
+              </p>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                {dueOutcomeReports.slice(0, 4).map(({ report, snapshot }) => (
+                  <Link
+                    key={report.id}
+                    href={`/report/${report.id}`}
+                    style={{ borderRadius: '999px', padding: '8px 12px', background: 'rgba(255,255,255,0.72)', border: `1px solid ${palette.border}`, color: palette.text, fontSize: '12px', fontWeight: 800, textDecoration: 'none' }}
+                  >
+                    {report.job_title} · {snapshot.outcomeFollowup.title}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
 
           {data.mode === 'unconfigured' && (
             <div style={{ borderRadius: '24px', padding: '22px', background: palette.panel, border: `1px solid ${palette.border}` }}>
@@ -262,6 +293,13 @@ export default async function DashboardPage() {
                       <div style={{ color: palette.text, fontSize: '14px', fontWeight: 800, marginBottom: '4px' }}>{latestSnapshot.outcomeSummary.title}</div>
                       <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{latestSnapshot.outcomeSummary.body}</div>
                     </div>
+                    {latestSnapshot.outcomeFollowup?.is_due && (
+                      <div style={{ marginBottom: '14px', padding: '13px 14px', borderRadius: '16px', background: 'rgba(255,255,255,0.7)', border: `1px solid ${palette.orange}33`, maxWidth: '760px' }}>
+                        <div style={{ color: '#8B4A1B', fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Feedback due</div>
+                        <div style={{ color: palette.text, fontSize: '14px', fontWeight: 800, marginBottom: '4px' }}>{latestSnapshot.outcomeFollowup.title}</div>
+                        <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{latestSnapshot.outcomeFollowup.body}</div>
+                      </div>
+                    )}
                     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                       <span style={{ background: 'rgba(27,111,99,0.12)', border: '1px solid rgba(27,111,99,0.18)', color: '#1B6F63', borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 800 }}>
                         {latestSnapshot.currentLabel}
@@ -284,6 +322,11 @@ export default async function DashboardPage() {
                       <span style={{ background: 'rgba(255,255,255,0.58)', border: `1px solid ${palette.border}`, color: palette.text, borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 700 }}>
                         {latestSnapshot.outcomeSummary.traction_label}
                       </span>
+                      {latestSnapshot.outcomeFollowup?.is_due && (
+                        <span style={{ background: 'rgba(242,138,67,0.14)', border: '1px solid rgba(242,138,67,0.24)', color: '#8B4A1B', borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 800 }}>
+                          Feedback due
+                        </span>
+                      )}
                     </div>
                   </div>
                   <div style={{ color: palette.navy, fontWeight: 800 }}>{messages.dashboard.resume}</div>
@@ -337,6 +380,13 @@ export default async function DashboardPage() {
                           <div style={{ color: palette.text, fontSize: '13px', fontWeight: 800, marginBottom: '4px' }}>{snapshot.outcomeSummary.title}</div>
                           <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.55 }}>{snapshot.outcomeSummary.body}</div>
                         </div>
+                        {snapshot.outcomeFollowup?.is_due && (
+                          <div style={{ marginBottom: '12px', padding: '12px 13px', borderRadius: '14px', background: 'rgba(255,255,255,0.66)', border: `1px solid ${palette.orange}33`, maxWidth: '760px' }}>
+                            <div style={{ color: '#8B4A1B', fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '5px' }}>Feedback due</div>
+                            <div style={{ color: palette.text, fontSize: '13px', fontWeight: 800, marginBottom: '4px' }}>{snapshot.outcomeFollowup.title}</div>
+                            <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.55 }}>{snapshot.outcomeFollowup.body}</div>
+                          </div>
+                        )}
                         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                           {index === 0 && (
                               <span style={{ background: 'rgba(27,111,99,0.12)', border: '1px solid rgba(27,111,99,0.18)', color: '#1B6F63', borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 800 }}>
@@ -355,6 +405,11 @@ export default async function DashboardPage() {
                           <span style={{ background: 'rgba(255,255,255,0.58)', border: `1px solid ${palette.border}`, color: palette.text, borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 700 }}>
                             {snapshot.outcomeSummary.traction_label}
                           </span>
+                          {snapshot.outcomeFollowup?.is_due && (
+                            <span style={{ background: 'rgba(242,138,67,0.14)', border: '1px solid rgba(242,138,67,0.24)', color: '#8B4A1B', borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 800 }}>
+                              Feedback due
+                            </span>
+                          )}
                           <span style={{ background: tone.bg, border: `1px solid ${tone.border}`, color: tone.fg, borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 800 }}>
                             {report.risk_score} {messages.dashboard.riskScoreSuffix}
                           </span>

@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
 import {
+  buildOutcomeFollowupState,
   buildDefaultOutcomeEntry,
   buildOutcomeSummary,
+  hasMeaningfulOutcome,
   normalizeOutcomeEntry,
   tractionStatusLabel,
 } from '../lib/outcome-tracking.js';
@@ -56,9 +58,34 @@ function testOutcomeSummaryReflectsStrongValidation() {
   assert.ok(summary.score >= 90);
 }
 
+function testMeaningfulOutcomeIgnoresEmptyDefaults() {
+  assert.equal(hasMeaningfulOutcome(buildDefaultOutcomeEntry()), false);
+  assert.equal(hasMeaningfulOutcome({ usefulness_rating: 4 }), true);
+}
+
+function testOutcomeFollowupStates() {
+  const sevenDay = buildOutcomeFollowupState({
+    createdAt: '2026-04-01T09:00:00.000Z',
+    outcome: buildDefaultOutcomeEntry(),
+    now: '2026-04-09T09:00:00.000Z',
+  });
+  assert.equal(sevenDay.stage, 'seven_day_due');
+  assert.equal(sevenDay.is_due, true);
+
+  const twentyOneDay = buildOutcomeFollowupState({
+    createdAt: '2026-03-15T09:00:00.000Z',
+    outcome: { built_proof_asset: true, manager_conversation_done: false, traction_status: 'no_signal' },
+    now: '2026-04-09T09:00:00.000Z',
+  });
+  assert.equal(twentyOneDay.stage, 'twenty_one_day_refresh');
+  assert.equal(twentyOneDay.is_due, true);
+}
+
 testDefaultOutcomeEntry();
 testNormalizeOutcomeEntry();
 testOutcomeSummaryReflectsMomentum();
 testOutcomeSummaryReflectsStrongValidation();
+testMeaningfulOutcomeIgnoresEmptyDefaults();
+testOutcomeFollowupStates();
 
 console.log('Outcome tracking tests passed.');
