@@ -238,6 +238,125 @@ function testStayAdvanceLearningPathDoesNotInheritPivotCourse() {
   assert.equal(stayGaps[1].resource_title, 'Google AI Essentials');
 }
 
+function testFinanceSyntheticTitleFallsBackToCanonicalRole() {
+  const report = buildDemoReportData(
+    'FP&A Analyst',
+    'Finance',
+    ['Forecasting and planning', 'Scenario modeling and sensitivity analysis'],
+    {
+      selected_tasks: [{ label: 'Forecasting and planning' }],
+      primary_tasks: ['Forecasting and planning', 'Scenario modeling and sensitivity analysis'],
+      domain_focus: 'commercial planning and pricing',
+    }
+  );
+
+  report.pivots[0] = {
+    ...report.pivots[0],
+    id: 'fpga-digital-sales-strategy',
+    title: 'FP&A Strategist – Commercial Growth & Pricing Optimization',
+    skill_gaps: [
+      {
+        skill_name: 'Product Monetization',
+        category: 'domain',
+        current_strength: 'Knows the planning context.',
+        required_level: 'Can connect pricing to business trade-offs.',
+        gap_priority: 'critical',
+        why_it_matters: 'Commercial finance teams need pricing fluency.',
+        evidence_you_already_have: 'Already works on forecasts.',
+        how_to_close_gap: 'Practice monetization analysis on one pricing case.',
+      },
+    ],
+    live_market_signal: {
+      matched_openings_count: 0,
+      profile_fit_score: 0,
+      ranking_reason: 'This pivot is being pushed down because the market signal is thin.',
+    },
+    ranking_reason: 'This pivot is being pushed down because the market signal is thin.',
+  };
+
+  const normalized = normalizeReportData(report);
+  assert.match(normalized.pivots[0].title, /Finance Business Partner|Strategic Finance Analyst|Commercial Finance Manager|FP&A Manager|Finance Systems Manager/i);
+  assertNoNegativeTopCopy(normalized);
+}
+
+function testProjectManagerOverSeniorTitlesFallBackToCanonicalRole() {
+  const report = buildDemoReportData(
+    'Project Manager',
+    'Consulting',
+    ['Stakeholder updates and coordination', 'Project tracking and follow-up'],
+    {
+      selected_tasks: [{ label: 'Stakeholder updates and coordination' }],
+      primary_tasks: ['Stakeholder updates and coordination', 'Project tracking and follow-up'],
+      domain_focus: 'client delivery and execution',
+    }
+  );
+
+  report.pivots[0] = {
+    ...report.pivots[0],
+    id: 'director-of-strategic-execution',
+    title: 'Director of Strategic Execution',
+    live_market_signal: {
+      matched_openings_count: 0,
+      profile_fit_score: 0,
+    },
+  };
+
+  const normalized = normalizeReportData(report);
+  assert.match(normalized.pivots[0].title, /Project Operations Manager|Program Operations Manager|Delivery Operations Manager|Change Management Lead|Portfolio Operations Manager|Workflow Operations Manager/i);
+}
+
+function testHrLowerPivotDoesNotKeepLegalSkillLeakage() {
+  const report = buildDemoReportData(
+    'HR Business Partner',
+    'HR',
+    ['Onboarding design and enablement workflows', 'People operations reporting'],
+    {
+      selected_tasks: [{ label: 'Onboarding design and enablement workflows' }],
+      primary_tasks: ['Onboarding design and enablement workflows', 'People operations reporting'],
+      domain_focus: 'manager enablement and people operations',
+    }
+  );
+
+  report.pivots[2] = {
+    ...report.pivots[2],
+    id: 'ai-program-manager',
+    title: 'AI Program Manager',
+    skill_gaps: [
+      {
+        skill_name: 'Clause library and approval routing',
+        category: 'domain',
+        current_strength: 'Handles policy questions today.',
+        required_level: 'Can map legal routing systems.',
+        gap_priority: 'critical',
+        why_it_matters: 'Legal teams need routing discipline.',
+        evidence_you_already_have: 'Works cross-functionally.',
+        how_to_close_gap: 'Study contract systems.',
+      },
+    ],
+  };
+
+  const normalized = normalizeReportData(report);
+  const lowerPivotSkills = (normalized.pivots[2].skill_gaps || []).map((skill) => skill.skill_name).join(' ');
+  assert.doesNotMatch(lowerPivotSkills, /Clause library|approval routing|contract/i);
+}
+
+function testLearningPathIsPersistedInNormalizedReport() {
+  const report = buildDemoReportData(
+    'Project Manager',
+    'Consulting',
+    ['Stakeholder updates and coordination', 'Project tracking and follow-up'],
+    {
+      selected_tasks: [{ label: 'Stakeholder updates and coordination' }],
+      primary_tasks: ['Stakeholder updates and coordination', 'Project tracking and follow-up'],
+    }
+  );
+
+  const normalized = normalizeReportData(report);
+  assert.ok((normalized.pivots[0].learning_path || []).length >= 1);
+  assert.ok((normalized.stay_path.learning_path || []).length >= 1);
+  assert.ok(normalized.stay_path.learning_path[0].resource_title);
+}
+
 testTopPivotFamilyRepairAndCopy();
 testGenericAiResourceRemovedFromNonAiGap();
 testFirst30DaysReferencesFinalPivot();
@@ -246,5 +365,9 @@ testStayAdvancePremiumSectionsArePresent();
 testEmailHtmlStartsWithActionPlan();
 testProcurementTopSkillUsesProcurementResource();
 testStayAdvanceLearningPathDoesNotInheritPivotCourse();
+testFinanceSyntheticTitleFallsBackToCanonicalRole();
+testProjectManagerOverSeniorTitlesFallBackToCanonicalRole();
+testHrLowerPivotDoesNotKeepLegalSkillLeakage();
+testLearningPathIsPersistedInNormalizedReport();
 
 console.log('Report quality tests passed.');
