@@ -32,7 +32,7 @@ function testMarketFitCanBeatRawModelScore() {
 
 function testNoOpeningFallbackKeepsOrderingUsable() {
   const stronger = rankPivotWithMarketSignal(
-    { title: 'Procurement Strategy Lead', match_score: 84 },
+    { title: 'Spend Analytics Manager', match_score: 84 },
     {
       matched_openings_count: 0,
       profile_fit_score: 0,
@@ -121,6 +121,37 @@ function testSpecializedRoleNeedsRoleNativeTitleEvidence() {
   );
 }
 
+function testSparseCoverageRiskyTitlesGetPenalized() {
+  const risky = rankPivotWithMarketSignal(
+    { title: 'Contract Lifecycle Automation Architect', match_score: 78, decision_frame: 'safest transition' },
+    {
+      matched_openings_count: 0,
+      profile_fit_score: 0,
+      overlap_skills: [],
+      missing_required_skills: [],
+      model_only_skill_gaps: ['Prompt Engineering'],
+    },
+    { job_title: 'Legal Operations Manager' }
+  );
+
+  const safer = rankPivotWithMarketSignal(
+    { title: 'Legal Operations Analyst', match_score: 72, decision_frame: 'safest transition' },
+    {
+      matched_openings_count: 0,
+      profile_fit_score: 0,
+      overlap_skills: [],
+      missing_required_skills: [],
+      model_only_skill_gaps: ['Prompt Engineering'],
+    },
+    { job_title: 'Legal Operations Manager' }
+  );
+
+  assert.ok(
+    safer.ranking_score > risky.ranking_score,
+    'Under sparse market coverage, a safer canonical title should outrank a stretched architect-style title.'
+  );
+}
+
 try {
   testMarketFitCanBeatRawModelScore();
   console.log('PASS 1: market fit can outrank a higher raw model score');
@@ -133,6 +164,9 @@ try {
 
   testSpecializedRoleNeedsRoleNativeTitleEvidence();
   console.log('PASS 4: specialized roles require role-native market evidence');
+
+  testSparseCoverageRiskyTitlesGetPenalized();
+  console.log('PASS 5: sparse coverage penalizes stretched specialized titles');
 } catch (error) {
   console.error(error.message);
   process.exit(1);
