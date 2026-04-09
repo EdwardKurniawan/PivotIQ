@@ -1,55 +1,12 @@
 import assert from 'node:assert/strict';
+import { BROAD_ROLE_FIXTURES, BROAD_ROLE_FIXTURE_CLARIFIERS } from '../data/broad-role-fixtures.js';
 import { buildDemoReportData, normalizeReportData } from '../lib/report-data.js';
-
-const fixtures = [
-  {
-    jobTitle: 'Data Analyst',
-    industry: 'SaaS',
-    tasks: ['Dashboard creation', 'SQL analysis', 'Stakeholder insights'],
-    topPivotPattern: /(data|analytics|business operations|business intelligence|strategy and operations|operations manager)/i,
-    stayPattern: /(strategic operations manager|analytics|operations lead|higher-leverage version)/i,
-  },
-  {
-    jobTitle: 'Customer Success Manager',
-    industry: 'SaaS',
-    tasks: ['Renewal prep', 'Account health reviews', 'Stakeholder communication'],
-    topPivotPattern: /(customer|account|enablement|operations)/i,
-    stayPattern: /(customer strategy lead|customer success lead|customer operations lead|higher-leverage version)/i,
-  },
-  {
-    jobTitle: 'Executive Assistant',
-    industry: 'Healthcare',
-    tasks: ['Calendar coordination', 'Meeting prep', 'Executive follow-up'],
-    topPivotPattern: /(operations|administrative|business operations|executive operations)/i,
-    stayPattern: /(higher-leverage version|operations lead|executive operations lead)/i,
-  },
-  {
-    jobTitle: 'Operations Manager',
-    industry: 'Manufacturing',
-    tasks: ['Process mapping', 'Workflow coordination', 'Status reporting'],
-    topPivotPattern: /(operations|program|project|delivery|workflow)/i,
-    stayPattern: /(program operations lead|operations lead|higher-leverage version)/i,
-  },
-  {
-    jobTitle: 'Marketing Manager',
-    industry: 'Retail',
-    tasks: ['Campaign planning', 'Performance reporting', 'Cross-functional launch coordination'],
-    topPivotPattern: /(marketing|gtm|growth|product marketing|operations)/i,
-    stayPattern: /(marketing strategy lead|marketing operations lead|growth strategy lead|higher-leverage version)/i,
-  },
-];
 
 function buildFixtureReport({ jobTitle, industry, tasks }) {
   return normalizeReportData(buildDemoReportData(jobTitle, industry, tasks, {
     selected_tasks: tasks.map((label) => ({ label })),
     primary_tasks: tasks,
-    clarifiers: {
-      goal_now: 'hybrid_transition',
-      timeline_urgency: 'within_6_months',
-      years_experience_band: '6_10',
-      location_preference: 'united_states',
-      ai_maturity: 'weekly',
-    },
+    clarifiers: BROAD_ROLE_FIXTURE_CLARIFIERS,
   }));
 }
 
@@ -60,7 +17,7 @@ function assertNoSyntheticDrift(title, label) {
 }
 
 function testBroadRoleFixturesStaySane() {
-  for (const fixture of fixtures) {
+  for (const fixture of BROAD_ROLE_FIXTURES) {
     const normalized = buildFixtureReport(fixture);
     const primary = normalized.recommendation_stack?.primary;
     const backup = normalized.recommendation_stack?.conservative_backup;

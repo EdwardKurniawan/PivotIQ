@@ -660,6 +660,83 @@ function testStrongProofLetsActivePivotStayPrimaryWhenSignalIsStrategyLed() {
   assert.match(normalized.recommendation_stack.decision_brief.summary, /already have enough proof/i);
 }
 
+function testHighRiskLowConfidencePivotStillFailsSafeToStay() {
+  const report = buildDemoReportData(
+    'Project Manager',
+    'Consulting',
+    ['Stakeholder updates and coordination', 'Project tracking and follow-up'],
+    {
+      selected_tasks: [{ label: 'Stakeholder updates and coordination' }],
+      primary_tasks: ['Stakeholder updates and coordination', 'Project tracking and follow-up'],
+      clarifiers: {
+        goal_now: 'active_pivot',
+        timeline_urgency: 'within_3_months',
+        years_experience_band: '3_5',
+        location_preference: 'europe',
+        ai_maturity: 'weekly',
+        proof_state: 'dashboard_or_analysis',
+        domain_focus: 'client delivery and execution',
+      },
+    }
+  );
+
+  report.summary.overall_score = 83;
+  report.pivots[0] = {
+    ...report.pivots[0],
+    id: 'program-operations-manager',
+    title: 'Program Operations Manager',
+    live_market_signal: {
+      matched_openings_count: 0,
+      profile_fit_score: 12,
+      missing_required_skills: ['Operating rhythm design'],
+      model_only_skill_gaps: ['Portfolio governance'],
+    },
+    match_score: 74,
+  };
+
+  const normalized = normalizeReportData(report);
+  assert.equal(normalized.recommendation_stack.primary.type, 'stay');
+  assert.equal(normalized.recommendation_stack.conservative_backup.confidence_state, 'low-confidence');
+}
+
+function testBroadRoleThinSignalDefaultsToStayBeforeTitleJump() {
+  const report = buildDemoReportData(
+    'Marketing Manager',
+    'Retail',
+    ['Campaign planning', 'Performance reporting', 'Cross-functional launch coordination'],
+    {
+      selected_tasks: [{ label: 'Campaign planning' }],
+      primary_tasks: ['Campaign planning', 'Performance reporting'],
+      clarifiers: {
+        goal_now: 'hybrid_transition',
+        timeline_urgency: 'within_6_months',
+        years_experience_band: '6_10',
+        location_preference: 'united_states',
+        ai_maturity: 'weekly',
+        domain_focus: 'campaign strategy and measurement',
+      },
+    }
+  );
+
+  report.summary.overall_score = 74;
+  report.pivots[0] = {
+    ...report.pivots[0],
+    id: 'marketing-strategy-lead',
+    title: 'Marketing Strategy Lead',
+    live_market_signal: {
+      matched_openings_count: 1,
+      profile_fit_score: 24,
+      missing_required_skills: ['Experiment design'],
+      model_only_skill_gaps: [],
+    },
+    match_score: 83,
+  };
+
+  const normalized = normalizeReportData(report);
+  assert.equal(normalized.recommendation_stack.primary.type, 'stay');
+  assert.match(normalized.recommendation_stack.decision_brief.summary, /broader role family|external signal is still thin/i);
+}
+
 function testExistingProofUpgradesProofBuildersInsteadOfStartingFromScratch() {
   const report = buildDemoReportData(
     'Operations Manager',
@@ -795,6 +872,8 @@ testLowTechnicalCapabilityKeepsTechnicalStretchPivotLowConfidence();
 testStrictSalaryTolerancePrefersSaferStayPathWhenPivotPayoffIsThin();
 testActivePivotGoalKeepsMarketBackedPivotPrimary();
 testStrongProofLetsActivePivotStayPrimaryWhenSignalIsStrategyLed();
+testHighRiskLowConfidencePivotStillFailsSafeToStay();
+testBroadRoleThinSignalDefaultsToStayBeforeTitleJump();
 testExistingProofUpgradesProofBuildersInsteadOfStartingFromScratch();
 testLowExperienceStretchTitleFallsBackToStayFirst();
 testAdvancedAiMaturitySkipsBeginnerLearningStart();

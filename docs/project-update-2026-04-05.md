@@ -827,3 +827,40 @@ Next best product move:
 1. Use the new tuning-playbook output to start making selected recommendation-policy changes in the engine, starting with the highest-confidence levers.
 2. Optionally persist a lightweight QA fixture catalog so broad-role checks can be regenerated and inspected more easily, not just tested.
 3. Keep improving the user-facing refresh language so the product explains not only what changed, but what got safer, stronger, or more actionable.
+
+## 2026-04-09 selected tuning policies are now applied
+
+This pass moved the recommendation-quality work from observation into actual runtime behavior for broader white-collar roles.
+
+What shipped:
+
+- Tightened [`lib/report-data.js`](lib/report-data.js) so recommendation stacking now:
+  - suppresses low-confidence active-pivot primaries more aggressively
+  - biases broader role families toward stay-and-advance when external signal is thin
+  - only preserves a strategy-led active pivot when the user has real proof and at least some market overlap
+- Added a reusable QA fixture catalog in [`data/broad-role-fixtures.js`](data/broad-role-fixtures.js)
+- Refactored [`scripts/test-broad-role-regression.mjs`](scripts/test-broad-role-regression.mjs) to use that catalog instead of inline fixtures
+- Expanded [`scripts/test-report-quality.mjs`](scripts/test-report-quality.mjs) with new coverage for:
+  - high-risk but low-confidence pivots still failing safe to stay
+  - broader-role thin-signal reports defaulting to stay before a title jump
+- Kept the recommendation-quality dashboard tests current in [`scripts/test-recommendation-quality.mjs`](scripts/test-recommendation-quality.mjs)
+
+What changed in product behavior:
+
+- Active-pivot users no longer get a weak stretch pivot primary just because role pressure is high.
+- Broader generalist role families now need cleaner evidence before PivotIQ tells the user to chase a bigger external title.
+- The broad-role QA suite is now easier to inspect and reuse for future refresh/regeneration work.
+
+Verification completed:
+
+- `npm run test:report-quality`
+- `npm run test:recommendation-quality`
+- `npm run test:broad-roles`
+- `npm run build`
+- `git diff --check`
+
+Next best product move:
+
+1. Use the broad-role fixture catalog to generate and inspect saved QA reports, not just run regression tests.
+2. Start feeding recommendation-quality playbook signals back into more user-facing copy, especially around why PivotIQ stayed conservative.
+3. Consider adding a second fixture catalog for higher-seniority roles so we can catch over-correction as we make broad-role defaults safer.
