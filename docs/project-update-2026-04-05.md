@@ -713,3 +713,64 @@ Next best product move:
 1. Add report refresh comparisons that explicitly tell the user how the new intake clarifiers changed the recommendation stack.
 2. Start measuring which clarifiers most improve recommendation usefulness and follow-through in the outcome dashboard.
 3. Keep expanding broad-role QA fixtures so the richer intake layer is tested across more real white-collar role families.
+
+## 2026-04-09 refresh comparison UX is live
+
+This pass upgraded the refresh experience from a vague “report refreshed” state into a clearer before/after explanation layer.
+
+What shipped:
+
+- Expanded `buildRefreshSummary()` in `lib/report-refresh.js` so refreshes now capture:
+  - before/after comparison rows
+  - what changed in the report
+  - why PivotIQ changed it
+  - which intake inputs shaped the refresh
+  - which report sections were updated
+- Expanded normalized refresh-summary support in `lib/report-data.js` so those new comparison fields persist safely in stored report data.
+- Upgraded the refresh UI in `components/report-experience.js` with:
+  - a `Before vs after` section
+  - a `Why PivotIQ changed this` section
+  - an `Inputs shaping this refresh` section
+  - clearer highlighting of updated sections
+- Expanded refresh regression coverage in `scripts/test-report-refresh.mjs`.
+
+What changed in product behavior:
+
+- Users can now see the difference between the old and refreshed report on:
+  - primary move
+  - confidence
+  - decision framing
+  - first learning focus
+  - proof asset
+- Refreshes now explain not only what changed, but also what signal caused it:
+  - milestones completed
+  - proof-ready progress
+  - manager conversations
+  - outcome traction
+  - recent progress notes
+- Refreshes also surface the intake inputs that shaped the recommendation, such as:
+  - goal
+  - timeline
+  - experience
+  - AI maturity
+  - technical capability
+  - pay tolerance
+  - proof state
+
+Verification completed:
+
+- `npm run test:refresh`
+- `npm run test:report-quality`
+- `npm run build`
+- `git diff --check`
+
+New regression coverage added:
+
+- refresh summaries now preserve change drivers, input context, comparison rows, and updated sections
+- refresh summaries now compare learning focus and proof asset, not only the primary move
+
+Next best product move:
+
+1. Use outcome data to tune recommendation logic more directly in the internal quality dashboard.
+2. Add persistent broad-role QA fixtures for roles like Data Analyst, Customer Success Manager, Executive Assistant, Operations Manager, and Marketing Manager.
+3. Consider a second refresh pass later that shows not only `before vs after`, but also `what improved because of your action` in more user-facing language.

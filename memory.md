@@ -23,6 +23,19 @@ Branch: `main`
 
 ## Most Recent Shipped Work
 
+### `pending current commit` Refresh comparison UX
+- Upgraded refresh summaries in [`lib/report-refresh.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/lib/report-refresh.js) so they now persist:
+  - before/after comparison rows
+  - change drivers
+  - inputs considered
+  - updated sections
+- Upgraded refresh rendering in [`components/report-experience.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/components/report-experience.js) with:
+  - `Before vs after`
+  - `Why PivotIQ changed this`
+  - `Inputs shaping this refresh`
+- Extended normalization in [`lib/report-data.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/lib/report-data.js)
+- Added refresh regression coverage in [`scripts/test-report-refresh.mjs`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/scripts/test-report-refresh.mjs)
+
 ### `c6c6b33` Add Phase 2 intake precision inputs
 - Added progressive-disclosure intake fields:
   - `technical_capability`
@@ -70,26 +83,25 @@ Branch: `main`
 ## Recommended Next Move
 Highest-leverage next build:
 
-1. Add refresh comparison UX
-- When a report is refreshed, explicitly show:
-  - what changed
-  - why it changed
-  - which inputs/progress signals caused the change
-- This should make the richer intake and progress loop feel visible and valuable.
-
-2. Feed outcomes back into recommendation tuning
+1. Feed outcomes back into recommendation tuning
 - Use the recommendation-quality dashboard data to identify:
   - which confidence states actually create traction
   - which role families benefit most from stay-vs-pivot bias
   - which proof builders correlate with stronger follow-through
 
-3. Expand broad-role QA fixtures
+2. Expand broad-role QA fixtures
 - Add persistent QA fixtures for broad white-collar roles like:
   - Data Analyst
   - Customer Success Manager
   - Executive Assistant
   - Operations Manager
   - Marketing Manager
+
+3. Consider a second refresh pass later
+- Make the refresh language even more user-facing by showing:
+  - what improved because of user action
+  - what got de-risked
+  - what is still unproven
 
 ## Files Most Likely To Matter Next Session
 - [`app/audit/page.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/audit/page.js)
@@ -104,6 +116,7 @@ Highest-leverage next build:
 
 ## Verification State
 Latest verified before this memory update:
+- `npm run test:refresh`
 - `npm run test:report-quality`
 - `npm run test:course-catalog`
 - `npm run test:market-ranking`
@@ -117,4 +130,4 @@ Latest verified before this memory update:
 ## Clean Resume Prompt
 Use this at the start of the next session:
 
-`Pick up PivotIQ from /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app. First read /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/memory.md and /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/docs/project-update-2026-04-05.md. Continue from the highest-leverage next move: build the refresh comparison UX so users can clearly see what changed after progress logging or richer intake inputs. Keep OpenRouter on nvidia/nemotron-3-nano-30b-a3b:free. Commit and push after code changes.`
+`Pick up PivotIQ from /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app. First read /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/memory.md and /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/docs/project-update-2026-04-05.md. Continue from the highest-leverage next move: use outcome data to tune recommendation logic, then add broader QA fixtures for more white-collar roles. Keep OpenRouter on nvidia/nemotron-3-nano-30b-a3b:free. Commit and push after code changes.`

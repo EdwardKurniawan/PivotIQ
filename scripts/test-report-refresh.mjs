@@ -50,6 +50,21 @@ function testRefreshContextBecomesReadyWithProofAndOutcome() {
 
 function testRefreshSummaryCapturesPrimaryMoveChange() {
   const previous = {
+    profile: {
+      clarifiers: {
+        goal_now: 'active_pivot',
+        timeline_urgency: 'within_6_months',
+        technical_capability: 'sql_bi',
+        proof_state: 'workflow_or_playbook',
+      },
+    },
+    decision: {
+      headline: 'Build toward Program Operations Manager now',
+    },
+    paid_value_summary: {
+      first_learning_step: 'SQL / BI: DataCamp',
+      first_proof_asset: 'Program Operations Manager proof asset',
+    },
     recommendation_stack: {
       primary: {
         id: 'program-operations-manager',
@@ -60,6 +75,21 @@ function testRefreshSummaryCapturesPrimaryMoveChange() {
     },
   };
   const next = {
+    profile: {
+      clarifiers: {
+        goal_now: 'active_pivot',
+        timeline_urgency: 'within_6_months',
+        technical_capability: 'sql_bi',
+        proof_state: 'workflow_or_playbook',
+      },
+    },
+    decision: {
+      headline: 'Build toward Delivery Operations Manager now',
+    },
+    paid_value_summary: {
+      first_learning_step: 'Workflow automation design: Zapier Learn in 14 Days',
+      first_proof_asset: 'Delivery Operations Manager proof asset',
+    },
     recommendation_stack: {
       primary: {
         id: 'delivery-operations-manager',
@@ -90,6 +120,11 @@ function testRefreshSummaryCapturesPrimaryMoveChange() {
   assert.equal(summary.previous_primary, 'Program Operations Manager');
   assert.equal(summary.current_primary, 'Delivery Operations Manager');
   assert.ok(summary.what_changed.some((item) => /Primary move changed/i.test(item)));
+  assert.ok(summary.comparison_rows.some((row) => row.label === 'Primary move' && row.changed));
+  assert.ok(summary.comparison_rows.some((row) => row.label === 'First learning focus' && row.changed));
+  assert.ok(summary.change_drivers.some((item) => /proof-ready milestone/i.test(item)));
+  assert.ok(summary.inputs_considered.some((item) => /Goal now: Active pivot/i.test(item)));
+  assert.ok(summary.sections_updated.includes('Primary move'));
 }
 
 function testNormalizeReportPreservesRefreshFields() {
@@ -104,6 +139,12 @@ function testNormalizeReportPreservesRefreshFields() {
       next_action: 'Share the forecast scenario model.',
       refreshed_at: '2026-04-09T11:00:00.000Z',
       confidence_delta: 'Strategy-led -> Market-backed',
+      change_drivers: ['1 proof-ready milestone told PivotIQ you have stronger visible evidence now.'],
+      inputs_considered: ['Technical capability: SQL / BI'],
+      comparison_rows: [
+        { key: 'primary_move', label: 'Primary move', before: 'Finance Systems Manager', after: 'Finance Systems Manager', changed: false },
+      ],
+      sections_updated: ['Confidence'],
     },
     refresh_count: 2,
     refreshed_at: '2026-04-09T11:00:00.000Z',
@@ -111,6 +152,10 @@ function testNormalizeReportPreservesRefreshFields() {
 
   assert.equal(normalized.refresh_count, 2);
   assert.equal(normalized.refresh_summary.current_primary, 'Finance Systems Manager');
+  assert.equal(normalized.refresh_summary.change_drivers[0], '1 proof-ready milestone told PivotIQ you have stronger visible evidence now.');
+  assert.equal(normalized.refresh_summary.inputs_considered[0], 'Technical capability: SQL / BI');
+  assert.equal(normalized.refresh_summary.comparison_rows[0].label, 'Primary move');
+  assert.equal(normalized.refresh_summary.sections_updated[0], 'Confidence');
   assert.equal(normalized.refreshed_at, '2026-04-09T11:00:00.000Z');
 }
 

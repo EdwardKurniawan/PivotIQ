@@ -1796,6 +1796,11 @@ function RefreshFromProgressCard({ refreshContext, refreshSummary, status, onRef
   const isLoading = status === 'loading';
   const isDone = status === 'done';
   const isFailed = status === 'failed';
+  const comparisonRows = refreshSummary?.comparison_rows || [];
+  const changedRows = comparisonRows.filter((row) => row.changed);
+  const changeDrivers = refreshSummary?.change_drivers?.length ? refreshSummary.change_drivers : (refreshContext.progress_notes || []);
+  const inputsConsidered = refreshSummary?.inputs_considered || [];
+  const sectionsUpdated = refreshSummary?.sections_updated || [];
   const buttonLabel = isLoading
     ? 'Refreshing report...'
     : refreshContext.is_ready
@@ -1846,6 +1851,106 @@ function RefreshFromProgressCard({ refreshContext, refreshSummary, status, onRef
             {refreshSummary.what_changed.map((item) => (
               <div key={item} style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{item}</div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {(sectionsUpdated.length > 0 || changedRows.length > 0) && (
+        <div style={{ padding: '14px 16px', borderRadius: '16px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}`, marginBottom: '12px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap', alignItems: 'center', marginBottom: '10px' }}>
+            <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800 }}>Before vs after</div>
+            {sectionsUpdated.length > 0 && (
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                {sectionsUpdated.map((item) => (
+                  <span
+                    key={item}
+                    style={{
+                      borderRadius: '999px',
+                      padding: '5px 8px',
+                      fontSize: '10px',
+                      fontWeight: 900,
+                      color: palette.teal,
+                      background: 'rgba(27,111,99,0.10)',
+                      border: '1px solid rgba(27,111,99,0.18)',
+                      letterSpacing: '0.04em',
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+          <div style={{ display: 'grid', gap: '10px' }}>
+            {comparisonRows.map((row) => (
+              <div
+                key={row.key}
+                style={{
+                  padding: '11px 12px',
+                  borderRadius: '14px',
+                  background: row.changed ? 'rgba(27,111,99,0.08)' : 'rgba(19,32,42,0.04)',
+                  border: `1px solid ${row.changed ? 'rgba(27,111,99,0.16)' : palette.border}`,
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '10px', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap' }}>
+                  <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.08em', textTransform: 'uppercase' }}>{row.label}</div>
+                  <div style={{ color: row.changed ? palette.teal : palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                    {row.changed ? 'Updated' : 'No change'}
+                  </div>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '10px' }} className="two-col">
+                  <div style={{ padding: '10px 11px', borderRadius: '12px', background: 'rgba(255,255,255,0.62)', border: `1px solid ${palette.border}` }}>
+                    <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '5px' }}>Before</div>
+                    <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.55 }}>{row.before}</div>
+                  </div>
+                  <div style={{ padding: '10px 11px', borderRadius: '12px', background: row.changed ? 'rgba(27,111,99,0.10)' : 'rgba(255,255,255,0.62)', border: `1px solid ${row.changed ? 'rgba(27,111,99,0.18)' : palette.border}` }}>
+                    <div style={{ color: row.changed ? palette.teal : palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '5px' }}>After</div>
+                    <div style={{ color: palette.text, fontSize: '12px', lineHeight: 1.55, fontWeight: row.changed ? 800 : 700 }}>{row.after}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {(changeDrivers.length > 0 || inputsConsidered.length > 0) && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '12px', marginBottom: '12px' }} className="two-col">
+          <div style={{ padding: '14px 16px', borderRadius: '16px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
+            <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '8px' }}>Why PivotIQ changed this</div>
+            <div style={{ display: 'grid', gap: '7px' }}>
+              {changeDrivers.slice(0, 5).map((item) => (
+                <div key={item} style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{item}</div>
+              ))}
+            </div>
+          </div>
+          <div style={{ padding: '14px 16px', borderRadius: '16px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
+            <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '8px' }}>Inputs shaping this refresh</div>
+            {inputsConsidered.length > 0 ? (
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                {inputsConsidered.map((item) => (
+                  <span
+                    key={item}
+                    style={{
+                      color: palette.textSoft,
+                      fontSize: '11px',
+                      fontWeight: 800,
+                      padding: '6px 9px',
+                      borderRadius: '999px',
+                      background: 'rgba(19,32,42,0.05)',
+                      border: `1px solid ${palette.border}`,
+                    }}
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>
+                This refresh was driven mainly by the progress and outcome signal you logged.
+              </div>
+            )}
           </div>
         </div>
       )}
