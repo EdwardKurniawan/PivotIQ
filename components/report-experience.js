@@ -830,6 +830,93 @@ function RecommendationWhyCard({ pivot, color, first30Days }) {
   );
 }
 
+function RecommendationStackCard({ stack, pivotColor, stayColor = palette.teal }) {
+  const cards = [
+    stack?.primary ? { ...stack.primary, tone: stack.primary.type === 'stay' ? stayColor : pivotColor, primary: true } : null,
+    stack?.conservative_backup ? { ...stack.conservative_backup, tone: palette.orange, primary: false } : null,
+    stack?.stay_path ? { ...stack.stay_path, tone: stayColor, primary: false } : null,
+  ]
+    .filter(Boolean)
+    .filter((item, index, items) => items.findIndex((candidate) => candidate.id === item.id) === index);
+
+  if (!cards.length) return null;
+
+  return (
+    <div className="piq-card" style={{ marginTop: '-22px', marginBottom: '18px', padding: '24px', background: 'linear-gradient(180deg, rgba(255,255,255,0.96), rgba(249,243,235,0.98))', boxShadow: '0 24px 54px rgba(19, 32, 42, 0.08)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', alignItems: 'end', flexWrap: 'wrap', marginBottom: '18px' }}>
+        <div style={{ maxWidth: '760px' }}>
+          <div style={{ color: pivotColor, fontSize: '11px', fontWeight: 950, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: '8px' }}>Decision brief</div>
+          <h2 style={{ color: palette.text, fontSize: 'clamp(26px, 4vw, 38px)', fontWeight: 950, letterSpacing: '-0.055em', lineHeight: 1.02, margin: '0 0 10px', fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif' }}>
+            {stack?.decision_brief?.headline || 'Here is the clearest move from this report.'}
+          </h2>
+          <p style={{ color: palette.textMuted, fontSize: '15px', lineHeight: 1.75, margin: 0 }}>
+            {stack?.decision_brief?.summary || stack?.decision_brief?.confidence_callout || 'The report is now prioritizing a narrower recommendation set so you can act with more confidence.'}
+          </p>
+        </div>
+        {stack?.decision_brief?.primary_rule && (
+          <div style={{ maxWidth: '280px', padding: '12px 14px', borderRadius: '18px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}` }}>
+            <div style={{ color: palette.textSoft, fontSize: '11px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>How to use this report</div>
+            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{stack.decision_brief.primary_rule}</div>
+          </div>
+        )}
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '12px' }} className="two-col">
+        {cards.map((item) => {
+          const confidenceStyle = recommendationConfidenceStyle(item.confidence_state);
+          return (
+            <div
+              key={`${item.slot_label}-${item.id}`}
+              style={{
+                padding: '18px',
+                borderRadius: '22px',
+                background: item.primary ? `${item.tone}10` : 'rgba(255,255,255,0.78)',
+                border: `1px solid ${item.primary ? `${item.tone}2A` : palette.border}`,
+                boxShadow: item.primary ? `0 18px 42px ${item.tone}18` : 'none',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: '10px', alignItems: 'start', marginBottom: '10px', flexWrap: 'wrap' }}>
+                <div>
+                  <div style={{ color: item.tone, fontSize: '11px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>{item.slot_label}</div>
+                  <div style={{ color: palette.text, fontSize: '19px', fontWeight: 900, lineHeight: 1.15, letterSpacing: '-0.03em' }}>{item.title}</div>
+                </div>
+                <span style={{ padding: '6px 10px', borderRadius: '999px', background: confidenceStyle.bg, border: `1px solid ${confidenceStyle.border}`, color: confidenceStyle.color, fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  {item.confidence_label}
+                </span>
+              </div>
+
+              <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7, marginBottom: '12px' }}>
+                {item.why}
+              </div>
+
+              <div style={{ display: 'grid', gap: '10px' }}>
+                <div style={{ padding: '12px 13px', borderRadius: '16px', background: 'rgba(255,255,255,0.72)', border: `1px solid ${palette.border}` }}>
+                  <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '4px' }}>Confidence read</div>
+                  <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.55 }}>{item.confidence_reason}</div>
+                </div>
+                <div style={{ padding: '12px 13px', borderRadius: '16px', background: 'rgba(255,255,255,0.72)', border: `1px solid ${palette.border}` }}>
+                  <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '4px' }}>Evidence</div>
+                  <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.55 }}>{item.market_evidence}</div>
+                </div>
+                <div style={{ display: 'grid', gap: '8px', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' }}>
+                  <div style={{ padding: '12px 13px', borderRadius: '16px', background: 'rgba(255,255,255,0.72)', border: `1px solid ${palette.border}` }}>
+                    <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '4px' }}>Next step</div>
+                    <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.55 }}>{item.next_step}</div>
+                  </div>
+                  <div style={{ padding: '12px 13px', borderRadius: '16px', background: 'rgba(255,255,255,0.72)', border: `1px solid ${palette.border}` }}>
+                    <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '4px' }}>Proof to build</div>
+                    <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.55 }}>{item.proof_asset}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function PaidValueSummaryCard({ summary, pivot, color, emailStatus }) {
   if (!summary?.headline && !pivot?.title) return null;
 
@@ -880,6 +967,63 @@ function PaidValueSummaryCard({ summary, pivot, color, emailStatus }) {
           {emailStatus === 'failed' && 'Action-plan email could not be sent automatically. Your report is still saved here.'}
         </div>
       )}
+    </div>
+  );
+}
+
+function RoleOperatingSystemCard({ system, color }) {
+  if (!system?.headline) return null;
+
+  const sections = [
+    ['Automate', system.automate || []],
+    ['Augment', system.augment || []],
+    ['Protect', system.protect || []],
+    ['Lead', system.lead || []],
+  ];
+
+  return (
+    <div className="piq-card" style={{ padding: '24px', marginBottom: '18px', background: `linear-gradient(135deg, ${color}12 0%, rgba(255,255,255,0.94) 58%)`, border: `1px solid ${color}24`, boxShadow: '0 22px 46px rgba(19, 32, 42, 0.08)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', alignItems: 'end', flexWrap: 'wrap', marginBottom: '18px' }}>
+        <div>
+          <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1.4px', textTransform: 'uppercase', marginBottom: '8px' }}>How to work now</div>
+          <h3 style={{ color: palette.text, fontSize: '22px', fontWeight: 950, letterSpacing: '-0.04em', margin: '0 0 6px' }}>{system.headline}</h3>
+          <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.7, margin: 0, maxWidth: '760px' }}>{system.summary}</p>
+        </div>
+        <span style={{ borderRadius: '999px', padding: '7px 12px', background: `${color}12`, border: `1px solid ${color}24`, color, fontSize: '12px', fontWeight: 900 }}>
+          {system.weekly_time_budget || '3-5 focused hours'}
+        </span>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '12px', marginBottom: '14px' }} className="two-col">
+        {sections.map(([label, items]) => (
+          <div key={label} style={{ padding: '16px', borderRadius: '18px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
+            <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '0.09em', textTransform: 'uppercase', marginBottom: '8px' }}>{label}</div>
+            <div style={{ display: 'grid', gap: '8px' }}>
+              {items.map((item) => (
+                <div key={item} style={{ display: 'flex', gap: '8px', color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>
+                  <span style={{ color, fontWeight: 950 }}>•</span>
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '12px' }} className="two-col">
+        <div style={{ padding: '14px 16px', borderRadius: '18px', background: `${color}0F`, border: `1px solid ${color}22` }}>
+          <div style={{ color, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Visible scope move</div>
+          <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{system.visible_scope_move}</div>
+        </div>
+        <div style={{ padding: '14px 16px', borderRadius: '18px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
+          <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>First-week win</div>
+          <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{system.first_week_win}</div>
+        </div>
+        <div style={{ padding: '14px 16px', borderRadius: '18px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
+          <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>What leadership should see</div>
+          <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{system.manager_read}</div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -1336,6 +1480,19 @@ function MarketSkillPill({ label, tone = 'default' }) {
   );
 }
 
+function recommendationConfidenceStyle(state) {
+  if (state === 'market-backed') {
+    return { bg: 'rgba(27,111,99,0.12)', border: 'rgba(27,111,99,0.24)', color: '#1B6F63' };
+  }
+  if (state === 'current-lane-advantage') {
+    return { bg: 'rgba(15,122,110,0.12)', border: 'rgba(15,122,110,0.24)', color: '#0F766E' };
+  }
+  if (state === 'low-confidence') {
+    return { bg: 'rgba(180,83,9,0.10)', border: 'rgba(180,83,9,0.20)', color: '#8B4A1B' };
+  }
+  return { bg: 'rgba(19,32,42,0.08)', border: 'rgba(19,32,42,0.14)', color: palette.textMuted };
+}
+
 function MarketMeter({ value, color, label, sublabel }) {
   const clamped = Math.max(0, Math.min(100, Number(value) || 0));
   return (
@@ -1788,9 +1945,11 @@ export default function ReportExperience({ payload, embedded = false }) {
   const stayPath = reportData.stay_path || null;
   const first30Days = reportData.first_30_days || {};
   const paidValueSummary = reportData.paid_value_summary || {};
+  const recommendationStack = reportData.recommendation_stack || {};
   const proofAssetBuilder = reportData.proof_asset_builder || {};
   const stayProofAssetBuilder = reportData.stay_proof_asset_builder || {};
   const aiLeveragePlaybook = stayAndAdvance.ai_leverage_playbook || {};
+  const roleOperatingSystem = stayAndAdvance.role_operating_system || {};
   const promotionConversationPack = stayAndAdvance.promotion_conversation_pack || {};
   const storageScope = useMemo(() => getStorageScope(reportData, payload.reportId), [reportData, payload.reportId]);
   const messages = getMessages(payload.uiLocale || payload.locale || getBrowserLocale() || reportData.locale);
@@ -2154,7 +2313,11 @@ export default function ReportExperience({ payload, embedded = false }) {
 
       <div style={{ position: 'relative', zIndex: 2, maxWidth: '1100px', margin: '0 auto', padding: '0 24px' }}>
         {tier === 'full' && (
-          <div className="piq-card" style={{ marginTop: '-22px', marginBottom: '18px', padding: '24px', background: 'linear-gradient(180deg, rgba(255,255,255,0.94), rgba(249,243,235,0.98))' }}>
+          <RecommendationStackCard stack={recommendationStack} pivotColor={pColor} stayColor={palette.teal} />
+        )}
+
+        {tier === 'full' && (
+          <div className="piq-card" style={{ marginBottom: '18px', padding: '24px', background: 'linear-gradient(180deg, rgba(255,255,255,0.94), rgba(249,243,235,0.98))' }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.1fr) minmax(280px, 0.9fr)', gap: '16px', marginBottom: '16px' }} className="two-col">
               <div style={{ padding: '20px', borderRadius: '22px', background: `${recommendationAccent(decision.recommendation_type).bg}`, border: `1px solid ${recommendationAccent(decision.recommendation_type).border}` }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
@@ -2677,6 +2840,7 @@ export default function ReportExperience({ payload, embedded = false }) {
                   </div>
                 </div>
               </div>
+              {isStayPlan && <RoleOperatingSystemCard system={roleOperatingSystem} color={planColor} />}
               {isStayPlan && <AiLeveragePlaybookCard playbook={aiLeveragePlaybook} color={planColor} />}
               <ProofAssetBuilderCard builder={isStayPlan ? stayProofAssetBuilder : proofAssetBuilder} color={planColor} />
               {isStayPlan && <PromotionConversationPackCard pack={promotionConversationPack} color={planColor} />}

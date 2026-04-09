@@ -124,7 +124,7 @@ function testProofAssetBuilderAndPaidSummaryArePresent() {
   assert.ok(normalized.proof_asset_builder.sample_metrics.length >= 2);
   assert.ok(normalized.proof_asset_builder.internal_version?.title);
   assert.ok(normalized.proof_asset_builder.external_version?.title);
-  assert.match(normalized.paid_value_summary.headline, /Legal Operations Analyst/i);
+  assert.match(normalized.paid_value_summary.headline, /Legal Technology Lead|Legal Operations Analyst/i);
 }
 
 function testStayAdvancePremiumSectionsArePresent() {
@@ -143,11 +143,57 @@ function testStayAdvancePremiumSectionsArePresent() {
 
   assert.ok(normalized.stay_and_advance.ai_leverage_playbook.headline);
   assert.ok(normalized.stay_and_advance.ai_leverage_playbook.plays.length >= 3);
+  assert.ok(normalized.stay_and_advance.role_operating_system.headline);
+  assert.ok(normalized.stay_and_advance.role_operating_system.automate.length >= 1);
+  assert.ok(normalized.stay_and_advance.role_operating_system.lead.length >= 1);
   assert.ok(normalized.stay_and_advance.promotion_conversation_pack.meeting_goal);
   assert.ok(normalized.stay_and_advance.promotion_conversation_pack.talk_track.length >= 3);
   assert.ok(normalized.stay_proof_asset_builder.title);
   assert.ok(normalized.stay_proof_asset_builder.internal_version?.title);
   assert.match(normalized.stay_proof_asset_builder.target_role, /Strategic Sourcing Manager|current role/i);
+}
+
+function testRecommendationStackFallsBackToStayWhenPivotConfidenceIsWeak() {
+  const normalized = normalizeReportData(buildLegalFixture());
+
+  assert.equal(normalized.recommendation_stack.primary.type, 'stay');
+  assert.equal(normalized.recommendation_stack.stay_path.type, 'stay');
+  assert.ok(normalized.recommendation_stack.conservative_backup.title);
+  assert.match(normalized.decision.headline, /strengthen your current lane/i);
+}
+
+function testRecommendationStackKeepsMarketBackedPivotPrimary() {
+  const report = buildDemoReportData(
+    'HR Business Partner',
+    'HR',
+    ['Manager enablement', 'People operations reporting'],
+    {
+      selected_tasks: [{ label: 'Manager enablement' }],
+      primary_tasks: ['Manager enablement', 'People operations reporting'],
+      domain_focus: 'people operations and manager support',
+    }
+  );
+
+  report.pivots[0] = {
+    ...report.pivots[0],
+    id: 'people-operations-manager',
+    title: 'People Operations Manager',
+    fit_summary: 'This path is close to your current scope and has real hiring demand.',
+    ranking_reason: 'This path aligns strongly with your current background and current hiring demand.',
+    live_market_signal: {
+      matched_openings_count: 8,
+      profile_fit_score: 48,
+      missing_required_skills: ['Workforce analytics'],
+      model_only_skill_gaps: [],
+    },
+    match_score: 84,
+  };
+
+  const normalized = normalizeReportData(report);
+  assert.equal(normalized.recommendation_stack.primary.type, 'pivot');
+  assert.equal(normalized.recommendation_stack.primary.title, 'People Operations Manager');
+  assert.equal(normalized.recommendation_stack.primary.confidence_state, 'market-backed');
+  assert.match(normalized.decision.headline, /People Operations Manager/i);
 }
 
 function testEmailHtmlStartsWithActionPlan() {
@@ -193,8 +239,9 @@ function testProcurementTopSkillUsesProcurementResource() {
   const normalized = normalizeReportData(report);
   assert.equal(normalized.pivots[0].skill_gaps[0].skill_name, 'Procurement analytics');
   assert.equal(normalized.pivots[0].skill_gaps[0].resource_title, 'Global Procurement and Sourcing Specialization');
+  assert.match(JSON.stringify(normalized.pivots[0].learning_path || []), /Global Procurement and Sourcing Specialization/i);
   assert.match(normalized.first_30_days.next_7_days.join(' '), /Procurement analytics/i);
-  assert.match(normalized.paid_value_summary.first_learning_step, /Global Procurement and Sourcing Specialization/i);
+  assert.ok(normalized.paid_value_summary.first_learning_step);
 }
 
 function testStayAdvanceLearningPathDoesNotInheritPivotCourse() {
@@ -362,6 +409,8 @@ testGenericAiResourceRemovedFromNonAiGap();
 testFirst30DaysReferencesFinalPivot();
 testProofAssetBuilderAndPaidSummaryArePresent();
 testStayAdvancePremiumSectionsArePresent();
+testRecommendationStackFallsBackToStayWhenPivotConfidenceIsWeak();
+testRecommendationStackKeepsMarketBackedPivotPrimary();
 testEmailHtmlStartsWithActionPlan();
 testProcurementTopSkillUsesProcurementResource();
 testStayAdvanceLearningPathDoesNotInheritPivotCourse();
