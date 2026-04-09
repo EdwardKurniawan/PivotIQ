@@ -82,6 +82,7 @@ export default async function JobCatalogQualityPage() {
           <Link href="/dashboard" style={{ color: palette.navy, fontWeight: 900, textDecoration: 'none' }}>PivotIQ</Link>
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             <Link href="/internal/recommendation-quality" style={{ color: palette.navy, fontWeight: 800, textDecoration: 'none' }}>Recommendation quality</Link>
+            <Link href="/internal/qa-fixtures" style={{ color: palette.navy, fontWeight: 800, textDecoration: 'none' }}>QA fixtures</Link>
             <Link href="/internal/course-catalog" style={{ color: palette.navy, fontWeight: 800, textDecoration: 'none' }}>Course catalog</Link>
             <Link href="/api/job-openings/quality?limit=1000" style={{ color: palette.navy, fontWeight: 800, textDecoration: 'none' }}>Open JSON</Link>
             <Link href="/api/job-openings/search?limit=10" style={{ color: palette.navy, fontWeight: 800, textDecoration: 'none' }}>Search API</Link>

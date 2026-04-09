@@ -864,3 +864,44 @@ Next best product move:
 1. Use the broad-role fixture catalog to generate and inspect saved QA reports, not just run regression tests.
 2. Start feeding recommendation-quality playbook signals back into more user-facing copy, especially around why PivotIQ stayed conservative.
 3. Consider adding a second fixture catalog for higher-seniority roles so we can catch over-correction as we make broad-role defaults safer.
+
+## 2026-04-09 broad-role fixture viewer and stronger confidence copy are live
+
+This pass made the new broad-role QA catalog inspectable in-product and tightened how conservative recommendations are explained to users.
+
+What shipped:
+
+- Added shared fixture-generation helpers in [`lib/broad-role-fixtures.js`](lib/broad-role-fixtures.js)
+- Added an internal QA fixture viewer at [`/internal/qa-fixtures`](app/internal/qa-fixtures/page.js)
+- Added a JSON endpoint at [`/api/qa-fixtures`](app/api/qa-fixtures/route.js)
+- Refactored [`scripts/test-broad-role-regression.mjs`](scripts/test-broad-role-regression.mjs) to use the shared fixture logic
+- Added internal navigation links to the new QA fixture view from:
+  - [`app/internal/recommendation-quality/page.js`](app/internal/recommendation-quality/page.js)
+  - [`app/internal/job-catalog/page.js`](app/internal/job-catalog/page.js)
+  - [`app/internal/course-catalog/page.js`](app/internal/course-catalog/page.js)
+- Tightened user-facing recommendation and refresh copy in:
+  - [`lib/report-data.js`](lib/report-data.js)
+  - [`lib/report-refresh.js`](lib/report-refresh.js)
+  - [`components/report-experience.js`](components/report-experience.js)
+
+What changed in product behavior:
+
+- Broad-role QA is now inspectable as live report snapshots instead of only script output.
+- Strategy-led pivots now read as directional build targets instead of fuzzy “validate with postings” language.
+- Refreshes now explain conservative recommendations more clearly as higher-conviction filtering, not indecision.
+- Recommendation cards now describe confidence and evidence in more user-centered language.
+
+Verification completed:
+
+- `npm run test:broad-roles`
+- `npm run test:report-quality`
+- `npm run test:refresh`
+- `npm run test:recommendation-quality`
+- `npm run build`
+- `git diff --check`
+
+Next best product move:
+
+1. Use the new fixture viewer to manually review and regenerate a few saved QA snapshots in-account.
+2. Add a second fixture catalog for higher-seniority roles so we can catch over-correction while broad-role defaults get safer.
+3. Use the fixture viewer findings to sharpen paid-report copy around “why not this pivot yet?” and “what would raise confidence next?”

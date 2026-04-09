@@ -910,11 +910,11 @@ function RecommendationStackCard({ stack, pivotColor, stayColor = palette.teal }
 
               <div style={{ display: 'grid', gap: '10px' }}>
                 <div style={{ padding: '12px 13px', borderRadius: '16px', background: 'rgba(255,255,255,0.72)', border: `1px solid ${palette.border}` }}>
-                  <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '4px' }}>Confidence read</div>
+                  <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '4px' }}>Why PivotIQ trusts this level</div>
                   <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.55 }}>{item.confidence_reason}</div>
                 </div>
                 <div style={{ padding: '12px 13px', borderRadius: '16px', background: 'rgba(255,255,255,0.72)', border: `1px solid ${palette.border}` }}>
-                  <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '4px' }}>Evidence</div>
+                  <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '4px' }}>What is backing this</div>
                   <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.55 }}>{item.market_evidence}</div>
                 </div>
                 <div style={{ display: 'grid', gap: '8px', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' }}>
@@ -1846,7 +1846,7 @@ function RefreshFromProgressCard({ refreshContext, refreshSummary, status, onRef
 
       {refreshSummary?.what_changed?.length > 0 && (
         <div style={{ padding: '14px 16px', borderRadius: '16px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}`, marginBottom: '12px' }}>
-          <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '8px' }}>What changed in this refresh</div>
+          <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '8px' }}>What got stronger in this refresh</div>
           <div style={{ display: 'grid', gap: '7px' }}>
             {refreshSummary.what_changed.map((item) => (
               <div key={item} style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{item}</div>
@@ -1858,7 +1858,7 @@ function RefreshFromProgressCard({ refreshContext, refreshSummary, status, onRef
       {(sectionsUpdated.length > 0 || changedRows.length > 0) && (
         <div style={{ padding: '14px 16px', borderRadius: '16px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}`, marginBottom: '12px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap', alignItems: 'center', marginBottom: '10px' }}>
-            <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800 }}>Before vs after</div>
+            <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800 }}>What PivotIQ tightened</div>
             {sectionsUpdated.length > 0 && (
               <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                 {sectionsUpdated.map((item) => (
@@ -1896,7 +1896,7 @@ function RefreshFromProgressCard({ refreshContext, refreshSummary, status, onRef
                 <div style={{ display: 'flex', justifyContent: 'space-between', gap: '10px', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap' }}>
                   <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.08em', textTransform: 'uppercase' }}>{row.label}</div>
                   <div style={{ color: row.changed ? palette.teal : palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-                    {row.changed ? 'Updated' : 'No change'}
+                    {row.changed ? 'Tightened' : 'No change'}
                   </div>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '10px' }} className="two-col">
@@ -1918,7 +1918,7 @@ function RefreshFromProgressCard({ refreshContext, refreshSummary, status, onRef
       {(changeDrivers.length > 0 || inputsConsidered.length > 0) && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '12px', marginBottom: '12px' }} className="two-col">
           <div style={{ padding: '14px 16px', borderRadius: '16px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
-            <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '8px' }}>Why PivotIQ changed this</div>
+            <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '8px' }}>Why PivotIQ shifted or stayed conservative</div>
             <div style={{ display: 'grid', gap: '7px' }}>
               {changeDrivers.slice(0, 5).map((item) => (
                 <div key={item} style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{item}</div>
@@ -1926,7 +1926,7 @@ function RefreshFromProgressCard({ refreshContext, refreshSummary, status, onRef
             </div>
           </div>
           <div style={{ padding: '14px 16px', borderRadius: '16px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
-            <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '8px' }}>Inputs shaping this refresh</div>
+            <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '8px' }}>Signals shaping this refresh</div>
             {inputsConsidered.length > 0 ? (
               <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                 {inputsConsidered.map((item) => (

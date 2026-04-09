@@ -23,6 +23,17 @@ Branch: `main`
 
 ## Most Recent Shipped Work
 
+### `pending current commit` Add QA fixture viewer + stronger confidence copy
+- Added shared broad-role fixture helpers in [`lib/broad-role-fixtures.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/lib/broad-role-fixtures.js)
+- Added inspectable internal QA fixture viewer in [`app/internal/qa-fixtures/page.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/internal/qa-fixtures/page.js)
+- Added JSON endpoint in [`app/api/qa-fixtures/route.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/api/qa-fixtures/route.js)
+- Refactored [`scripts/test-broad-role-regression.mjs`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/scripts/test-broad-role-regression.mjs) to use shared fixture generation/evaluation
+- Tightened user-facing recommendation / refresh language in:
+  - [`lib/report-data.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/lib/report-data.js)
+  - [`lib/report-refresh.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/lib/report-refresh.js)
+  - [`components/report-experience.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/components/report-experience.js)
+- Added nav links to the QA fixture viewer from the internal quality pages
+
 ### `pending current commit` Apply safer broad-role recommendation policies
 - Tightened [`lib/report-data.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/lib/report-data.js) so the recommendation stack now:
   - suppresses low-confidence active pivots more aggressively
@@ -102,17 +113,14 @@ Branch: `main`
 ## Recommended Next Move
 Highest-leverage next build:
 
-1. Use the broad-role fixture catalog to generate and inspect saved QA reports
-- The regression suite is now reusable, but we still want visual/manual QA on saved reports created from the same fixture set
+1. Use the new QA fixture viewer to generate and manually inspect saved QA snapshots
+- The fixture catalog is now inspectable in-product, but we still want to push a few snapshots into saved reports for account-level QA
 
-2. Feed tuning-playbook signals back into user-facing refresh / confidence copy
-- Explain more clearly when PivotIQ stayed conservative because the market signal was still thin
+2. Add a second fixture catalog for higher-seniority roles
+- Broad-role defaults are safer now; the next protection is making sure we do not over-correct on senior operators and managers
 
-3. Consider a second refresh pass later
-- Make the refresh language even more user-facing by showing:
-  - what improved because of user action
-  - what got de-risked
-  - what is still unproven
+3. Sharpen “why not this pivot yet?” explanation in paid reports
+- Use the stronger confidence copy and fixture findings to explain what is missing before a riskier pivot becomes the main move
 
 ## Files Most Likely To Matter Next Session
 - [`app/audit/page.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/audit/page.js)
@@ -122,7 +130,9 @@ Highest-leverage next build:
 - [`lib/report-refresh.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/lib/report-refresh.js)
 - [`lib/recommendation-quality.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/lib/recommendation-quality.js)
 - [`data/broad-role-fixtures.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/data/broad-role-fixtures.js)
+- [`lib/broad-role-fixtures.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/lib/broad-role-fixtures.js)
 - [`app/internal/recommendation-quality/page.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/internal/recommendation-quality/page.js)
+- [`app/internal/qa-fixtures/page.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/internal/qa-fixtures/page.js)
 - [`scripts/test-broad-role-regression.mjs`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/scripts/test-broad-role-regression.mjs)
 - [`scripts/test-report-quality.mjs`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/scripts/test-report-quality.mjs)
 - [`docs/project-update-2026-04-05.md`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/docs/project-update-2026-04-05.md)
@@ -130,13 +140,14 @@ Highest-leverage next build:
 
 ## Verification State
 Latest verified before this memory update:
-- `npm run test:report-quality`
-- `npm run test:recommendation-quality`
 - `npm run test:broad-roles`
+- `npm run test:report-quality`
+- `npm run test:refresh`
+- `npm run test:recommendation-quality`
 - `npm run build`
 - `git diff --check`
 
 ## Clean Resume Prompt
 Use this at the start of the next session:
 
-`Pick up PivotIQ from /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app. First read /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/memory.md and /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/docs/project-update-2026-04-05.md. Continue from the highest-leverage next move: use the broad-role fixture catalog to generate inspectable QA reports, then feed the tuning-playbook signal back into clearer user-facing confidence and refresh copy. Keep OpenRouter on nvidia/nemotron-3-nano-30b-a3b:free. Commit and push after code changes.`
+`Pick up PivotIQ from /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app. First read /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/memory.md and /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/docs/project-update-2026-04-05.md. Continue from the highest-leverage next move: use the new QA fixture viewer to generate inspectable saved snapshots, then add a higher-seniority fixture catalog and sharpen “why not this pivot yet?” copy in paid reports. Keep OpenRouter on nvidia/nemotron-3-nano-30b-a3b:free. Commit and push after code changes.`

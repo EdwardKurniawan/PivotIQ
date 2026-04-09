@@ -110,6 +110,7 @@ export default async function CourseCatalogQualityPage() {
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             <Link href="/internal/job-catalog" style={{ color: palette.navy, fontWeight: 800, textDecoration: 'none' }}>Job catalog</Link>
             <Link href="/internal/recommendation-quality" style={{ color: palette.navy, fontWeight: 800, textDecoration: 'none' }}>Recommendation quality</Link>
+            <Link href="/internal/qa-fixtures" style={{ color: palette.navy, fontWeight: 800, textDecoration: 'none' }}>QA fixtures</Link>
             <Link href="/api/course-catalog/quality?limit=1000" style={{ color: palette.navy, fontWeight: 800, textDecoration: 'none' }}>Open JSON</Link>
           </div>
         </nav>

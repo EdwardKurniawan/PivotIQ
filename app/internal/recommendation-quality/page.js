@@ -210,6 +210,7 @@ export default async function RecommendationQualityPage() {
         <nav style={{ display: 'flex', justifyContent: 'space-between', gap: '14px', alignItems: 'center', flexWrap: 'wrap', marginBottom: '22px' }}>
           <Link href="/dashboard" style={{ color: palette.navy, fontWeight: 900, textDecoration: 'none' }}>PivotIQ</Link>
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            <Link href="/internal/qa-fixtures" style={{ color: palette.navy, fontWeight: 800, textDecoration: 'none' }}>QA fixtures</Link>
             <Link href="/internal/job-catalog" style={{ color: palette.navy, fontWeight: 800, textDecoration: 'none' }}>Job catalog</Link>
             <Link href="/internal/course-catalog" style={{ color: palette.navy, fontWeight: 800, textDecoration: 'none' }}>Course catalog</Link>
             <Link href="/api/recommendation-quality?limit=1000" style={{ color: palette.navy, fontWeight: 800, textDecoration: 'none' }}>Open JSON</Link>
