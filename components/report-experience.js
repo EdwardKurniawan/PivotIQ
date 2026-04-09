@@ -22,6 +22,7 @@ import {
   getWeekProgressEntry,
   hydrateLegacyWeekProgress,
 } from '../lib/progress-tracking';
+import { buildProgressRefreshContext } from '../lib/report-refresh';
 
 function riskColor(score) {
   return score >= 70 ? '#C86A2C' : score >= 40 ? '#8B6B2E' : '#1B6F63';
@@ -1789,6 +1790,110 @@ function ExecutionLoopCard({ summary, planColor, progressPercent }) {
   );
 }
 
+function RefreshFromProgressCard({ refreshContext, refreshSummary, status, onRefresh, locale = 'en' }) {
+  if (!refreshContext) return null;
+
+  const isLoading = status === 'loading';
+  const isDone = status === 'done';
+  const isFailed = status === 'failed';
+  const buttonLabel = isLoading
+    ? 'Refreshing report...'
+    : refreshContext.is_ready
+      ? 'Refresh this report from my progress'
+      : 'Log progress to unlock refresh';
+
+  return (
+    <div className="piq-card" style={{ padding: '22px', marginBottom: '18px', background: `linear-gradient(145deg, ${palette.navy}08 0%, rgba(255,255,255,0.94) 62%)`, border: `1px solid ${palette.border}`, boxShadow: '0 22px 46px rgba(19, 32, 42, 0.08)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', alignItems: 'start', flexWrap: 'wrap', marginBottom: '16px' }}>
+        <div style={{ maxWidth: '760px' }}>
+          <div style={{ color: palette.navy, fontSize: '11px', fontWeight: 900, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '8px' }}>Refresh from progress</div>
+          <div style={{ color: palette.text, fontSize: '24px', fontWeight: 900, letterSpacing: '-0.04em', marginBottom: '6px' }}>
+            {refreshSummary?.headline || refreshContext.title}
+          </div>
+          <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.7 }}>
+            {refreshSummary?.body || refreshContext.body}
+          </div>
+        </div>
+        <button
+          type="button"
+          className="btn-primary"
+          disabled={!refreshContext.is_ready || isLoading}
+          onClick={onRefresh}
+          style={{ width: 'auto', padding: '11px 16px', opacity: !refreshContext.is_ready && !isLoading ? 0.58 : 1 }}
+        >
+          {buttonLabel}
+        </button>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '12px', marginBottom: refreshSummary?.what_changed?.length ? '14px' : '0' }} className="two-col">
+        {[
+          ['Milestones done', refreshContext.completed_weeks_count],
+          ['Proof ready', refreshContext.proof_ready_count],
+          ['Manager signal', refreshContext.manager_done_count],
+          ['Outcome', refreshContext.outcome_summary?.traction_label || 'No signal yet'],
+        ].map(([label, value]) => (
+          <div key={label} style={{ padding: '14px 16px', borderRadius: '16px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
+            <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>{label}</div>
+            <div style={{ color: palette.text, fontSize: typeof value === 'number' ? '22px' : '14px', fontWeight: 900, lineHeight: 1.35 }}>{value}</div>
+          </div>
+        ))}
+      </div>
+
+      {refreshSummary?.what_changed?.length > 0 && (
+        <div style={{ padding: '14px 16px', borderRadius: '16px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}`, marginBottom: '12px' }}>
+          <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '8px' }}>What changed in this refresh</div>
+          <div style={{ display: 'grid', gap: '7px' }}>
+            {refreshSummary.what_changed.map((item) => (
+              <div key={item} style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{item}</div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '12px' }}>
+        {refreshSummary?.previous_primary && refreshSummary?.current_primary && (
+          <span style={{ color: palette.textSoft, fontSize: '11px', fontWeight: 800 }}>
+            {refreshSummary.previous_primary === refreshSummary.current_primary
+              ? `Primary move: ${refreshSummary.current_primary}`
+              : `Primary move: ${refreshSummary.previous_primary} -> ${refreshSummary.current_primary}`}
+          </span>
+        )}
+        {refreshSummary?.confidence_delta && (
+          <>
+            <span style={{ color: 'rgba(80,96,107,0.42)', fontSize: '11px' }}>·</span>
+            <span style={{ color: palette.textSoft, fontSize: '11px', fontWeight: 800 }}>Confidence: {refreshSummary.confidence_delta}</span>
+          </>
+        )}
+        {refreshSummary?.refreshed_at && (
+          <>
+            <span style={{ color: 'rgba(80,96,107,0.42)', fontSize: '11px' }}>·</span>
+            <span style={{ color: palette.textSoft, fontSize: '11px', fontWeight: 800 }}>Refreshed {formatDate(refreshSummary.refreshed_at, locale)}</span>
+          </>
+        )}
+        {isDone && (
+          <>
+            <span style={{ color: 'rgba(80,96,107,0.42)', fontSize: '11px' }}>·</span>
+            <span style={{ color: palette.teal, fontSize: '11px', fontWeight: 800 }}>Latest refresh saved</span>
+          </>
+        )}
+        {isFailed && (
+          <>
+            <span style={{ color: 'rgba(80,96,107,0.42)', fontSize: '11px' }}>·</span>
+            <span style={{ color: '#8B4A1B', fontSize: '11px', fontWeight: 800 }}>Refresh failed. Try again.</span>
+          </>
+        )}
+      </div>
+
+      {refreshSummary?.next_action && (
+        <div style={{ marginTop: '12px', padding: '12px 14px', borderRadius: '14px', background: 'rgba(19,32,42,0.05)', border: `1px solid ${palette.border}` }}>
+          <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '5px' }}>Next step after refresh</div>
+          <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{refreshSummary.next_action}</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function OutcomeTrackerCard({ outcome, summary, followup, onSave, locale = 'en' }) {
   if (!outcome || !summary || !onSave) return null;
 
@@ -2160,6 +2265,7 @@ export default function ReportExperience({ payload, embedded = false }) {
   const [outcomeState, setOutcomeState] = useState(normalizeOutcomeEntry(payload.outcome));
   const [reportData, setReportData] = useState(payload.reportData);
   const [actionEmailStatus, setActionEmailStatus] = useState('idle');
+  const [refreshStatus, setRefreshStatus] = useState('idle');
   const [generationStatus, setGenerationStatus] = useState(
     payload.tier === 'full' && payload.reportData?.generation_stage !== 'full_complete' ? 'loading' : 'idle'
   );
@@ -2179,6 +2285,7 @@ export default function ReportExperience({ payload, embedded = false }) {
   const recommendationStack = reportData.recommendation_stack || {};
   const proofAssetBuilder = reportData.proof_asset_builder || {};
   const stayProofAssetBuilder = reportData.stay_proof_asset_builder || {};
+  const refreshSummary = reportData.refresh_summary || null;
   const aiLeveragePlaybook = stayAndAdvance.ai_leverage_playbook || {};
   const roleOperatingSystem = stayAndAdvance.role_operating_system || {};
   const promotionConversationPack = stayAndAdvance.promotion_conversation_pack || {};
@@ -2191,6 +2298,14 @@ export default function ReportExperience({ payload, embedded = false }) {
     createdAt: payload.createdAt || reportData.generated_at || '',
     outcome: outcomeState,
   }), [payload.createdAt, reportData.generated_at, outcomeState]);
+  const refreshContext = useMemo(() => buildProgressRefreshContext({
+    reportData,
+    weekProgressMap: weekProgressState,
+    startDate,
+    outcome: outcomeState,
+    createdAt: payload.createdAt || reportData.generated_at || '',
+    refreshedAt: reportData.refreshed_at || '',
+  }), [outcomeState, payload.createdAt, reportData, startDate, weekProgressState]);
   const reportPaths = useMemo(() => (tier === 'full' && stayPath ? [stayPath, ...pivots] : pivots), [tier, stayPath, pivots]);
   const activePath = reportPaths[selectedPlanPath] || reportPaths[0] || pivot || {};
   const isStayPlan = tier === 'full' && Boolean(stayPath) && selectedPlanPath === 0;
@@ -2208,6 +2323,7 @@ export default function ReportExperience({ payload, embedded = false }) {
     } else {
       setGenerationStatus('idle');
     }
+    setRefreshStatus('idle');
   }, [payload.reportData, payload.tier]);
 
   useEffect(() => {
@@ -2551,6 +2667,46 @@ export default function ReportExperience({ payload, embedded = false }) {
     navigator.clipboard.writeText(window.location.href).catch(() => {});
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const refreshReportFromProgress = async () => {
+    if (!payload.reportId || tier !== 'full' || !refreshContext.is_ready) return;
+
+    setRefreshStatus('loading');
+
+    try {
+      const response = await fetch(`/api/reports/${payload.reportId}/refresh`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const json = await response.json().catch(() => ({}));
+
+      if (!response.ok || !json.reportData) {
+        throw new Error(json.error || 'Failed to refresh the report.');
+      }
+
+      setReportData(json.reportData);
+      setSelectedPlanPath(0);
+      setExpandedWeeks([1]);
+      setRefreshStatus('done');
+
+      const raw = sessionStorage.getItem('pivotiq_report') || localStorage.getItem('pivotiq_report');
+      if (raw) {
+        try {
+          const stored = JSON.parse(raw);
+          const next = JSON.stringify({
+            ...stored,
+            reportData: json.reportData,
+            reportId: json.reportId || stored.reportId || payload.reportId || null,
+          });
+          sessionStorage.setItem('pivotiq_report', next);
+          localStorage.setItem('pivotiq_report', next);
+        } catch {}
+      }
+    } catch (error) {
+      console.error('Refresh from progress failed:', error);
+      setRefreshStatus('failed');
+    }
   };
 
   if (tier === 'free' && !embedded) {
@@ -3112,6 +3268,13 @@ export default function ReportExperience({ payload, embedded = false }) {
 
             <div style={{ marginBottom: '28px' }}>
               <ExecutionLoopCard summary={executionSummary} planColor={planColor} progressPercent={progressPercent} />
+              <RefreshFromProgressCard
+                refreshContext={refreshContext}
+                refreshSummary={refreshSummary}
+                status={refreshStatus}
+                onRefresh={refreshReportFromProgress}
+                locale={payload.uiLocale || payload.locale || getBrowserLocale() || reportData.locale}
+              />
               {showOutcomeTracker && (
                 <OutcomeTrackerCard
                   outcome={outcomeState}
@@ -3332,7 +3495,7 @@ export default function ReportExperience({ payload, embedded = false }) {
                                 style={{ minHeight: '100px' }}
                                 placeholder={messages.report.progressNotesPlaceholder}
                                 value={note}
-                                onChange={(event) => setWeekNotes((prev) => ({ ...prev, [week.week_number]: event.target.value }))}
+                                onChange={(event) => setWeekProgressState((prev) => updateWeekProgressState(prev, week.week_number, { notes: event.target.value }))}
                                 onBlur={(event) => saveWeekNote(week.week_number, event.target.value)}
                               />
                             </div>

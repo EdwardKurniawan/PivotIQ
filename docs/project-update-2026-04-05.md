@@ -2,6 +2,49 @@
 
 This file captures the current PivotIQ state so the next session can continue without rebuilding context.
 
+## Recent platform upgrades — 2026-04-09
+
+PivotIQ is no longer just a one-time report generator. The product now has a real execution and feedback loop:
+
+- `recommendation_stack` now drives a narrower decision layer with:
+  - one primary move
+  - one conservative backup
+  - one stay-and-advance lane
+- full reports now include:
+  - `decision brief`
+  - richer stay-and-advance operating plays
+  - proof asset builder
+  - promotion conversation pack
+- weekly execution tracking is live through `week_progress`, including:
+  - action state
+  - proof asset state
+  - manager conversation state
+  - last active step
+- outcome tracking is live through `report_outcomes`, including:
+  - proof asset built
+  - manager conversation done
+  - traction status
+  - usefulness rating
+  - notes
+- an internal recommendation-quality dashboard now groups real results by:
+  - confidence state
+  - recommendation type
+  - role bucket
+- reports can now be refreshed from logged progress through:
+  - `POST /api/reports/[id]/refresh`
+  - progress-aware prompt context in `lib/report-generation.js`
+  - report-side `Refresh from progress` UI
+  - persisted `refresh_summary`, `refresh_count`, and `refreshed_at`
+- dashboard cards now surface `Refresh ready` when enough progress or outcome signal exists to justify a rerun
+
+This means the current product direction is:
+
+- diagnose risk
+- recommend a next move
+- help the user execute
+- capture what really happened
+- refresh the plan around real-world signal
+
 ## Current direction
 
 PivotIQ now does more than generate model-only pivots. It:

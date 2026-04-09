@@ -4,6 +4,7 @@ import { isSupabaseConfigured } from '../../lib/supabase/config';
 import { buildOutcomeFollowupState, buildOutcomeSummary } from '../../lib/outcome-tracking';
 import { normalizeReportData } from '../../lib/report-data';
 import { buildExecutionSummary, buildWeekProgressMap, getCompletedWeeks } from '../../lib/progress-tracking';
+import { buildProgressRefreshContext } from '../../lib/report-refresh';
 import { BrandLogo } from '../../components/brand-logo';
 import LanguageSwitcher from '../../components/language-switcher';
 import { getMessages } from '../../lib/i18n';
@@ -115,6 +116,14 @@ function buildCoachingSnapshot(report, messages, locale) {
     createdAt: report.created_at || report.updated_at || '',
     outcome: outcomeEntry,
   });
+  const refreshContext = buildProgressRefreshContext({
+    reportData: normalized,
+    weekProgressMap,
+    startDate: report.roadmap_start_date || '',
+    outcome: outcomeEntry,
+    createdAt: report.created_at || report.updated_at || '',
+    refreshedAt: normalized?.refreshed_at || '',
+  });
   const nextWeekStart = report.roadmap_start_date && nextIncompleteWeek
     ? addDays(report.roadmap_start_date, (nextIncompleteWeek.week_number - 1) * 7)
     : null;
@@ -148,6 +157,7 @@ function buildCoachingSnapshot(report, messages, locale) {
     executionSummary,
     outcomeSummary,
     outcomeFollowup,
+    refreshContext,
     currentLabel,
     dateLabel,
   };
@@ -397,6 +407,11 @@ export default async function DashboardPage() {
                       <span style={{ background: 'rgba(255,255,255,0.58)', border: `1px solid ${palette.border}`, color: palette.text, borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 700 }}>
                         {latestSnapshot.outcomeSummary.traction_label}
                       </span>
+                      {latestSnapshot.refreshContext?.is_ready && (
+                        <span style={{ background: 'rgba(19,27,35,0.08)', border: `1px solid ${palette.border}`, color: palette.navy, borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 800 }}>
+                          Refresh ready
+                        </span>
+                      )}
                       {latestSnapshot.outcomeFollowup?.is_due && (
                         <span style={{ background: 'rgba(242,138,67,0.14)', border: '1px solid rgba(242,138,67,0.24)', color: '#8B4A1B', borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 800 }}>
                           Feedback due
@@ -477,6 +492,11 @@ export default async function DashboardPage() {
                           <span style={{ background: 'rgba(255,255,255,0.58)', border: `1px solid ${palette.border}`, color: palette.text, borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 700 }}>
                             {snapshot.outcomeSummary.traction_label}
                           </span>
+                          {snapshot.refreshContext?.is_ready && (
+                            <span style={{ background: 'rgba(19,27,35,0.08)', border: `1px solid ${palette.border}`, color: palette.navy, borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 800 }}>
+                              Refresh ready
+                            </span>
+                          )}
                           {snapshot.outcomeFollowup?.is_due && (
                             <span style={{ background: 'rgba(242,138,67,0.14)', border: '1px solid rgba(242,138,67,0.24)', color: '#8B4A1B', borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 800 }}>
                               Feedback due
