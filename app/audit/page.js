@@ -27,6 +27,16 @@ const MANAGEMENT_SCOPE_OPTIONS = ['none', 'small-team', 'larger-team'];
 
 const DECISION_SCOPE_OPTIONS = ['internal-ops', 'customer-revenue', 'regulated-high-stakes'];
 
+const GOAL_NOW_OPTIONS = ['stay_and_advance', 'hybrid_transition', 'active_pivot', 'not_sure'];
+
+const TIMELINE_URGENCY_OPTIONS = ['within_3_months', 'within_6_months', 'within_12_months', 'exploring_only'];
+
+const YEARS_EXPERIENCE_OPTIONS = ['0_2', '3_5', '6_10', '11_plus'];
+
+const LOCATION_PREFERENCE_OPTIONS = ['netherlands', 'europe', 'united_states', 'global_remote', 'other'];
+
+const AI_MATURITY_OPTIONS = ['never_use_it', 'occasionally', 'weekly', 'repeatable_workflows', 'team_level_adoption'];
+
 const palette = {
   bg: '#F4EFE7',
   panel: 'rgba(255, 255, 255, 0.8)',
@@ -108,6 +118,34 @@ function TaskCard({ task, onClick, selected = false, subtle = false }) {
   );
 }
 
+function ChoiceChipGroup({ options, value, onSelect, labels }) {
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+      {options.map((option) => (
+        <button
+          key={option}
+          type="button"
+          onClick={() => onSelect(option)}
+          className={`chip ${value === option ? 'active-primary' : ''}`}
+          style={value === option
+            ? {
+                background: 'rgba(27, 111, 99, 0.12)',
+                color: palette.teal,
+                outlineColor: 'rgba(27, 111, 99, 0.38)',
+              }
+            : {
+                background: 'rgba(255,255,255,0.58)',
+                color: palette.textMuted,
+                outlineColor: 'rgba(19,27,35,0.08)',
+              }}
+        >
+          {labels?.[option] || option}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function getSelectedTaskCountLabel(count, messages) {
   return `${count} ${count === 1 ? messages.audit.selectedSummarySingle : messages.audit.selectedSummaryPlural}`;
 }
@@ -131,6 +169,11 @@ export default function AuditPage() {
   const [industry, setIndustry] = useState(null);
   const [selectedTasks, setSelectedTasks] = useState([]);
   const [primaryTasks, setPrimaryTasks] = useState([]);
+  const [goalNow, setGoalNow] = useState('');
+  const [timelineUrgency, setTimelineUrgency] = useState('');
+  const [yearsExperienceBand, setYearsExperienceBand] = useState('');
+  const [locationPreference, setLocationPreference] = useState('');
+  const [aiMaturity, setAiMaturity] = useState('');
   const [roleBlend, setRoleBlend] = useState('');
   const [managementScope, setManagementScope] = useState('');
   const [decisionScope, setDecisionScope] = useState('');
@@ -299,6 +342,10 @@ export default function AuditPage() {
       setError('Keep it to 10 tasks or fewer. Choose the work that truly fills your week.');
       return;
     }
+    if (!goalNow || !timelineUrgency || !yearsExperienceBand || !locationPreference || !aiMaturity) {
+      setError('Answer the quick clarifiers so the recommendation can reflect your real timeline, level, market, and AI starting point.');
+      return;
+    }
     if (email.trim() && !email.includes('@')) {
       setError('Enter a valid email address, or leave it blank for now.');
       return;
@@ -334,6 +381,11 @@ export default function AuditPage() {
         .filter((task) => primaryTasks.includes(task.task_id))
         .map((task) => task.label),
       clarifiers: {
+        goal_now: goalNow || null,
+        timeline_urgency: timelineUrgency || null,
+        years_experience_band: yearsExperienceBand || null,
+        location_preference: locationPreference || null,
+        ai_maturity: aiMaturity || null,
         role_blend: roleBlend || null,
         management_scope: leadershipSignals ? managementScope || null : null,
         decision_scope: decisionScope || null,
@@ -898,23 +950,52 @@ export default function AuditPage() {
                     </div>
                   </div>
 
+                  <div style={{ marginBottom: '20px' }}>
+                    <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>
+                      {messages.audit.goalPrompt}
+                    </label>
+                    <ChoiceChipGroup
+                      options={GOAL_NOW_OPTIONS}
+                      value={goalNow}
+                      onSelect={setGoalNow}
+                      labels={messages.audit.goalOptions}
+                    />
+                  </div>
+
+                  <div style={{ marginBottom: '20px' }}>
+                    <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>
+                      {messages.audit.timelinePrompt}
+                    </label>
+                    <ChoiceChipGroup
+                      options={TIMELINE_URGENCY_OPTIONS}
+                      value={timelineUrgency}
+                      onSelect={setTimelineUrgency}
+                      labels={messages.audit.timelineOptions}
+                    />
+                  </div>
+
+                  <div style={{ marginBottom: '20px' }}>
+                    <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>
+                      {messages.audit.experiencePrompt}
+                    </label>
+                    <ChoiceChipGroup
+                      options={YEARS_EXPERIENCE_OPTIONS}
+                      value={yearsExperienceBand}
+                      onSelect={setYearsExperienceBand}
+                      labels={messages.audit.experienceOptions}
+                    />
+                  </div>
+
                   <div style={{ marginBottom: leadershipSignals ? '20px' : 0 }}>
                     <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>
                       {messages.audit.rolePrompt}
                     </label>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-                      {ROLE_BLEND_OPTIONS.map((option) => (
-                        <button
-                          key={option}
-                          type="button"
-                          onClick={() => setRoleBlend(option)}
-                          className={`chip ${roleBlend === option ? 'active-primary' : ''}`}
-                          style={roleBlend === option ? { background: 'rgba(27, 111, 99, 0.12)', color: palette.teal, outlineColor: 'rgba(27, 111, 99, 0.38)' } : { background: 'rgba(255,255,255,0.58)', color: palette.textMuted, outlineColor: 'rgba(19,27,35,0.08)' }}
-                        >
-                          {messages.audit.roleBlendOptions[option]}
-                        </button>
-                      ))}
-                    </div>
+                    <ChoiceChipGroup
+                      options={ROLE_BLEND_OPTIONS}
+                      value={roleBlend}
+                      onSelect={setRoleBlend}
+                      labels={messages.audit.roleBlendOptions}
+                    />
                   </div>
 
                   {leadershipSignals && (
@@ -922,19 +1003,12 @@ export default function AuditPage() {
                       <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>
                         {messages.audit.managementPrompt}
                       </label>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-                        {MANAGEMENT_SCOPE_OPTIONS.map((option) => (
-                          <button
-                            key={option}
-                            type="button"
-                            onClick={() => setManagementScope(option)}
-                            className={`chip ${managementScope === option ? 'active-primary' : ''}`}
-                            style={managementScope === option ? { background: 'rgba(27, 111, 99, 0.12)', color: palette.teal, outlineColor: 'rgba(27, 111, 99, 0.38)' } : { background: 'rgba(255,255,255,0.58)', color: palette.textMuted, outlineColor: 'rgba(19,27,35,0.08)' }}
-                          >
-                            {messages.audit.managementScopeOptions[option]}
-                          </button>
-                        ))}
-                      </div>
+                      <ChoiceChipGroup
+                        options={MANAGEMENT_SCOPE_OPTIONS}
+                        value={managementScope}
+                        onSelect={setManagementScope}
+                        labels={messages.audit.managementScopeOptions}
+                      />
                     </div>
                   )}
 
@@ -942,19 +1016,36 @@ export default function AuditPage() {
                     <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>
                       {messages.audit.decisionScopePrompt}
                     </label>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-                      {DECISION_SCOPE_OPTIONS.map((value) => (
-                        <button
-                          key={value}
-                          type="button"
-                          onClick={() => setDecisionScope(value)}
-                          className={`chip ${decisionScope === value ? 'active-primary' : ''}`}
-                          style={decisionScope === value ? { background: 'rgba(27, 111, 99, 0.12)', color: palette.teal, outlineColor: 'rgba(27, 111, 99, 0.38)' } : { background: 'rgba(255,255,255,0.58)', color: palette.textMuted, outlineColor: 'rgba(19,27,35,0.08)' }}
-                        >
-                          {messages.audit.decisionScopeOptions[value]}
-                        </button>
-                      ))}
-                    </div>
+                    <ChoiceChipGroup
+                      options={DECISION_SCOPE_OPTIONS}
+                      value={decisionScope}
+                      onSelect={setDecisionScope}
+                      labels={messages.audit.decisionScopeOptions}
+                    />
+                  </div>
+
+                  <div style={{ marginBottom: '20px' }}>
+                    <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>
+                      {messages.audit.locationPrompt}
+                    </label>
+                    <ChoiceChipGroup
+                      options={LOCATION_PREFERENCE_OPTIONS}
+                      value={locationPreference}
+                      onSelect={setLocationPreference}
+                      labels={messages.audit.locationOptions}
+                    />
+                  </div>
+
+                  <div style={{ marginBottom: '20px' }}>
+                    <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>
+                      {messages.audit.aiMaturityPrompt}
+                    </label>
+                    <ChoiceChipGroup
+                      options={AI_MATURITY_OPTIONS}
+                      value={aiMaturity}
+                      onSelect={setAiMaturity}
+                      labels={messages.audit.aiMaturityOptions}
+                    />
                   </div>
 
                   <div>

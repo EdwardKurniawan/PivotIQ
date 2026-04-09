@@ -595,3 +595,63 @@ Current quality read:
 3. Procurement is cleaner after replacing a contract-lifecycle first step with procurement analytics.
 4. Customer Education is still the fixture most likely to drift because role-pure market coverage remains thin; `Learning Experience Architect` is coherent but should be watched.
 5. Legal is credible but still mostly needs richer legal-ops market coverage over time.
+
+## 2026-04-09 intake phase 1 is live
+
+This pass moved the first batch of higher-signal user-state inputs from spec into the product and recommendation engine.
+
+What shipped:
+
+- Added 5 new audit clarifiers in `app/audit/page.js`:
+  - `goal_now`
+  - `timeline_urgency`
+  - `years_experience_band`
+  - `location_preference`
+  - `ai_maturity`
+- Added localized copy for those fields in `lib/i18n.js` for English, Dutch, and German.
+- Updated the OpenRouter report schema/prompt guides in `lib/report-generation.js` so the model now treats those clarifiers as high-signal context instead of decorative metadata.
+- Updated `lib/report-data.js` so those fields now influence:
+  - primary move selection in `recommendation_stack`
+  - stay-vs-pivot bias
+  - confidence language
+  - over-senior pivot caution
+  - stay-path urgency framing
+  - first learning-step selection when AI maturity is already high
+- Added compatibility parsing for older direct `buildDemoReportData()` fixture calls that pass clarifiers at the top level instead of inside `clarifiers`.
+
+What changed in recommendation behavior:
+
+- Users who choose `stay_and_advance` now require stronger external evidence before a pivot can become the primary move.
+- Users who need a plan to be useful within `3 months` now bias harder toward safer, faster, proof-first moves.
+- Early-career users get more caution around stretched titles and promotion-path realism.
+- Users with higher `ai_maturity` no longer default as hard toward beginner AI-learning-first recommendations when stronger workflow/governance learning is available.
+- Location preference is now preserved and exposed to the model/prompt layer, with extra confidence caution for narrower target markets like `global_remote` or `other`.
+
+Verification completed:
+
+- `npm run test:report-quality`
+- `npm run test:course-catalog`
+- `npm run test:market-ranking`
+- `npm run test:job-grounding`
+- `npm run build`
+- `git diff --check`
+
+New regression coverage added:
+
+- the new clarifiers persist through normalization
+- stay intent + high urgency can keep the stay path primary over a merely strategy-led pivot
+- active pivot intent + urgency still allows a market-backed pivot to win
+- low-experience users fail safer when the top title is overstretched
+- advanced AI maturity can skip beginner-first learning starts when a stronger workflow-oriented skill is available
+
+Next best product move:
+
+1. Add Phase 2 precision inputs behind progressive disclosure:
+   - `technical_capability`
+   - `salary_tolerance`
+   - `proof_state`
+2. Use those precision inputs to improve:
+   - coding/tool realism
+   - pay-cut avoidance
+   - proof asset selection
+3. Add report refresh comparisons that explicitly tell the user how these new inputs changed the recommendation stack.

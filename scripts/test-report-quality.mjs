@@ -404,6 +404,198 @@ function testLearningPathIsPersistedInNormalizedReport() {
   assert.ok(normalized.stay_path.learning_path[0].resource_title);
 }
 
+function testPhaseOneClarifiersPersistInNormalizedReport() {
+  const report = buildDemoReportData(
+    'Operations Manager',
+    'Tech',
+    ['Process mapping and improvement', 'Stakeholder updates and coordination'],
+    {
+      selected_tasks: [{ label: 'Process mapping and improvement' }],
+      primary_tasks: ['Process mapping and improvement'],
+      clarifiers: {
+        goal_now: 'stay_and_advance',
+        timeline_urgency: 'within_3_months',
+        years_experience_band: '3_5',
+        location_preference: 'europe',
+        ai_maturity: 'weekly',
+        domain_focus: 'internal operations',
+      },
+    }
+  );
+
+  const normalized = normalizeReportData(report);
+  assert.equal(normalized.profile.clarifiers.goal_now, 'stay_and_advance');
+  assert.equal(normalized.profile.clarifiers.timeline_urgency, 'within_3_months');
+  assert.equal(normalized.profile.clarifiers.years_experience_band, '3_5');
+  assert.equal(normalized.profile.clarifiers.location_preference, 'europe');
+  assert.equal(normalized.profile.clarifiers.ai_maturity, 'weekly');
+}
+
+function testStayGoalAndUrgencyPreferStayOverStrategyLedPivot() {
+  const report = buildDemoReportData(
+    'HR Business Partner',
+    'HR',
+    ['Manager enablement', 'People operations reporting'],
+    {
+      selected_tasks: [{ label: 'Manager enablement' }],
+      primary_tasks: ['Manager enablement', 'People operations reporting'],
+      clarifiers: {
+        goal_now: 'stay_and_advance',
+        timeline_urgency: 'within_3_months',
+        years_experience_band: '3_5',
+        location_preference: 'europe',
+        ai_maturity: 'weekly',
+        domain_focus: 'people operations and manager support',
+      },
+    }
+  );
+
+  report.summary.overall_score = 75;
+  report.pivots[0] = {
+    ...report.pivots[0],
+    id: 'people-operations-manager',
+    title: 'People Operations Manager',
+    fit_summary: 'This path is close to your current scope and has some hiring support.',
+    live_market_signal: {
+      matched_openings_count: 2,
+      profile_fit_score: 32,
+      missing_required_skills: ['Workforce analytics'],
+      model_only_skill_gaps: [],
+    },
+    match_score: 84,
+  };
+
+  const normalized = normalizeReportData(report);
+  assert.equal(normalized.recommendation_stack.primary.type, 'stay');
+  assert.match(normalized.recommendation_stack.primary.confidence_label, /Fastest practical path|Strong current-lane advantage/i);
+}
+
+function testActivePivotGoalKeepsMarketBackedPivotPrimary() {
+  const report = buildDemoReportData(
+    'HR Business Partner',
+    'HR',
+    ['Manager enablement', 'People operations reporting'],
+    {
+      selected_tasks: [{ label: 'Manager enablement' }],
+      primary_tasks: ['Manager enablement', 'People operations reporting'],
+      clarifiers: {
+        goal_now: 'active_pivot',
+        timeline_urgency: 'within_3_months',
+        years_experience_band: '3_5',
+        location_preference: 'united_states',
+        ai_maturity: 'weekly',
+        domain_focus: 'people operations and manager support',
+      },
+    }
+  );
+
+  report.pivots[0] = {
+    ...report.pivots[0],
+    id: 'people-operations-manager',
+    title: 'People Operations Manager',
+    fit_summary: 'This path is close to your current scope and has real hiring demand.',
+    live_market_signal: {
+      matched_openings_count: 8,
+      profile_fit_score: 48,
+      missing_required_skills: ['Workforce analytics'],
+      model_only_skill_gaps: [],
+    },
+    match_score: 86,
+  };
+
+  const normalized = normalizeReportData(report);
+  assert.equal(normalized.recommendation_stack.primary.type, 'pivot');
+  assert.equal(normalized.recommendation_stack.primary.title, 'People Operations Manager');
+  assert.equal(normalized.decision.recommendation_type, 'active-pivot');
+  assert.equal(normalized.decision.urgency, 'Make this useful in the next 90 days');
+}
+
+function testLowExperienceStretchTitleFallsBackToStayFirst() {
+  const report = buildDemoReportData(
+    'Project Manager',
+    'Consulting',
+    ['Stakeholder updates and coordination', 'Project tracking and follow-up'],
+    {
+      selected_tasks: [{ label: 'Stakeholder updates and coordination' }],
+      primary_tasks: ['Stakeholder updates and coordination', 'Project tracking and follow-up'],
+      clarifiers: {
+        goal_now: 'active_pivot',
+        timeline_urgency: 'within_6_months',
+        years_experience_band: '0_2',
+        location_preference: 'europe',
+        ai_maturity: 'occasionally',
+        domain_focus: 'client delivery and execution',
+      },
+    }
+  );
+
+  report.summary.overall_score = 72;
+  report.pivots[0] = {
+    ...report.pivots[0],
+    id: 'director-of-strategic-execution',
+    title: 'Director of Strategic Execution',
+    live_market_signal: {
+      matched_openings_count: 0,
+      profile_fit_score: 18,
+      missing_required_skills: ['Portfolio leadership'],
+      model_only_skill_gaps: ['Executive stakeholder alignment'],
+    },
+    match_score: 82,
+  };
+
+  const normalized = normalizeReportData(report);
+  assert.equal(normalized.recommendation_stack.primary.type, 'stay');
+  assert.doesNotMatch(normalized.recommendation_stack.conservative_backup.title, /Director|Head|Principal|Architect/i);
+  assert.notEqual(normalized.recommendation_stack.conservative_backup.confidence_state, 'market-backed');
+}
+
+function testAdvancedAiMaturitySkipsBeginnerLearningStart() {
+  const report = buildDemoReportData(
+    'Procurement Analyst',
+    'Manufacturing',
+    ['Vendor performance reporting', 'Sourcing analysis'],
+    {
+      selected_tasks: [{ label: 'Vendor performance reporting' }],
+      primary_tasks: ['Vendor performance reporting'],
+      clarifiers: {
+        goal_now: 'hybrid_transition',
+        timeline_urgency: 'within_6_months',
+        years_experience_band: '6_10',
+        location_preference: 'europe',
+        ai_maturity: 'repeatable_workflows',
+        domain_focus: 'supplier performance and spend analytics',
+      },
+    }
+  );
+
+  report.pivots[0] = {
+    ...report.pivots[0],
+    skill_gaps: [
+      {
+        skill_name: 'Prompt design',
+        category: 'ai execution',
+        gap_priority: 'critical',
+        how_to_close_gap: 'Practice with reusable prompts.',
+        resource_title: 'OpenAI Academy',
+        resource_provider: 'OpenAI',
+        resource_url: 'https://academy.openai.com/',
+      },
+      {
+        skill_name: 'Workflow automation design',
+        category: 'workflow design',
+        gap_priority: 'critical',
+        how_to_close_gap: 'Turn one weekly workflow into a reusable automation pattern.',
+        resource_title: 'Zapier Learn in 14 Days',
+        resource_provider: 'Zapier',
+        resource_url: 'https://zapier.com/l/learn-14-days',
+      },
+    ],
+  };
+
+  const normalized = normalizeReportData(report);
+  assert.equal(normalized.pivots[0].learning_path[0].skill_name, 'Workflow automation design');
+}
+
 testTopPivotFamilyRepairAndCopy();
 testGenericAiResourceRemovedFromNonAiGap();
 testFirst30DaysReferencesFinalPivot();
@@ -418,5 +610,10 @@ testFinanceSyntheticTitleFallsBackToCanonicalRole();
 testProjectManagerOverSeniorTitlesFallBackToCanonicalRole();
 testHrLowerPivotDoesNotKeepLegalSkillLeakage();
 testLearningPathIsPersistedInNormalizedReport();
+testPhaseOneClarifiersPersistInNormalizedReport();
+testStayGoalAndUrgencyPreferStayOverStrategyLedPivot();
+testActivePivotGoalKeepsMarketBackedPivotPrimary();
+testLowExperienceStretchTitleFallsBackToStayFirst();
+testAdvancedAiMaturitySkipsBeginnerLearningStart();
 
 console.log('Report quality tests passed.');
