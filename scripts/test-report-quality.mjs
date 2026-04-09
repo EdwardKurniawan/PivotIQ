@@ -120,7 +120,34 @@ function testProofAssetBuilderAndPaidSummaryArePresent() {
   assert.ok(normalized.proof_asset_builder.title);
   assert.ok(normalized.proof_asset_builder.sections.length >= 3);
   assert.ok(normalized.proof_asset_builder.checklist.length >= 3);
+  assert.ok(normalized.proof_asset_builder.audience);
+  assert.ok(normalized.proof_asset_builder.sample_metrics.length >= 2);
+  assert.ok(normalized.proof_asset_builder.internal_version?.title);
+  assert.ok(normalized.proof_asset_builder.external_version?.title);
   assert.match(normalized.paid_value_summary.headline, /Legal Operations Analyst/i);
+}
+
+function testStayAdvancePremiumSectionsArePresent() {
+  const report = buildDemoReportData(
+    'Procurement Analyst',
+    'Manufacturing',
+    ['Vendor performance reporting', 'Sourcing analysis', 'Stakeholder updates'],
+    {
+      selected_tasks: [{ label: 'Vendor performance reporting' }],
+      primary_tasks: ['Vendor performance reporting', 'Sourcing analysis', 'Stakeholder updates'],
+      domain_focus: 'supplier performance and spend analytics',
+    }
+  );
+
+  const normalized = normalizeReportData(report);
+
+  assert.ok(normalized.stay_and_advance.ai_leverage_playbook.headline);
+  assert.ok(normalized.stay_and_advance.ai_leverage_playbook.plays.length >= 3);
+  assert.ok(normalized.stay_and_advance.promotion_conversation_pack.meeting_goal);
+  assert.ok(normalized.stay_and_advance.promotion_conversation_pack.talk_track.length >= 3);
+  assert.ok(normalized.stay_proof_asset_builder.title);
+  assert.ok(normalized.stay_proof_asset_builder.internal_version?.title);
+  assert.match(normalized.stay_proof_asset_builder.target_role, /Strategic Sourcing Manager|current role/i);
 }
 
 function testEmailHtmlStartsWithActionPlan() {
@@ -215,6 +242,7 @@ testTopPivotFamilyRepairAndCopy();
 testGenericAiResourceRemovedFromNonAiGap();
 testFirst30DaysReferencesFinalPivot();
 testProofAssetBuilderAndPaidSummaryArePresent();
+testStayAdvancePremiumSectionsArePresent();
 testEmailHtmlStartsWithActionPlan();
 testProcurementTopSkillUsesProcurementResource();
 testStayAdvanceLearningPathDoesNotInheritPivotCourse();

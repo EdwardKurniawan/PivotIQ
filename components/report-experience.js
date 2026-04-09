@@ -217,9 +217,9 @@ function buildLearningPathSteps(skillGaps = []) {
   ].join(' '))) || withResources.find((skill) => skill !== critical && skill !== proof) || proof;
 
   return [
-    { label: 'Start here', helper: 'Close the most important gap first.', skill: critical },
-    { label: 'Build proof', helper: 'Turn learning into a visible work sample.', skill: proof },
-    { label: 'Go deeper', helper: 'Add depth once the first proof is moving.', skill: deeper },
+    { label: 'Start here', helper: 'Learn just enough to redesign one real workflow or decision.', skill: critical },
+    { label: 'Build proof', helper: 'Turn that learning into a visible asset someone else can review in minutes.', skill: proof },
+    { label: 'Go deeper', helper: 'Add depth only after the first artifact is already creating signal.', skill: deeper },
   ].filter((step, index, steps) => step.skill && steps.findIndex((item) => item.label === step.label && item.skill?.resource_title === step.skill?.resource_title) === index);
 }
 
@@ -900,6 +900,23 @@ function ProofAssetBuilderCard({ builder, color }) {
         </span>
       </div>
 
+      {(builder.audience || builder.business_question) && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '12px', marginBottom: '14px' }} className="two-col">
+          {builder.audience && (
+            <div style={{ padding: '15px 16px', borderRadius: '18px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
+              <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '8px' }}>Who this convinces</div>
+              <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{builder.audience}</div>
+            </div>
+          )}
+          {builder.business_question && (
+            <div style={{ padding: '15px 16px', borderRadius: '18px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
+              <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '8px' }}>Business question to answer</div>
+              <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{builder.business_question}</div>
+            </div>
+          )}
+        </div>
+      )}
+
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.1fr) minmax(280px, 0.9fr)', gap: '14px' }} className="two-col">
         <div style={{ padding: '18px', borderRadius: '20px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
           <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Artifact outline</div>
@@ -925,9 +942,234 @@ function ProofAssetBuilderCard({ builder, color }) {
         </div>
       </div>
 
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '14px', marginTop: '14px' }} className="two-col">
+        {(builder.sample_metrics || []).length > 0 && (
+          <div style={{ padding: '18px', borderRadius: '20px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
+            <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Metrics to show</div>
+            <div style={{ display: 'grid', gap: '9px' }}>
+              {(builder.sample_metrics || []).map((metric) => (
+                <div key={metric} style={{ display: 'flex', gap: '8px', color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>
+                  <span style={{ color, fontWeight: 950 }}>•</span>
+                  <span>{metric}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        {(builder.good_looks_like?.credible || builder.good_looks_like?.standout) && (
+          <div style={{ padding: '18px', borderRadius: '20px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
+            <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>What good looks like</div>
+            {builder.good_looks_like?.credible && (
+              <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65, marginBottom: '10px' }}>
+                <strong style={{ color: palette.text }}>Credible:</strong> {builder.good_looks_like.credible}
+              </div>
+            )}
+            {builder.good_looks_like?.standout && (
+              <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>
+                <strong style={{ color: palette.text }}>Standout:</strong> {builder.good_looks_like.standout}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '14px', marginTop: '14px' }} className="two-col">
+        {builder.internal_version && (
+          <div style={{ padding: '18px', borderRadius: '20px', background: `${color}0F`, border: `1px solid ${color}22` }}>
+            <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Use this internally</div>
+            <div style={{ color: palette.text, fontSize: '15px', fontWeight: 800, marginBottom: '8px' }}>{builder.internal_version.title}</div>
+            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65, marginBottom: '10px' }}>{builder.internal_version.use_case}</div>
+            <div style={{ display: 'grid', gap: '8px' }}>
+              {(builder.internal_version.emphasis || []).map((item) => (
+                <div key={item} style={{ display: 'flex', gap: '8px', color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>
+                  <span style={{ color, fontWeight: 950 }}>•</span>
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        {builder.external_version && (
+          <div style={{ padding: '18px', borderRadius: '20px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
+            <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Use this externally</div>
+            <div style={{ color: palette.text, fontSize: '15px', fontWeight: 800, marginBottom: '8px' }}>{builder.external_version.title}</div>
+            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65, marginBottom: '10px' }}>{builder.external_version.use_case}</div>
+            <div style={{ display: 'grid', gap: '8px' }}>
+              {(builder.external_version.emphasis || []).map((item) => (
+                <div key={item} style={{ display: 'flex', gap: '8px', color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>
+                  <span style={{ color, fontWeight: 950 }}>•</span>
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {(builder.common_mistakes || []).length > 0 && (
+        <div style={{ marginTop: '14px', padding: '14px 16px', borderRadius: '18px', background: 'rgba(19,32,42,0.06)', border: `1px solid ${palette.border}` }}>
+          <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '8px' }}>Avoid these mistakes</div>
+          <div style={{ display: 'grid', gap: '8px' }}>
+            {(builder.common_mistakes || []).map((item) => (
+              <div key={item} style={{ display: 'flex', gap: '8px', color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>
+                <span style={{ color: '#B45309', fontWeight: 900 }}>•</span>
+                <span>{item}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {builder.share_prompt && (
         <div style={{ marginTop: '14px', padding: '14px 16px', borderRadius: '18px', background: 'rgba(19,32,42,0.06)', border: `1px solid ${palette.border}`, color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>
           <strong style={{ color: palette.text }}>Use this in outreach:</strong> {builder.share_prompt}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function AiLeveragePlaybookCard({ playbook, color }) {
+  if (!playbook?.headline) return null;
+
+  return (
+    <div className="piq-card" style={{ padding: '24px', marginBottom: '18px', background: `linear-gradient(140deg, ${color}10 0%, rgba(255,255,255,0.96) 58%)`, border: `1px solid ${color}24`, boxShadow: '0 22px 46px rgba(19, 32, 42, 0.08)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', alignItems: 'end', flexWrap: 'wrap', marginBottom: '18px' }}>
+        <div>
+          <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1.4px', textTransform: 'uppercase', marginBottom: '8px' }}>AI leverage playbook</div>
+          <h3 style={{ color: palette.text, fontSize: '22px', fontWeight: 950, letterSpacing: '-0.04em', margin: '0 0 6px' }}>{playbook.headline}</h3>
+          <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.7, margin: 0, maxWidth: '760px' }}>{playbook.operator_shift}</p>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gap: '14px', marginBottom: '14px' }}>
+        {(playbook.plays || []).map((play, index) => (
+          <div key={`${play.title}-${index}`} style={{ borderRadius: '22px', padding: '18px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}` }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap' }}>
+              <div style={{ color: palette.text, fontSize: '17px', fontWeight: 900 }}>{play.title}</div>
+              <span style={{ padding: '6px 10px', borderRadius: '999px', background: `${color}12`, border: `1px solid ${color}22`, color, fontSize: '11px', fontWeight: 900, textTransform: 'uppercase' }}>Play {index + 1}</span>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '12px' }} className="two-col">
+              <div>
+                <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>Workflow to own</div>
+                <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{play.workflow}</div>
+              </div>
+              <div>
+                <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>How AI helps</div>
+                <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{play.ai_role}</div>
+              </div>
+              <div>
+                <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>Human checkpoint</div>
+                <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{play.human_checkpoint}</div>
+              </div>
+              <div>
+                <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>What this changes</div>
+                <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{play.business_impact}</div>
+              </div>
+            </div>
+            <div style={{ marginTop: '12px', padding: '12px 13px', borderRadius: '16px', background: `${color}0E`, border: `1px solid ${color}20`, color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>
+              <strong style={{ color: palette.text }}>What to show leadership:</strong> {play.what_to_share}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '14px' }} className="two-col">
+        <div style={{ padding: '18px', borderRadius: '20px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}` }}>
+          <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>How to work now</div>
+          <div style={{ display: 'grid', gap: '8px' }}>
+            {(playbook.weekly_operating_system || []).map((item) => (
+              <div key={item} style={{ display: 'flex', gap: '8px', color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>
+                <span style={{ color, fontWeight: 950 }}>•</span>
+                <span>{item}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div style={{ padding: '18px', borderRadius: '20px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}` }}>
+          <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Signals that make you promotable</div>
+          <div style={{ display: 'grid', gap: '8px' }}>
+            {(playbook.promotion_signals || []).map((item) => (
+              <div key={item} style={{ display: 'flex', gap: '8px', color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>
+                <span style={{ color, fontWeight: 950 }}>•</span>
+                <span>{item}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PromotionConversationPackCard({ pack, color }) {
+  if (!pack?.meeting_goal) return null;
+
+  return (
+    <div className="piq-card" style={{ padding: '24px', marginBottom: '18px', background: 'linear-gradient(135deg, rgba(255,255,255,0.96), rgba(255,247,237,0.94))', border: `1px solid ${color}20`, boxShadow: '0 22px 46px rgba(19, 32, 42, 0.08)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', alignItems: 'end', flexWrap: 'wrap', marginBottom: '18px' }}>
+        <div>
+          <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1.4px', textTransform: 'uppercase', marginBottom: '8px' }}>Promotion conversation pack</div>
+          <h3 style={{ color: palette.text, fontSize: '22px', fontWeight: 950, letterSpacing: '-0.04em', margin: '0 0 6px' }}>Use your AI work to earn more scope</h3>
+          <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.7, margin: 0, maxWidth: '760px' }}>{pack.meeting_goal}</p>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.05fr) minmax(280px, 0.95fr)', gap: '14px' }} className="two-col">
+        <div style={{ padding: '18px', borderRadius: '20px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}` }}>
+          <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Talk track</div>
+          <div style={{ display: 'grid', gap: '9px' }}>
+            {(pack.talk_track || []).map((item, index) => (
+              <div key={item} style={{ display: 'flex', gap: '10px', color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>
+                <span style={{ color, fontWeight: 950 }}>{index + 1}</span>
+                <span>{item}</span>
+              </div>
+            ))}
+          </div>
+          {pack.manager_script && (
+            <div style={{ marginTop: '12px', padding: '12px 13px', borderRadius: '16px', background: `${color}0F`, border: `1px solid ${color}22`, color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>
+              <strong style={{ color: palette.text }}>Open with this:</strong> {pack.manager_script}
+            </div>
+          )}
+        </div>
+        <div style={{ display: 'grid', gap: '14px' }}>
+          <div style={{ padding: '18px', borderRadius: '20px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}` }}>
+            <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Bring this evidence</div>
+            <div style={{ display: 'grid', gap: '8px' }}>
+              {(pack.evidence_to_bring || []).map((item) => (
+                <div key={item} style={{ display: 'flex', gap: '8px', color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>
+                  <span style={{ color, fontWeight: 950 }}>•</span>
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div style={{ padding: '18px', borderRadius: '20px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}` }}>
+            <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Make this ask</div>
+            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65, marginBottom: '10px' }}>{pack.ask}</div>
+            <div style={{ display: 'grid', gap: '8px' }}>
+              {(pack.next_scope_options || []).map((item) => (
+                <div key={item} style={{ display: 'flex', gap: '8px', color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>
+                  <span style={{ color, fontWeight: 950 }}>•</span>
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {(pack.what_not_to_say || []).length > 0 && (
+        <div style={{ marginTop: '14px', padding: '14px 16px', borderRadius: '18px', background: 'rgba(19,32,42,0.06)', border: `1px solid ${palette.border}` }}>
+          <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '8px' }}>What not to say</div>
+          <div style={{ display: 'grid', gap: '8px' }}>
+            {(pack.what_not_to_say || []).map((item) => (
+              <div key={item} style={{ display: 'flex', gap: '8px', color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>
+                <span style={{ color: '#B45309', fontWeight: 900 }}>•</span>
+                <span>{item}</span>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>
@@ -1547,6 +1789,9 @@ export default function ReportExperience({ payload, embedded = false }) {
   const first30Days = reportData.first_30_days || {};
   const paidValueSummary = reportData.paid_value_summary || {};
   const proofAssetBuilder = reportData.proof_asset_builder || {};
+  const stayProofAssetBuilder = reportData.stay_proof_asset_builder || {};
+  const aiLeveragePlaybook = stayAndAdvance.ai_leverage_playbook || {};
+  const promotionConversationPack = stayAndAdvance.promotion_conversation_pack || {};
   const storageScope = useMemo(() => getStorageScope(reportData, payload.reportId), [reportData, payload.reportId]);
   const messages = getMessages(payload.uiLocale || payload.locale || getBrowserLocale() || reportData.locale);
   const reportPaths = useMemo(() => (tier === 'full' && stayPath ? [stayPath, ...pivots] : pivots), [tier, stayPath, pivots]);
@@ -2432,7 +2677,9 @@ export default function ReportExperience({ payload, embedded = false }) {
                   </div>
                 </div>
               </div>
-              {!isStayPlan && <ProofAssetBuilderCard builder={proofAssetBuilder} color={planColor} />}
+              {isStayPlan && <AiLeveragePlaybookCard playbook={aiLeveragePlaybook} color={planColor} />}
+              <ProofAssetBuilderCard builder={isStayPlan ? stayProofAssetBuilder : proofAssetBuilder} color={planColor} />
+              {isStayPlan && <PromotionConversationPackCard pack={promotionConversationPack} color={planColor} />}
               <LearningPathCard path={activePath} color={planColor} />
               <div style={{ display: 'grid', gap: '14px' }}>
                 {(activePath.skill_gaps || []).map((skill) => (
