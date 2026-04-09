@@ -431,6 +431,33 @@ function testPhaseOneClarifiersPersistInNormalizedReport() {
   assert.equal(normalized.profile.clarifiers.ai_maturity, 'weekly');
 }
 
+function testPhaseTwoClarifiersPersistInNormalizedReport() {
+  const report = buildDemoReportData(
+    'Operations Manager',
+    'Tech',
+    ['Process mapping and improvement', 'Stakeholder updates and coordination'],
+    {
+      selected_tasks: [{ label: 'Process mapping and improvement' }],
+      primary_tasks: ['Process mapping and improvement'],
+      clarifiers: {
+        goal_now: 'hybrid_transition',
+        timeline_urgency: 'within_6_months',
+        years_experience_band: '6_10',
+        location_preference: 'europe',
+        ai_maturity: 'weekly',
+        technical_capability: 'advanced_spreadsheets',
+        salary_tolerance: 'up_to_10_percent',
+        proof_state: 'internal_project',
+      },
+    }
+  );
+
+  const normalized = normalizeReportData(report);
+  assert.equal(normalized.profile.clarifiers.technical_capability, 'advanced_spreadsheets');
+  assert.equal(normalized.profile.clarifiers.salary_tolerance, 'up_to_10_percent');
+  assert.equal(normalized.profile.clarifiers.proof_state, 'internal_project');
+}
+
 function testStayGoalAndUrgencyPreferStayOverStrategyLedPivot() {
   const report = buildDemoReportData(
     'HR Business Partner',
@@ -468,6 +495,89 @@ function testStayGoalAndUrgencyPreferStayOverStrategyLedPivot() {
   const normalized = normalizeReportData(report);
   assert.equal(normalized.recommendation_stack.primary.type, 'stay');
   assert.match(normalized.recommendation_stack.primary.confidence_label, /Fastest practical path|Strong current-lane advantage/i);
+}
+
+function testLowTechnicalCapabilityKeepsTechnicalStretchPivotLowConfidence() {
+  const report = buildDemoReportData(
+    'FP&A Analyst',
+    'Finance',
+    ['Forecasting and planning', 'Scenario modeling and sensitivity analysis'],
+    {
+      selected_tasks: [{ label: 'Forecasting and planning' }],
+      primary_tasks: ['Forecasting and planning', 'Scenario modeling and sensitivity analysis'],
+      clarifiers: {
+        goal_now: 'active_pivot',
+        timeline_urgency: 'within_6_months',
+        years_experience_band: '3_5',
+        location_preference: 'europe',
+        ai_maturity: 'occasionally',
+        technical_capability: 'no_code_only',
+        domain_focus: 'commercial planning and pricing',
+      },
+    }
+  );
+
+  report.summary.overall_score = 68;
+  report.pivots[0] = {
+    ...report.pivots[0],
+    id: 'finance-systems-manager',
+    title: 'Finance Systems Manager',
+    live_market_signal: {
+      matched_openings_count: 0,
+      profile_fit_score: 24,
+      missing_required_skills: ['SQL', 'systems design'],
+      model_only_skill_gaps: [],
+    },
+    match_score: 81,
+  };
+
+  const normalized = normalizeReportData(report);
+  assert.equal(normalized.recommendation_stack.primary.type, 'stay');
+  assert.equal(normalized.recommendation_stack.conservative_backup.title, 'Finance Systems Manager');
+  assert.equal(normalized.recommendation_stack.conservative_backup.confidence_state, 'low-confidence');
+  assert.match(normalized.recommendation_stack.conservative_backup.confidence_reason, /technical jump|no-code only/i);
+}
+
+function testStrictSalaryTolerancePrefersSaferStayPathWhenPivotPayoffIsThin() {
+  const report = buildDemoReportData(
+    'HR Business Partner',
+    'HR',
+    ['Manager enablement', 'People operations reporting'],
+    {
+      selected_tasks: [{ label: 'Manager enablement' }],
+      primary_tasks: ['Manager enablement', 'People operations reporting'],
+      clarifiers: {
+        goal_now: 'active_pivot',
+        timeline_urgency: 'within_6_months',
+        years_experience_band: '6_10',
+        location_preference: 'europe',
+        ai_maturity: 'weekly',
+        salary_tolerance: 'cannot_take_cut',
+        domain_focus: 'people operations and manager support',
+      },
+    }
+  );
+
+  report.summary.overall_score = 71;
+  report.pivots[0] = {
+    ...report.pivots[0],
+    id: 'people-operations-manager',
+    title: 'People Operations Manager',
+    salary_delta: 'Flat / lateral to start',
+    transition_time: '4–6 months with consistent effort (~6hrs/week)',
+    live_market_signal: {
+      matched_openings_count: 2,
+      profile_fit_score: 28,
+      missing_required_skills: ['Workforce analytics'],
+      model_only_skill_gaps: [],
+    },
+    match_score: 82,
+  };
+
+  const normalized = normalizeReportData(report);
+  assert.equal(normalized.recommendation_stack.primary.type, 'stay');
+  assert.match(normalized.recommendation_stack.decision_brief.summary, /pay protection matters/i);
+  assert.match(normalized.career_roi.roi_read, /compensation protection matters/i);
 }
 
 function testActivePivotGoalKeepsMarketBackedPivotPrimary() {
@@ -508,6 +618,74 @@ function testActivePivotGoalKeepsMarketBackedPivotPrimary() {
   assert.equal(normalized.recommendation_stack.primary.title, 'People Operations Manager');
   assert.equal(normalized.decision.recommendation_type, 'active-pivot');
   assert.equal(normalized.decision.urgency, 'Make this useful in the next 90 days');
+}
+
+function testStrongProofLetsActivePivotStayPrimaryWhenSignalIsStrategyLed() {
+  const report = buildDemoReportData(
+    'Project Manager',
+    'Consulting',
+    ['Stakeholder updates and coordination', 'Project tracking and follow-up'],
+    {
+      selected_tasks: [{ label: 'Stakeholder updates and coordination' }],
+      primary_tasks: ['Stakeholder updates and coordination', 'Project tracking and follow-up'],
+      clarifiers: {
+        goal_now: 'active_pivot',
+        timeline_urgency: 'within_6_months',
+        years_experience_band: '6_10',
+        location_preference: 'europe',
+        ai_maturity: 'weekly',
+        proof_state: 'workflow_or_playbook',
+        domain_focus: 'client delivery and execution',
+      },
+    }
+  );
+
+  report.summary.overall_score = 68;
+  report.pivots[0] = {
+    ...report.pivots[0],
+    id: 'delivery-operations-manager',
+    title: 'Delivery Operations Manager',
+    live_market_signal: {
+      matched_openings_count: 2,
+      profile_fit_score: 29,
+      missing_required_skills: ['Operating rhythm design'],
+      model_only_skill_gaps: [],
+    },
+    match_score: 82,
+  };
+
+  const normalized = normalizeReportData(report);
+  assert.equal(normalized.recommendation_stack.primary.type, 'pivot');
+  assert.equal(normalized.recommendation_stack.primary.title, 'Delivery Operations Manager');
+  assert.match(normalized.recommendation_stack.decision_brief.summary, /already have enough proof/i);
+}
+
+function testExistingProofUpgradesProofBuildersInsteadOfStartingFromScratch() {
+  const report = buildDemoReportData(
+    'Operations Manager',
+    'Manufacturing',
+    ['Process mapping and improvement', 'Stakeholder updates and coordination'],
+    {
+      selected_tasks: [{ label: 'Process mapping and improvement' }],
+      primary_tasks: ['Process mapping and improvement'],
+      clarifiers: {
+        goal_now: 'hybrid_transition',
+        timeline_urgency: 'within_6_months',
+        years_experience_band: '6_10',
+        location_preference: 'europe',
+        ai_maturity: 'weekly',
+        proof_state: 'internal_project',
+        domain_focus: 'operations improvement',
+      },
+    }
+  );
+
+  const normalized = normalizeReportData(report);
+  assert.match(normalized.proof_asset_builder.objective, /Package one internal project/i);
+  assert.match(normalized.proof_asset_builder.first_action, /choosing the internal project/i);
+  assert.equal(normalized.proof_asset_builder.proof_state_read, 'package an internal project into visible proof');
+  assert.match(normalized.stay_proof_asset_builder.objective, /Package one internal project/i);
+  assert.match(normalized.stay_proof_asset_builder.first_action, /promotion case/i);
 }
 
 function testLowExperienceStretchTitleFallsBackToStayFirst() {
@@ -611,8 +789,13 @@ testProjectManagerOverSeniorTitlesFallBackToCanonicalRole();
 testHrLowerPivotDoesNotKeepLegalSkillLeakage();
 testLearningPathIsPersistedInNormalizedReport();
 testPhaseOneClarifiersPersistInNormalizedReport();
+testPhaseTwoClarifiersPersistInNormalizedReport();
 testStayGoalAndUrgencyPreferStayOverStrategyLedPivot();
+testLowTechnicalCapabilityKeepsTechnicalStretchPivotLowConfidence();
+testStrictSalaryTolerancePrefersSaferStayPathWhenPivotPayoffIsThin();
 testActivePivotGoalKeepsMarketBackedPivotPrimary();
+testStrongProofLetsActivePivotStayPrimaryWhenSignalIsStrategyLed();
+testExistingProofUpgradesProofBuildersInsteadOfStartingFromScratch();
 testLowExperienceStretchTitleFallsBackToStayFirst();
 testAdvancedAiMaturitySkipsBeginnerLearningStart();
 

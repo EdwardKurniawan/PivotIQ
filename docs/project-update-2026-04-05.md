@@ -655,3 +655,61 @@ Next best product move:
    - pay-cut avoidance
    - proof asset selection
 3. Add report refresh comparisons that explicitly tell the user how these new inputs changed the recommendation stack.
+
+## 2026-04-09 intake phase 2 is live
+
+This pass finished the precision-input layer and made those optional fields meaningfully change recommendation quality instead of only being stored.
+
+What shipped:
+
+- Added progressive-disclosure audit inputs in `app/audit/page.js` for:
+  - `technical_capability`
+  - `salary_tolerance`
+  - `proof_state`
+- Added localized copy for those fields and the precision-input toggle in `lib/i18n.js`.
+- Updated the OpenRouter schema and prompt instructions in `lib/report-generation.js` so the model now treats those fields as recommendation constraints, not just profile notes.
+- Updated `lib/report-data.js` so those inputs now affect:
+  - pivot confidence states when a role quietly assumes more technical depth than the user declared
+  - stay-vs-pivot bias when salary protection matters and the pivot payoff is still thin
+  - decision-brief language so compensation risk and existing proof are reflected honestly
+  - proof asset builders so users with existing internal projects, dashboards, workflows, or case studies package stronger proof instead of being told to start from scratch
+  - demo fixtures and normalization so the new fields persist end to end
+- Expanded `scripts/test-report-quality.mjs` with Phase 2 regression coverage.
+
+What changed in recommendation behavior:
+
+- Users who explicitly declare low technical capability now fail safer on systems-heavy or coding-adjacent pivots unless the market evidence is much stronger.
+- Users who need to protect compensation now bias harder toward the stay path when the pivot is only strategy-led and the salary/payback story is still thin.
+- Users who already have strong visible proof can keep a strategy-led pivot primary more often when they explicitly want to pivot.
+- Proof asset builders now change shape based on what the user already has:
+  - `internal_project` now packages internal work into visible proof
+  - `dashboard_or_analysis` now upgrades existing analysis into a decision-ready case
+  - `workflow_or_playbook` now packages existing workflows into reusable proof
+  - `portfolio_or_case_study` now sharpens existing cases into stronger market-facing assets
+- Optional precision inputs no longer penalize users who skip them; they only tighten the recommendation when the user actually provides the signal.
+
+Verification completed:
+
+- `npm run test:report-quality`
+- `npm run test:course-catalog`
+- `npm run test:market-ranking`
+- `npm run test:job-grounding`
+- `npm run test:progress`
+- `npm run test:outcomes`
+- `npm run test:recommendation-quality`
+- `npm run build`
+- `git diff --check`
+
+New regression coverage added:
+
+- Phase 2 clarifiers persist through normalization
+- low technical capability can demote a technical stretch pivot to low-confidence
+- strict salary tolerance can keep the safer stay path primary when the pivot payoff is thin
+- strong proof can keep a strategy-led pivot primary when the user explicitly wants to pivot
+- proof builders upgrade existing work instead of always starting from scratch
+
+Next best product move:
+
+1. Add report refresh comparisons that explicitly tell the user how the new intake clarifiers changed the recommendation stack.
+2. Start measuring which clarifiers most improve recommendation usefulness and follow-through in the outcome dashboard.
+3. Keep expanding broad-role QA fixtures so the richer intake layer is tested across more real white-collar role families.

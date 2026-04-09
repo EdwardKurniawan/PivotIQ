@@ -37,6 +37,12 @@ const LOCATION_PREFERENCE_OPTIONS = ['netherlands', 'europe', 'united_states', '
 
 const AI_MATURITY_OPTIONS = ['never_use_it', 'occasionally', 'weekly', 'repeatable_workflows', 'team_level_adoption'];
 
+const TECHNICAL_CAPABILITY_OPTIONS = ['no_code_only', 'advanced_spreadsheets', 'sql_bi', 'scripting_python', 'software_engineering'];
+
+const SALARY_TOLERANCE_OPTIONS = ['cannot_take_cut', 'up_to_10_percent', 'up_to_20_percent', 'flexible_for_right_move'];
+
+const PROOF_STATE_OPTIONS = ['none', 'internal_project', 'dashboard_or_analysis', 'workflow_or_playbook', 'portfolio_or_case_study'];
+
 const palette = {
   bg: '#F4EFE7',
   panel: 'rgba(255, 255, 255, 0.8)',
@@ -174,6 +180,10 @@ export default function AuditPage() {
   const [yearsExperienceBand, setYearsExperienceBand] = useState('');
   const [locationPreference, setLocationPreference] = useState('');
   const [aiMaturity, setAiMaturity] = useState('');
+  const [showPrecisionInputs, setShowPrecisionInputs] = useState(false);
+  const [technicalCapability, setTechnicalCapability] = useState('');
+  const [salaryTolerance, setSalaryTolerance] = useState('');
+  const [proofState, setProofState] = useState('');
   const [roleBlend, setRoleBlend] = useState('');
   const [managementScope, setManagementScope] = useState('');
   const [decisionScope, setDecisionScope] = useState('');
@@ -386,6 +396,9 @@ export default function AuditPage() {
         years_experience_band: yearsExperienceBand || null,
         location_preference: locationPreference || null,
         ai_maturity: aiMaturity || null,
+        technical_capability: technicalCapability || null,
+        salary_tolerance: salaryTolerance || null,
+        proof_state: proofState || null,
         role_blend: roleBlend || null,
         management_scope: leadershipSignals ? managementScope || null : null,
         decision_scope: decisionScope || null,
@@ -1046,6 +1059,74 @@ export default function AuditPage() {
                       onSelect={setAiMaturity}
                       labels={messages.audit.aiMaturityOptions}
                     />
+                  </div>
+
+                  <div
+                    style={{
+                      borderRadius: '20px',
+                      border: '1px solid rgba(19, 27, 35, 0.08)',
+                      background: 'rgba(255,255,255,0.56)',
+                      padding: '18px',
+                      marginBottom: '20px',
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: '14px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+                      <div style={{ maxWidth: '560px' }}>
+                        <p style={{ color: palette.text, fontSize: '15px', fontWeight: 800, margin: '0 0 6px', letterSpacing: '-0.02em' }}>
+                          {messages.audit.precisionTitle}
+                        </p>
+                        <p style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7, margin: 0 }}>
+                          {messages.audit.precisionBody}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setShowPrecisionInputs((value) => !value)}
+                        style={{ ...secondaryButtonStyle, width: 'auto', whiteSpace: 'nowrap' }}
+                      >
+                        {showPrecisionInputs ? messages.audit.precisionHide : messages.audit.precisionShow}
+                      </button>
+                    </div>
+
+                    {showPrecisionInputs && (
+                      <div style={{ marginTop: '18px' }}>
+                        <div style={{ marginBottom: '20px' }}>
+                          <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>
+                            {messages.audit.technicalCapabilityPrompt}
+                          </label>
+                          <ChoiceChipGroup
+                            options={TECHNICAL_CAPABILITY_OPTIONS}
+                            value={technicalCapability}
+                            onSelect={setTechnicalCapability}
+                            labels={messages.audit.technicalCapabilityOptions}
+                          />
+                        </div>
+
+                        <div style={{ marginBottom: '20px' }}>
+                          <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>
+                            {messages.audit.salaryTolerancePrompt}
+                          </label>
+                          <ChoiceChipGroup
+                            options={SALARY_TOLERANCE_OPTIONS}
+                            value={salaryTolerance}
+                            onSelect={setSalaryTolerance}
+                            labels={messages.audit.salaryToleranceOptions}
+                          />
+                        </div>
+
+                        <div>
+                          <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>
+                            {messages.audit.proofStatePrompt}
+                          </label>
+                          <ChoiceChipGroup
+                            options={PROOF_STATE_OPTIONS}
+                            value={proofState}
+                            onSelect={setProofState}
+                            labels={messages.audit.proofStateOptions}
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   <div>
