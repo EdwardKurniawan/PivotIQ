@@ -112,11 +112,9 @@ export default function Home() {
   const faqItems = messages.home.faqItems.map(([question, answer]) => ({ question, answer })).slice(0, 4);
   const featuredRoleGuides = getRoleGuideLinks(locale, [
     'marketing-manager-ai-risk',
-    'fpa-analyst-ai-risk',
-    'hr-business-partner-ai-risk',
-    'customer-success-manager-ai-risk',
-    'recruiter-ai-risk',
-    'office-manager-ai-risk',
+    'procurement-analyst-ai-risk',
+    'legal-operations-manager-ai-risk',
+    'customer-education-manager-ai-risk',
   ]).slice(0, 3);
   const sampleTaskNotes = messages.home.sampleNotes;
   const sampleTaskLabels = messages.home.sampleTaskLabels;

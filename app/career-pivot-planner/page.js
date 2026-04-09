@@ -23,9 +23,9 @@ export default function CareerPivotPlannerPage() {
     { href: '/white-collar-jobs-at-risk-from-ai', label: messages.pillars.whiteCollarJobsAtRisk.linkLabel },
   ];
   const rolePages = getRoleGuideLinks(locale, [
-    'customer-success-manager-ai-risk',
-    'recruiter-ai-risk',
-    'office-manager-ai-risk',
+    'customer-education-manager-ai-risk',
+    'procurement-analyst-ai-risk',
+    'legal-operations-manager-ai-risk',
   ]);
 
   return <PillarPage locale={locale} page={page} relatedPages={relatedPages} rolePages={rolePages} path={PATH} />;
