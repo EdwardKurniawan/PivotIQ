@@ -159,17 +159,75 @@ function riskTone(level) {
   return { bg: 'rgba(244,228,199,0.24)', fg: '#7A5A43', border: 'rgba(122,90,67,0.16)' };
 }
 
+function buildAttentionState(snapshot) {
+  if (snapshot?.outcomeFollowup?.is_due) {
+    return {
+      priority: 4,
+      label: 'Feedback due',
+      detail: snapshot.outcomeFollowup.title,
+      tone: { bg: 'rgba(242,138,67,0.14)', fg: '#8B4A1B', border: 'rgba(242,138,67,0.24)' },
+    };
+  }
+
+  if (snapshot?.executionSummary?.statusLabel === 'Conversation prep' || /conversation/i.test(snapshot?.executionSummary?.title || '')) {
+    return {
+      priority: 3,
+      label: 'Manager conversation',
+      detail: snapshot.executionSummary.title,
+      tone: { bg: 'rgba(27,111,99,0.12)', fg: palette.teal, border: 'rgba(27,111,99,0.18)' },
+    };
+  }
+
+  if (snapshot?.executionSummary?.statusLabel === 'Proof still needed' || /proof/i.test(snapshot?.executionSummary?.title || '')) {
+    return {
+      priority: 2,
+      label: 'Proof sprint',
+      detail: snapshot.executionSummary.title,
+      tone: { bg: 'rgba(255,143,77,0.14)', fg: '#A7602E', border: 'rgba(255,143,77,0.22)' },
+    };
+  }
+
+  if (snapshot?.executionSummary?.title) {
+    return {
+      priority: 1,
+      label: 'Active plan',
+      detail: snapshot.executionSummary.title,
+      tone: { bg: 'rgba(19,27,35,0.06)', fg: palette.textMuted, border: 'rgba(19,27,35,0.12)' },
+    };
+  }
+
+  return {
+    priority: 0,
+    label: 'Tracked',
+    detail: 'No urgent action right now.',
+    tone: { bg: 'rgba(19,27,35,0.06)', fg: palette.textMuted, border: 'rgba(19,27,35,0.12)' },
+  };
+}
+
 export default async function DashboardPage() {
   const locale = getServerLocale();
   const messages = getMessages(locale);
   const data = await loadDashboardData();
   const configured = isSupabaseConfigured();
-  const latestSnapshot = data.mode === 'ready' && data.reports[0] ? buildCoachingSnapshot(data.reports[0], messages, locale) : null;
-  const dueOutcomeReports = data.mode === 'ready'
-    ? data.reports
-        .map((report) => ({ report, snapshot: buildCoachingSnapshot(report, messages, locale) }))
-        .filter((item) => item.snapshot?.outcomeFollowup?.is_due)
+  const reportCards = data.mode === 'ready'
+    ? data.reports.map((report) => {
+        const snapshot = buildCoachingSnapshot(report, messages, locale);
+        return {
+          report,
+          snapshot,
+          attention: buildAttentionState(snapshot),
+        };
+      })
     : [];
+  const latestCard = reportCards[0] || null;
+  const latestSnapshot = latestCard?.snapshot || null;
+  const dueOutcomeReports = reportCards.filter((item) => item.snapshot?.outcomeFollowup?.is_due);
+  const managerConversationReports = reportCards.filter((item) => item.attention.label === 'Manager conversation');
+  const proofSprintReports = reportCards.filter((item) => item.attention.label === 'Proof sprint');
+  const tractionReports = reportCards.filter((item) => item.snapshot?.outcomeSummary?.traction_status !== 'no_signal');
+  const sortedReportCards = reportCards
+    .slice(1)
+    .sort((left, right) => right.attention.priority - left.attention.priority || new Date(right.report.updated_at || right.report.created_at).getTime() - new Date(left.report.updated_at || left.report.created_at).getTime());
 
   return (
     <div style={{ minHeight: '100vh', background: palette.bg, padding: '24px', position: 'relative', overflow: 'hidden' }}>
@@ -228,6 +286,23 @@ export default async function DashboardPage() {
             </div>
           )}
 
+          {data.mode === 'ready' && reportCards.length > 0 && (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '14px' }} className="dashboard-action-grid">
+              {[
+                ['Feedback due', dueOutcomeReports.length, 'Reports that now need a real-world outcome check-in.'],
+                ['Manager prep', managerConversationReports.length, 'Reports where the next move is to make the work visible to a manager.'],
+                ['Proof sprint', proofSprintReports.length, 'Reports that should turn planning into a visible artifact next.'],
+                ['Traction logged', tractionReports.length, 'Reports where users already recorded team, internal, or market movement.'],
+              ].map(([label, value, body]) => (
+                <div key={label} style={{ borderRadius: '22px', padding: '18px', background: palette.panel, border: `1px solid ${palette.border}`, boxShadow: '0 20px 60px rgba(19, 33, 45, 0.10)' }}>
+                  <div style={{ color: palette.textSoft, fontSize: '11px', fontWeight: 900, letterSpacing: '0.09em', textTransform: 'uppercase', marginBottom: '8px' }}>{label}</div>
+                  <div style={{ color: palette.text, fontSize: '30px', fontWeight: 950, letterSpacing: '-0.05em', marginBottom: '6px' }}>{value}</div>
+                  <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.55 }}>{body}</div>
+                </div>
+              ))}
+            </div>
+          )}
+
           {data.mode === 'unconfigured' && (
             <div style={{ borderRadius: '24px', padding: '22px', background: palette.panel, border: `1px solid ${palette.border}` }}>
               <div style={{ color: '#8B4A1B', fontSize: '12px', fontWeight: 800, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{messages.dashboard.setupRequired}</div>
@@ -258,9 +333,9 @@ export default async function DashboardPage() {
 
         {data.mode === 'ready' && (
           <div style={{ display: 'grid', gap: '16px' }}>
-            {data.reports[0] && latestSnapshot && (
+            {latestCard && latestSnapshot && (
               <Link
-                href={`/report/${data.reports[0].id}`}
+                href={`/report/${latestCard.report.id}`}
                 style={{
                   display: 'block',
                   borderRadius: '28px',
@@ -276,7 +351,7 @@ export default async function DashboardPage() {
                       {messages.dashboard.continueFromHere}
                     </div>
                     <div style={{ color: palette.text, fontSize: '24px', fontWeight: 900, letterSpacing: '-0.04em', marginBottom: '8px' }}>
-                      {latestSnapshot.activePivot?.title || data.reports[0].job_title}
+                      {latestSnapshot.activePivot?.title || latestCard.report.job_title}
                     </div>
                     <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.72, marginBottom: '14px', maxWidth: '720px' }}>
                       {latestSnapshot.nextIncompleteWeek?.goal || messages.dashboard.latestReportFallback}
@@ -334,16 +409,15 @@ export default async function DashboardPage() {
               </Link>
             )}
 
-            {data.reports.length === 0 ? (
+            {reportCards.length <= 1 ? (
               <div style={{ borderRadius: '24px', padding: '24px', background: palette.panel, border: `1px solid ${palette.border}` }}>
                 <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.72, margin: 0 }}>
-                  {messages.dashboard.noSavedReports}
+                  {reportCards.length === 0 ? messages.dashboard.noSavedReports : 'No additional saved reports yet. Run a new audit to compare multiple plans in one place.'}
                 </p>
               </div>
             ) : (
-              data.reports.map((report, index) => {
+              sortedReportCards.map(({ report, snapshot, attention }) => {
                 const tone = riskTone(report.risk_level);
-                const snapshot = buildCoachingSnapshot(report, messages, locale);
                 return (
                   <Link
                     key={report.id}
@@ -388,11 +462,9 @@ export default async function DashboardPage() {
                           </div>
                         )}
                         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                          {index === 0 && (
-                              <span style={{ background: 'rgba(27,111,99,0.12)', border: '1px solid rgba(27,111,99,0.18)', color: '#1B6F63', borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 800 }}>
-                                {messages.dashboard.continueLatest}
-                              </span>
-                          )}
+                          <span style={{ background: attention.tone.bg, border: `1px solid ${attention.tone.border}`, color: attention.tone.fg, borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 800 }}>
+                            {attention.label}
+                          </span>
                           <span style={{ background: 'rgba(255,255,255,0.58)', border: `1px solid ${palette.border}`, color: palette.text, borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 700 }}>
                             {snapshot.progressPercent}% {messages.dashboard.progressSuffix}
                           </span>
@@ -427,6 +499,14 @@ export default async function DashboardPage() {
           </div>
         )}
       </div>
+      <style dangerouslySetInnerHTML={{ __html: `
+        @media (max-width: 920px) {
+          .dashboard-action-grid,
+          .dashboard-card-head {
+            grid-template-columns: 1fr !important;
+          }
+        }
+      ` }} />
     </div>
   );
 }
