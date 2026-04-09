@@ -90,6 +90,10 @@ function testRecommendationQualityAudit() {
   assert.ok(audit.strong_examples.some((item) => item.job_title === 'FP&A Analyst'));
   assert.ok(audit.weak_examples.some((item) => item.job_title === 'Project Manager'));
   assert.ok(audit.action_items.length >= 1);
+  assert.ok(audit.tuning_playbook.policy_levers.length >= 1);
+  assert.ok(audit.tuning_playbook.policy_levers.some((item) => /low-confidence|stay-path bias|proof-builder specificity|outcome sampling/i.test(item.lever) || /low-confidence|stay-and-advance|proof|collect more outcome feedback/i.test(item.recommendation)));
+  assert.ok(audit.tuning_playbook.winning_patterns.length >= 1);
+  assert.ok(audit.tuning_playbook.watchlist_patterns.length >= 1);
 }
 
 testRecommendationQualityAudit();

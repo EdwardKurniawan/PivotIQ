@@ -23,7 +23,16 @@ Branch: `main`
 
 ## Most Recent Shipped Work
 
-### `pending current commit` Refresh comparison UX
+### `pending current commit` Outcome tuning layer + broad-role QA
+- Expanded [`lib/recommendation-quality.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/lib/recommendation-quality.js) with a `tuning_playbook`:
+  - `policy_levers`
+  - `winning_patterns`
+  - `watchlist_patterns`
+- Upgraded [`app/internal/recommendation-quality/page.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/internal/recommendation-quality/page.js) to render that playbook
+- Added broad-role regression coverage in [`scripts/test-broad-role-regression.mjs`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/scripts/test-broad-role-regression.mjs)
+- Added `npm run test:broad-roles`
+
+### `fb8ed19` Refresh comparison UX
 - Upgraded refresh summaries in [`lib/report-refresh.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/lib/report-refresh.js) so they now persist:
   - before/after comparison rows
   - change drivers
@@ -83,19 +92,15 @@ Branch: `main`
 ## Recommended Next Move
 Highest-leverage next build:
 
-1. Feed outcomes back into recommendation tuning
+1. Use the tuning-playbook output to make selected engine-policy changes
 - Use the recommendation-quality dashboard data to identify:
   - which confidence states actually create traction
   - which role families benefit most from stay-vs-pivot bias
   - which proof builders correlate with stronger follow-through
 
-2. Expand broad-role QA fixtures
-- Add persistent QA fixtures for broad white-collar roles like:
-  - Data Analyst
-  - Customer Success Manager
-  - Executive Assistant
-  - Operations Manager
-  - Marketing Manager
+2. Consider persisting a lightweight QA fixture catalog
+- The broad-role regression suite now exists, but it still lives only as code fixtures
+- A persistent fixture catalog would make inspection/regeneration easier
 
 3. Consider a second refresh pass later
 - Make the refresh language even more user-facing by showing:
@@ -110,12 +115,16 @@ Highest-leverage next build:
 - [`lib/report-generation.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/lib/report-generation.js)
 - [`lib/report-refresh.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/lib/report-refresh.js)
 - [`lib/recommendation-quality.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/lib/recommendation-quality.js)
+- [`app/internal/recommendation-quality/page.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/internal/recommendation-quality/page.js)
+- [`scripts/test-broad-role-regression.mjs`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/scripts/test-broad-role-regression.mjs)
 - [`scripts/test-report-quality.mjs`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/scripts/test-report-quality.mjs)
 - [`docs/project-update-2026-04-05.md`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/docs/project-update-2026-04-05.md)
 - [`docs/intake-upgrade-spec-2026-04-09.md`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/docs/intake-upgrade-spec-2026-04-09.md)
 
 ## Verification State
 Latest verified before this memory update:
+- `npm run test:recommendation-quality`
+- `npm run test:broad-roles`
 - `npm run test:refresh`
 - `npm run test:report-quality`
 - `npm run test:course-catalog`
@@ -123,11 +132,10 @@ Latest verified before this memory update:
 - `npm run test:job-grounding`
 - `npm run test:progress`
 - `npm run test:outcomes`
-- `npm run test:recommendation-quality`
 - `npm run build`
 - `git diff --check`
 
 ## Clean Resume Prompt
 Use this at the start of the next session:
 
-`Pick up PivotIQ from /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app. First read /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/memory.md and /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/docs/project-update-2026-04-05.md. Continue from the highest-leverage next move: use outcome data to tune recommendation logic, then add broader QA fixtures for more white-collar roles. Keep OpenRouter on nvidia/nemotron-3-nano-30b-a3b:free. Commit and push after code changes.`
+`Pick up PivotIQ from /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app. First read /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/memory.md and /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/docs/project-update-2026-04-05.md. Continue from the highest-leverage next move: use the new tuning-playbook output to make selected recommendation-policy changes, then consider persisting a lightweight QA fixture catalog. Keep OpenRouter on nvidia/nemotron-3-nano-30b-a3b:free. Commit and push after code changes.`

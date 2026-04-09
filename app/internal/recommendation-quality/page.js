@@ -128,6 +128,73 @@ function ExampleList({ title, rows, empty }) {
   );
 }
 
+function TuningPlaybook({ playbook }) {
+  const levers = playbook?.policy_levers || [];
+  const winning = playbook?.winning_patterns || [];
+  const watchlist = playbook?.watchlist_patterns || [];
+
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr 0.8fr', gap: '18px', marginBottom: '18px' }} className="quality-grid">
+      <Card>
+        <h2 style={{ color: palette.text, fontSize: '22px', margin: '0 0 14px' }}>Engine tuning levers</h2>
+        {levers.length ? (
+          <div style={{ display: 'grid', gap: '10px' }}>
+            {levers.map((item) => (
+              <div key={`${item.lever}-${item.target}`} style={{ padding: '14px 16px', borderRadius: '18px', background: 'rgba(255,255,255,0.72)', border: `1px solid ${palette.border}` }}>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap', marginBottom: '6px' }}>
+                  <Pill tone={item.priority}>{item.priority}</Pill>
+                  <strong style={{ color: palette.text }}>{item.lever}</strong>
+                </div>
+                <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6, marginBottom: '8px' }}>
+                  Target: <span style={{ color: palette.text }}>{item.target}</span>
+                </div>
+                <div style={{ color: palette.text, fontSize: '13px', lineHeight: 1.65, marginBottom: '8px' }}>{item.recommendation}</div>
+                <div style={{ color: palette.textSoft, fontSize: '12px', lineHeight: 1.55 }}>{item.evidence}</div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p style={{ color: palette.textMuted, margin: 0 }}>No tuning levers yet.</p>
+        )}
+      </Card>
+
+      <Card>
+        <h2 style={{ color: palette.text, fontSize: '22px', margin: '0 0 14px' }}>Winning patterns</h2>
+        {winning.length ? (
+          <div style={{ display: 'grid', gap: '10px' }}>
+            {winning.map((item) => (
+              <div key={`${item.scope}-${item.label}`} style={{ padding: '14px', borderRadius: '18px', background: 'rgba(27,111,99,0.08)', border: `1px solid rgba(27,111,99,0.16)` }}>
+                <div style={{ color: palette.teal, fontSize: '10px', fontWeight: 900, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '6px' }}>{item.scope}</div>
+                <div style={{ color: palette.text, fontWeight: 850, textTransform: 'capitalize', marginBottom: '6px' }}>{item.label}</div>
+                <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.55 }}>{item.summary}</div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p style={{ color: palette.textMuted, margin: 0 }}>No clear winning pattern yet.</p>
+        )}
+      </Card>
+
+      <Card>
+        <h2 style={{ color: palette.text, fontSize: '22px', margin: '0 0 14px' }}>Watchlist patterns</h2>
+        {watchlist.length ? (
+          <div style={{ display: 'grid', gap: '10px' }}>
+            {watchlist.map((item) => (
+              <div key={`${item.scope}-${item.label}`} style={{ padding: '14px', borderRadius: '18px', background: 'rgba(155,61,46,0.08)', border: `1px solid rgba(155,61,46,0.16)` }}>
+                <div style={{ color: '#9B3D2E', fontSize: '10px', fontWeight: 900, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '6px' }}>{item.scope}</div>
+                <div style={{ color: palette.text, fontWeight: 850, textTransform: 'capitalize', marginBottom: '6px' }}>{item.label}</div>
+                <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.55 }}>{item.summary}</div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p style={{ color: palette.textMuted, margin: 0 }}>No watchlist pattern yet.</p>
+        )}
+      </Card>
+    </div>
+  );
+}
+
 export default async function RecommendationQualityPage() {
   const audit = await auditRecommendationQuality({ limit: 1000 });
 
@@ -182,6 +249,8 @@ export default async function RecommendationQualityPage() {
             ))}
           </div>
         </Card>
+
+        <TuningPlaybook playbook={audit.tuning_playbook} />
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '18px', marginBottom: '18px' }} className="quality-grid">
           <PerformanceTable title="Performance by confidence" rows={audit.confidence_performance || []} labelKey="confidence_state" />

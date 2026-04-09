@@ -774,3 +774,56 @@ Next best product move:
 1. Use outcome data to tune recommendation logic more directly in the internal quality dashboard.
 2. Add persistent broad-role QA fixtures for roles like Data Analyst, Customer Success Manager, Executive Assistant, Operations Manager, and Marketing Manager.
 3. Consider a second refresh pass later that shows not only `before vs after`, but also `what improved because of your action` in more user-facing language.
+
+## 2026-04-09 outcome tuning layer and broad-role QA are live
+
+This pass turned the recommendation-quality dashboard from mostly descriptive reporting into a more prescriptive tuning surface, and added a dedicated regression pack for common broad white-collar roles.
+
+What shipped:
+
+- Expanded `lib/recommendation-quality.js` with a `tuning_playbook` that now derives:
+  - `policy_levers`
+  - `winning_patterns`
+  - `watchlist_patterns`
+- Upgraded `app/internal/recommendation-quality/page.js` with new sections for:
+  - `Engine tuning levers`
+  - `Winning patterns`
+  - `Watchlist patterns`
+- Added a new broad-role regression suite in `scripts/test-broad-role-regression.mjs` covering:
+  - `Data Analyst`
+  - `Customer Success Manager`
+  - `Executive Assistant`
+  - `Operations Manager`
+  - `Marketing Manager`
+- Added `npm run test:broad-roles` in `package.json`.
+- Expanded `scripts/test-recommendation-quality.mjs` to cover the new tuning-playbook outputs.
+
+What changed in product behavior:
+
+- The internal recommendation-quality audit now tells us not only which report cohorts are strong or weak, but also which engine levers are the next candidates to tune:
+  - confidence thresholds
+  - low-confidence suppression
+  - stay-path bias
+  - proof-builder specificity
+  - role-bucket QA priorities
+- The tuning view now stays useful even when the sample is still early by surfacing an `outcome sampling` lever instead of returning an empty playbook.
+- Broad-role regression coverage now protects us against embarrassing drift on common roles outside the specialized seeded fixtures.
+
+Verification completed:
+
+- `npm run test:recommendation-quality`
+- `npm run test:broad-roles`
+- `npm run test:report-quality`
+- `npm run build`
+- `git diff --check`
+
+New regression coverage added:
+
+- tuning-playbook policy levers, winning patterns, and watchlist patterns
+- sanity checks for broad roles across recommendation stack, stay path, proof builders, and anti-drift title guardrails
+
+Next best product move:
+
+1. Use the new tuning-playbook output to start making selected recommendation-policy changes in the engine, starting with the highest-confidence levers.
+2. Optionally persist a lightweight QA fixture catalog so broad-role checks can be regenerated and inspected more easily, not just tested.
+3. Keep improving the user-facing refresh language so the product explains not only what changed, but what got safer, stronger, or more actionable.
