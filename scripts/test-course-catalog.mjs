@@ -344,6 +344,192 @@ function testAiWorkflowGapBeatsRoleDomainCourse() {
   assert.equal(match.entry.title, 'Introduction to AI Agents');
 }
 
+function testLegalIntakeWorkflowPrefersLegalOpsResource() {
+  const match = buildCatalogMatch(
+    {
+      skill_name: 'Legal intake workflow design',
+      category: 'legal operations',
+      gap_priority: 'critical',
+      how_to_close_gap: 'Design a structured legal intake process with routing, issue tagging, and SLA visibility.',
+    },
+    {
+      title: 'Legal Operations Analyst',
+      decision_frame: 'safest transition',
+    },
+    [
+      entry({
+        provider: 'HubSpot Academy',
+        title: 'Customer service operations skills',
+        summary: 'Improve support operations and service routing workflows.',
+        skills: ['service operations', 'routing', 'customer workflows'],
+        tags: ['customer service', 'support routing'],
+        role_families: ['customer', 'operations'],
+        resource_type: 'pathway',
+      }),
+      entry({
+        provider: 'Coursera',
+        title: 'Legal operations learning paths',
+        summary: 'Find legal operations, contract workflow, and compliance-oriented learning paths on Coursera.',
+        skills: ['legal operations', 'contract workflows', 'compliance', 'governance'],
+        tags: ['trusted vendor resource', 'coursera'],
+        role_families: ['legal', 'operations'],
+        resource_type: 'pathway',
+      }),
+    ]
+  );
+
+  assert.equal(match.entry.title, 'Legal operations learning paths');
+}
+
+function testProcurementDashboardProbeRejectsGenericFinanceCourse() {
+  const match = buildCatalogMatch(
+    {
+      skill_name: 'Supplier performance dashboarding',
+      category: 'procurement operations',
+      gap_priority: 'critical',
+      how_to_close_gap: 'Build supplier scorecards and procurement dashboards that support sourcing reviews.',
+    },
+    {
+      title: 'Procurement Systems Manager',
+      decision_frame: 'strongest leverage fit',
+    },
+    [
+      entry({
+        provider: 'Coursera',
+        title: 'Finance automation learning paths',
+        summary: 'Explore automation, analytics, and operational finance learning resources.',
+        skills: ['finance automation', 'workflow automation', 'reporting', 'operational finance'],
+        tags: ['trusted vendor resource', 'coursera'],
+        role_families: ['analytics', 'operations'],
+        resource_type: 'pathway',
+      }),
+      entry({
+        provider: 'Coursera',
+        title: 'Procurement analytics learning paths',
+        summary: 'Use Coursera programs to strengthen spend analysis, sourcing decisions, and supplier reporting.',
+        skills: ['procurement analytics', 'sourcing', 'supplier reporting', 'spend analysis'],
+        tags: ['trusted vendor resource', 'coursera'],
+        role_families: ['procurement', 'analytics'],
+        resource_type: 'pathway',
+      }),
+    ]
+  );
+
+  assert.equal(match.entry.title, 'Procurement analytics learning paths');
+}
+
+function testCustomerEducationProbePrefersLearningResource() {
+  const match = buildCatalogMatch(
+    {
+      skill_name: 'Learning analytics and onboarding measurement',
+      category: 'customer education',
+      gap_priority: 'medium',
+      how_to_close_gap: 'Measure onboarding completion, adoption signals, and curriculum impact for customer education programs.',
+    },
+    {
+      title: 'Customer Education Lead',
+      decision_frame: 'strongest leverage fit',
+    },
+    [
+      entry({
+        provider: 'HubSpot Academy',
+        title: 'Customer success operations skills',
+        summary: 'Improve onboarding and lifecycle operations for customer-facing teams.',
+        skills: ['customer success', 'onboarding', 'customer lifecycle', 'service design'],
+        tags: ['customer operations'],
+        role_families: ['customer', 'operations'],
+        resource_type: 'pathway',
+      }),
+      entry({
+        provider: 'Coursera',
+        title: 'Instructional Design Foundations and Applications',
+        summary: 'Instructional design course for curriculum planning and measurable learning programs.',
+        skills: ['instructional design', 'learning programs', 'curriculum', 'training'],
+        tags: ['instructional design', 'learning analytics'],
+        role_families: ['education', 'operations'],
+        resource_type: 'course',
+      }),
+    ]
+  );
+
+  assert.equal(match.entry.title, 'Instructional Design Foundations and Applications');
+}
+
+function testRevopsProbePrefersCrmReportingResource() {
+  const match = buildCatalogMatch(
+    {
+      skill_name: 'Revenue operations dashboard design',
+      category: 'revenue operations',
+      gap_priority: 'medium',
+      how_to_close_gap: 'Build shared funnel dashboards and CRM reporting for handoffs across sales and marketing.',
+    },
+    {
+      title: 'Revenue Operations Manager',
+      decision_frame: 'strongest leverage fit',
+    },
+    [
+      entry({
+        provider: 'Google Cloud Skills Boost',
+        title: 'Data analytics foundations paths',
+        summary: 'Build data literacy and analysis habits for business reporting and decision support.',
+        skills: ['data analytics', 'analysis foundations', 'reporting', 'decision support'],
+        tags: ['google', 'analytics'],
+        role_families: ['analytics', 'operations'],
+        resource_type: 'pathway',
+        source_metadata: { collection: 'researched-expansion-pack' },
+      }),
+      entry({
+        provider: 'HubSpot Academy',
+        title: 'Revenue operations skills',
+        summary: 'Strengthen cross-functional pipeline operations and shared reporting systems.',
+        skills: ['revenue operations', 'shared reporting', 'crm hygiene', 'process alignment'],
+        tags: ['trusted free vendor resource', 'hubspot'],
+        role_families: ['operations', 'analytics'],
+        resource_type: 'course',
+      }),
+    ]
+  );
+
+  assert.equal(match.entry.title, 'Revenue operations skills');
+}
+
+function testFpaProbePrefersForecastResource() {
+  const match = buildCatalogMatch(
+    {
+      skill_name: 'Forecast scenario modeling',
+      category: 'finance analytics',
+      gap_priority: 'critical',
+      how_to_close_gap: 'Create scenario models and forecast views that support planning and executive decision-making.',
+    },
+    {
+      title: 'FP&A Manager',
+      decision_frame: 'strongest leverage fit',
+    },
+    [
+      entry({
+        provider: 'Coursera',
+        title: 'Google Project Management Professional Certificate',
+        summary: 'Project management certificate covering planning, stakeholder communication, and delivery workflows.',
+        skills: ['project management', 'stakeholder management', 'planning', 'delivery'],
+        tags: ['operations'],
+        role_families: ['operations', 'strategy'],
+      }),
+      entry({
+        provider: 'DataCamp',
+        title: 'Forecasting paths',
+        summary: 'Learn business forecasting, scenario modeling, finance planning, and time series methods for analytical decision support.',
+        skills: ['forecasting', 'scenario modeling', 'finance planning', 'analysis'],
+        tags: ['trusted vendor resource', 'datacamp', 'forecast modeling', 'fpa'],
+        role_families: ['analytics', 'strategy'],
+        resource_type: 'pathway',
+        source_metadata: { collection: 'researched-expansion-pack' },
+      }),
+    ]
+  );
+
+  assert.equal(match.entry.title, 'Forecasting paths');
+}
+
 testExactToolPhraseBeatsGenericReporting();
 testStrongCatalogMatchBeatsGenericAiFallbackShape();
 testWeakSemanticMatchIsFlagged();
@@ -354,5 +540,10 @@ testProcurementForecastingRejectsEducationMatch();
 testLegalRiskRejectsMarketingMatch();
 testComplianceKpisPreferGovernanceOverGenericAi();
 testAiWorkflowGapBeatsRoleDomainCourse();
+testLegalIntakeWorkflowPrefersLegalOpsResource();
+testProcurementDashboardProbeRejectsGenericFinanceCourse();
+testCustomerEducationProbePrefersLearningResource();
+testRevopsProbePrefersCrmReportingResource();
+testFpaProbePrefersForecastResource();
 
 console.log('Course catalog matching tests passed.');

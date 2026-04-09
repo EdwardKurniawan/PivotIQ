@@ -170,6 +170,8 @@ const COURSERA_PACK = makeSearchPack({
     ['coursera-change-management-paths', 'Change management learning paths', 'change management', 'Strengthen adoption planning, stakeholder alignment, and transformation execution skills.', ['change management', 'stakeholder alignment', 'transformation', 'adoption'], ['strategy', 'operations'], ['strongest leverage fit'], ['general-upskilling', 'credential']],
     ['coursera-ai-workflow-design-paths', 'AI workflow design learning paths', 'ai workflow design', 'Explore AI workflow design, automation redesign, and prompt-based execution programs.', ['ai workflow design', 'automation redesign', 'prompting', 'operating model'], ['ai-automation', 'operations'], ['strongest leverage fit', 'highest upside'], ['ai-execution', 'portfolio']],
     ['coursera-enablement-analytics-paths', 'Enablement analytics learning paths', 'enablement analytics', 'Develop measurement and reporting skills for training, onboarding, and enablement programs.', ['enablement analytics', 'learning measurement', 'training reporting', 'program operations'], ['education', 'analytics'], ['strongest leverage fit'], ['technical-skill', 'credential']],
+    ['coursera-financial-modeling-paths', 'Financial modeling learning paths', 'financial modeling', 'Strengthen financial modeling, planning, and scenario analysis for finance-facing roles.', ['financial modeling', 'scenario analysis', 'planning', 'finance'], ['finance', 'analytics'], ['strongest leverage fit'], ['technical-skill', 'credential']],
+    ['coursera-fpa-paths', 'FP&A learning paths', 'fp&a financial planning analysis', 'Develop planning, budgeting, and forecast analysis skills for FP&A-style roles.', ['fp&a', 'budgeting', 'forecast analysis', 'planning'], ['finance', 'analytics'], ['strongest leverage fit'], ['technical-skill', 'credential']],
   ].map(([slug, title, query, summary, skills, roleFamilies, frames, outcomes]) => ({ slug, title, query, summary, skills, role_families: roleFamilies, pivot_frames: frames, outcome_types: outcomes })),
 });
 
@@ -192,6 +194,8 @@ const DATACAMP_PACK = makeSearchPack({
     ['datacamp-power-query-paths', 'Power Query paths', 'power query', 'Build skills for data cleaning, shaping, and operational reporting workflows.', ['power query', 'data cleaning', 'reporting', 'power bi'], ['analytics', 'operations']],
     ['datacamp-excel-analysis-paths', 'Excel analysis paths', 'excel analysis', 'Improve spreadsheet modeling, analysis, and business reporting workflows.', ['excel', 'analysis', 'business reporting', 'spreadsheets'], ['analytics', 'operations']],
     ['datacamp-forecasting-paths', 'Forecasting paths', 'forecasting', 'Learn business forecasting, time series fundamentals, and scenario planning methods.', ['forecasting', 'time series', 'scenario planning', 'analysis'], ['analytics', 'strategy']],
+    ['datacamp-financial-modeling-paths', 'Financial modeling paths', 'financial modeling', 'Build financial modeling, planning, and scenario analysis skills with finance-oriented learning paths.', ['financial modeling', 'scenario analysis', 'planning models', 'finance'], ['finance', 'analytics']],
+    ['datacamp-budgeting-forecasting-paths', 'Budgeting and forecasting paths', 'budgeting forecasting', 'Develop budget planning and forecasting habits for finance and FP&A decision support.', ['budgeting', 'forecasting', 'planning', 'finance'], ['finance', 'analytics']],
     ['datacamp-stakeholder-storytelling-paths', 'Analytics storytelling paths', 'analytics storytelling', 'Develop stronger communication habits for turning analysis into decisions.', ['analytics storytelling', 'communication', 'reporting', 'decision support'], ['analytics', 'operations']],
   ].map(([slug, title, query, summary, skills, roleFamilies]) => ({ slug, title, query, summary, skills, role_families: roleFamilies })),
 });
@@ -247,6 +251,7 @@ const PLURALSIGHT_PACK = makeSearchPack({
     ['pluralsight-excel-reporting-paths', 'Excel reporting paths', 'excel reporting analysis', 'Use Excel more effectively for decision support and structured reporting.', ['excel', 'reporting', 'analysis', 'business reporting'], ['analytics', 'operations']],
     ['pluralsight-stakeholder-communication-paths', 'Stakeholder communication paths', 'stakeholder communication', 'Improve how you translate analysis and delivery work into decisions and alignment.', ['stakeholder communication', 'decision communication', 'alignment', 'presentation'], ['operations', 'strategy']],
     ['pluralsight-business-analysis-paths', 'Business analysis paths', 'business analysis', 'Strengthen business analysis, requirements, and process-improvement skills.', ['business analysis', 'requirements', 'process improvement', 'stakeholder management'], ['operations', 'analytics']],
+    ['pluralsight-financial-modeling-paths', 'Financial modeling paths', 'financial modeling forecasting', 'Develop finance modeling and planning fluency for analytical finance roles.', ['financial modeling', 'forecasting', 'finance planning', 'analysis'], ['finance', 'analytics']],
   ].map(([slug, title, query, summary, skills, roleFamilies]) => ({ slug, title, query, summary, skills, role_families: roleFamilies })),
 });
 
@@ -346,4 +351,3 @@ export const GENERATED_COURSE_CATALOG = [
   ...OREILLY_PACK,
   ...EDUCATIVE_PACK,
 ];
-
