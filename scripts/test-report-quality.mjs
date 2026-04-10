@@ -930,6 +930,406 @@ function testInflatedStayTitlesFallBackToRoleNativeGrowthPath() {
   assert.ok(normalized.quality_audit.repairs.some((item) => /stay-and-advance title/i.test(item)));
 }
 
+function testCustomerSuccessPivotFallsBackToCanonicalTitleAndRoleNativeLearning() {
+  const report = buildDemoReportData(
+    'Customer Success Manager',
+    'SaaS',
+    ['Renewal prep', 'Account health reviews', 'Stakeholder communication'],
+    {
+      selected_tasks: [{ label: 'Renewal prep' }],
+      primary_tasks: ['Renewal prep', 'Account health reviews', 'Stakeholder communication'],
+      clarifiers: {
+        goal_now: 'hybrid_transition',
+        timeline_urgency: 'within_6_months',
+        years_experience_band: '6_10',
+        location_preference: 'united_states',
+        ai_maturity: 'weekly',
+      },
+    }
+  );
+
+  report.pivots[0] = {
+    ...report.pivots[0],
+    id: 'customer-success-data-analyst',
+    title: 'Customer Success Data Analyst',
+    live_market_signal: {
+      matched_openings_count: 0,
+      profile_fit_score: 12,
+      missing_required_skills: ['SQL'],
+      model_only_skill_gaps: ['Python for Data Analysis'],
+    },
+    skill_gaps: [
+      {
+        skill_name: 'Python for Data Analysis',
+        category: 'technical',
+        gap_priority: 'critical',
+        why_it_matters: 'Customer reporting needs more analysis depth.',
+        how_to_close_gap: 'Learn Python and notebooks.',
+        resource_title: 'Python for Everybody',
+        resource_url: 'https://www.coursera.org/specializations/python',
+        resource_provider: 'Coursera',
+      },
+      {
+        skill_name: 'Statistical modeling',
+        category: 'technical',
+        gap_priority: 'medium',
+        why_it_matters: 'Better analysis.',
+        how_to_close_gap: 'Study statistics.',
+        resource_title: 'Data Science Specialization',
+        resource_url: 'https://www.coursera.org/specializations/jhu-data-science',
+        resource_provider: 'Coursera',
+      },
+    ],
+  };
+
+  const normalized = normalizeReportData(report);
+  assert.match(normalized.pivots[0].title, /Customer Operations Lead|Customer Enablement Lead/);
+  assert.doesNotMatch(normalized.pivots[0].title, /Customer Success Data Analyst/i);
+  assert.notEqual(normalized.pivots[0].learning_path[0].resource_title, 'Python for Everybody');
+}
+
+function testMarketingPivotGetsRoleNativeLearningBundle() {
+  const report = buildDemoReportData(
+    'Marketing Manager',
+    'Retail',
+    ['Campaign planning', 'Performance reporting', 'Cross-functional launch coordination'],
+    {
+      selected_tasks: [{ label: 'Campaign planning' }],
+      primary_tasks: ['Campaign planning', 'Performance reporting', 'Cross-functional launch coordination'],
+      clarifiers: {
+        goal_now: 'hybrid_transition',
+        timeline_urgency: 'within_6_months',
+        years_experience_band: '6_10',
+        location_preference: 'united_states',
+        ai_maturity: 'weekly',
+      },
+    }
+  );
+
+  report.pivots[0] = {
+    ...report.pivots[0],
+    id: 'strategic-ai-integrated-marketing-lead',
+    title: 'Strategic AI-Integrated Marketing Lead',
+    skill_gaps: [
+      {
+        skill_name: 'Prompt design',
+        category: 'AI execution',
+        gap_priority: 'critical',
+        why_it_matters: 'Prompting helps.',
+        how_to_close_gap: 'Study prompt engineering.',
+        resource_title: 'ChatGPT Prompt Engineering for Developers',
+        resource_url: 'https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/',
+        resource_provider: 'DeepLearning.AI',
+      },
+      {
+        skill_name: 'AI QA workflows',
+        category: 'Quality control',
+        gap_priority: 'medium',
+        why_it_matters: 'Quality matters.',
+        how_to_close_gap: 'Learn QA workflows.',
+        resource_title: 'OpenAI Cookbook',
+        resource_url: 'https://cookbook.openai.com/',
+        resource_provider: 'OpenAI',
+      },
+    ],
+  };
+
+  const normalized = normalizeReportData(report);
+  assert.match(normalized.pivots[0].title, /Marketing Operations Lead|Marketing Operations Strategist/);
+  assert.equal(normalized.pivots[0].learning_path[0].skill_name, 'Campaign experiment design');
+  assert.equal(normalized.pivots[0].learning_path[0].resource_title, 'AI for Marketing Course');
+}
+
+function testOperationsPivotGetsRoleNativeLearningBundle() {
+  const report = buildDemoReportData(
+    'Operations Manager',
+    'Manufacturing',
+    ['Process mapping', 'Workflow coordination', 'Status reporting'],
+    {
+      selected_tasks: [{ label: 'Process mapping' }],
+      primary_tasks: ['Process mapping', 'Workflow coordination', 'Status reporting'],
+      clarifiers: {
+        goal_now: 'hybrid_transition',
+        timeline_urgency: 'within_6_months',
+        years_experience_band: '6_10',
+        location_preference: 'united_states',
+        ai_maturity: 'weekly',
+      },
+    }
+  );
+
+  report.pivots[0] = {
+    ...report.pivots[0],
+    id: 'strategy-and-operations-architect',
+    title: 'Strategy and Operations Architect',
+    skill_gaps: [
+      {
+        skill_name: 'Prompt design',
+        category: 'AI execution',
+        gap_priority: 'critical',
+        why_it_matters: 'Prompting helps.',
+        how_to_close_gap: 'Study prompt engineering.',
+        resource_title: 'ChatGPT Prompt Engineering for Developers',
+        resource_url: 'https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/',
+        resource_provider: 'DeepLearning.AI',
+      },
+      {
+        skill_name: 'Systems architecture judgment',
+        category: 'Platform thinking',
+        gap_priority: 'medium',
+        why_it_matters: 'Systems matter.',
+        how_to_close_gap: 'Study systems design.',
+        resource_title: 'Designing Machine Learning Systems',
+        resource_url: 'https://www.oreilly.com/library/view/designing-machine-learning/9781098107956/',
+        resource_provider: 'O’Reilly',
+      },
+    ],
+  };
+
+  const normalized = normalizeReportData(report);
+  assert.match(normalized.pivots[0].title, /Delivery Operations Manager|Program Operations Manager/);
+  assert.notEqual(normalized.pivots[0].learning_path[0].skill_name, 'Prompt design');
+  assert.notEqual(normalized.pivots[0].learning_path[0].resource_title, 'Designing Machine Learning Systems');
+}
+
+function testHrPivotLearningPathAvoidsOvertechnicalStart() {
+  const report = buildDemoReportData(
+    'Senior HR Business Partner',
+    'SaaS',
+    ['Workforce planning', 'Manager coaching', 'Org design support'],
+    {
+      selected_tasks: [{ label: 'Workforce planning' }],
+      primary_tasks: ['Workforce planning', 'Manager coaching', 'Org design support'],
+      clarifiers: {
+        goal_now: 'hybrid_transition',
+        timeline_urgency: 'within_6_months',
+        years_experience_band: '11_plus',
+        location_preference: 'united_states',
+        ai_maturity: 'repeatable_workflows',
+      },
+    }
+  );
+
+  report.pivots[0] = {
+    ...report.pivots[0],
+    id: 'hr-operations-manager',
+    title: 'HR Operations Manager',
+    skill_gaps: [
+      {
+        skill_name: 'Systems architecture judgment',
+        category: 'Platform thinking',
+        gap_priority: 'critical',
+        why_it_matters: 'Systems matter.',
+        how_to_close_gap: 'Study systems design.',
+        resource_title: 'Designing Machine Learning Systems',
+        resource_url: 'https://www.oreilly.com/library/view/designing-machine-learning/9781098107956/',
+        resource_provider: 'O’Reilly',
+      },
+      {
+        skill_name: 'Governance and rollout design',
+        category: 'Operating model',
+        gap_priority: 'medium',
+        why_it_matters: 'Governance matters.',
+        how_to_close_gap: 'Study rollout design.',
+        resource_title: 'Build and optimize cloud flows in Power Automate',
+        resource_url: 'https://learn.microsoft.com/en-us/training/paths/build-optimize-cloud-flows-power-automate/',
+        resource_provider: 'Microsoft Learn',
+      },
+    ],
+  };
+
+  const normalized = normalizeReportData(report);
+  assert.equal(normalized.pivots[0].learning_path[0].skill_name, 'Manager enablement workflow design');
+  assert.equal(normalized.pivots[0].learning_path[0].resource_title, 'OpenAI Academy');
+}
+
+function testBroadRoleCanonicalTitleCannotJumpStraightToDirector() {
+  const report = buildDemoReportData(
+    'Customer Success Manager',
+    'SaaS',
+    ['Renewal prep', 'Account health reviews', 'Stakeholder communication'],
+    {
+      selected_tasks: [{ label: 'Renewal prep' }],
+      primary_tasks: ['Renewal prep', 'Account health reviews', 'Stakeholder communication'],
+      clarifiers: {
+        goal_now: 'hybrid_transition',
+        timeline_urgency: 'within_6_months',
+        years_experience_band: '6_10',
+        location_preference: 'united_states',
+        ai_maturity: 'weekly',
+      },
+    }
+  );
+
+  report.pivots[0] = {
+    ...report.pivots[0],
+    id: 'customer-success-director',
+    title: 'Customer Success Director',
+    live_market_signal: {
+      matched_openings_count: 4,
+      profile_fit_score: 25,
+      missing_required_skills: ['Leadership'],
+      model_only_skill_gaps: [],
+    },
+  };
+
+  const normalized = normalizeReportData(report);
+  assert.doesNotMatch(normalized.pivots[0].title, /Customer Success Director/i);
+}
+
+function testAnalyticsPivotAvoidsOffFamilyStartingSkill() {
+  const report = buildDemoReportData(
+    'Data Analyst',
+    'SaaS',
+    ['Dashboard creation', 'SQL analysis', 'Stakeholder insights'],
+    {
+      selected_tasks: [{ label: 'Dashboard creation' }],
+      primary_tasks: ['Dashboard creation', 'SQL analysis', 'Stakeholder insights'],
+      clarifiers: {
+        goal_now: 'hybrid_transition',
+        timeline_urgency: 'within_6_months',
+        years_experience_band: '6_10',
+        location_preference: 'united_states',
+        ai_maturity: 'weekly',
+      },
+    }
+  );
+
+  report.pivots[0] = {
+    ...report.pivots[0],
+    id: 'business-intelligence-lead',
+    title: 'Business Intelligence Lead',
+    skill_gaps: [
+      {
+        skill_name: 'Product lifecycle management',
+        category: 'product',
+        gap_priority: 'critical',
+        why_it_matters: 'Learn product work.',
+        how_to_close_gap: 'Study digital product management.',
+        resource_title: 'Digital Product Management',
+        resource_url: 'https://www.coursera.org/learn/digital-product-management',
+        resource_provider: 'Coursera',
+      },
+      {
+        skill_name: 'Business strategy',
+        category: 'strategy',
+        gap_priority: 'medium',
+        why_it_matters: 'Think more strategically.',
+        how_to_close_gap: 'Study strategy.',
+        resource_title: 'Digital Product Management',
+        resource_url: 'https://www.coursera.org/learn/digital-product-management',
+        resource_provider: 'Coursera',
+      },
+    ],
+  };
+
+  const normalized = normalizeReportData(report);
+  assert.match(normalized.pivots[0].learning_path[0].skill_name, /Decision-support dashboard design|KPI review narrative/);
+  assert.notEqual(normalized.pivots[0].learning_path[0].resource_title, 'Digital Product Management');
+}
+
+function testFinancePivotGetsRoleNativeLearningBundle() {
+  const report = buildDemoReportData(
+    'Finance Manager',
+    'SaaS',
+    ['Forecast review', 'Budget planning', 'Variance analysis'],
+    {
+      selected_tasks: [{ label: 'Forecast review' }],
+      primary_tasks: ['Forecast review', 'Budget planning', 'Variance analysis'],
+      clarifiers: {
+        goal_now: 'hybrid_transition',
+        timeline_urgency: 'within_6_months',
+        years_experience_band: '6_10',
+        location_preference: 'united_states',
+        ai_maturity: 'weekly',
+      },
+    }
+  );
+
+  report.pivots[0] = {
+    ...report.pivots[0],
+    id: 'finance-systems-manager',
+    title: 'Finance Systems Manager',
+    skill_gaps: [
+      {
+        skill_name: 'Prompt design',
+        category: 'ai execution',
+        gap_priority: 'critical',
+        why_it_matters: 'Prompting helps finance teams.',
+        how_to_close_gap: 'Study prompt engineering.',
+        resource_title: 'Prompt Engineering & Generative AI for AI Engineers',
+        resource_url: 'https://www.coursera.org/learn/prompt-engineering',
+        resource_provider: 'Coursera',
+      },
+      {
+        skill_name: 'Business process management',
+        category: 'workflow',
+        gap_priority: 'medium',
+        why_it_matters: 'Process design matters.',
+        how_to_close_gap: 'Study BPM.',
+        resource_title: 'Business Process Management Specialization',
+        resource_url: 'https://www.coursera.org/specializations/business-process-management',
+        resource_provider: 'Coursera',
+      },
+    ],
+  };
+
+  const normalized = normalizeReportData(report);
+  assert.equal(normalized.pivots[0].learning_path[0].skill_name, 'Scenario modeling for decisions');
+  assert.notEqual(normalized.pivots[0].learning_path[0].resource_title, 'Prompt Engineering & Generative AI for AI Engineers');
+}
+
+function testCustomerPivotAvoidsGenericProcessCourseAsFirstStep() {
+  const report = buildDemoReportData(
+    'Customer Success Manager',
+    'SaaS',
+    ['Renewal prep', 'Account health reviews', 'Stakeholder communication'],
+    {
+      selected_tasks: [{ label: 'Renewal prep' }],
+      primary_tasks: ['Renewal prep', 'Account health reviews', 'Stakeholder communication'],
+      clarifiers: {
+        goal_now: 'hybrid_transition',
+        timeline_urgency: 'within_6_months',
+        years_experience_band: '6_10',
+        location_preference: 'united_states',
+        ai_maturity: 'weekly',
+      },
+    }
+  );
+
+  report.pivots[0] = {
+    ...report.pivots[0],
+    id: 'customer-operations-lead',
+    title: 'Customer Operations Lead',
+    skill_gaps: [
+      {
+        skill_name: 'Process design',
+        category: 'workflow',
+        gap_priority: 'critical',
+        why_it_matters: 'Better renewals need a stronger review process.',
+        how_to_close_gap: 'Study business process management.',
+        resource_title: 'Business Process Management Specialization',
+        resource_url: 'https://www.coursera.org/specializations/business-process-management',
+        resource_provider: 'Coursera',
+      },
+      {
+        skill_name: 'Data modeling',
+        category: 'analytics',
+        gap_priority: 'medium',
+        why_it_matters: 'Model better account signals.',
+        how_to_close_gap: 'Study Power BI modeling.',
+        resource_title: 'Get started building with Power BI',
+        resource_url: 'https://learn.microsoft.com/en-us/training/paths/get-started-power-bi/',
+        resource_provider: 'Microsoft Learn',
+      },
+    ],
+  };
+
+  const normalized = normalizeReportData(report);
+  assert.equal(normalized.pivots[0].learning_path[0].skill_name, 'Renewal risk review design');
+  assert.equal(normalized.pivots[0].learning_path[0].resource_title, 'Service Hub Software Certification Course');
+}
+
 testTopPivotFamilyRepairAndCopy();
 testGenericAiResourceRemovedFromNonAiGap();
 testFirst30DaysReferencesFinalPivot();
@@ -959,5 +1359,13 @@ testAdvancedAiMaturitySkipsBeginnerLearningStart();
 testAnalyticsRoleGetsRoleNativeStayPath();
 testAdvancedStayPathStillStartsWithWorkflowDesign();
 testInflatedStayTitlesFallBackToRoleNativeGrowthPath();
+testCustomerSuccessPivotFallsBackToCanonicalTitleAndRoleNativeLearning();
+testMarketingPivotGetsRoleNativeLearningBundle();
+testOperationsPivotGetsRoleNativeLearningBundle();
+testHrPivotLearningPathAvoidsOvertechnicalStart();
+testBroadRoleCanonicalTitleCannotJumpStraightToDirector();
+testAnalyticsPivotAvoidsOffFamilyStartingSkill();
+testFinancePivotGetsRoleNativeLearningBundle();
+testCustomerPivotAvoidsGenericProcessCourseAsFirstStep();
 
 console.log('Report quality tests passed.');

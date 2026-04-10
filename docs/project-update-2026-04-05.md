@@ -996,3 +996,58 @@ Best next move:
 1. Tighten the customer-success pivot family so top pivots stop drifting into awkward data/ops hybrids like `Customer Success Data Analyst`.
 2. Use the saved QA fixture viewer plus account snapshots together when tuning broad families, because the final user-facing recommendation stack can still differ from the raw pivot ordering.
 3. Consider making the report UI explicitly say when the stay path is the cleaner recommendation even if a pivot still ranks first in the raw pivot set.
+
+---
+
+## 2026-04-10 Broad-Role Learning Coherence Pass
+
+This pass focused on the remaining broad-role weakness after title realism improved: first-step learning recommendations that still felt generic, too technical, or off-domain for analytics, finance, customer success, and marketing.
+
+What shipped:
+
+- Tightened broad-role top-bundle repair logic in [`lib/report-quality.js`](lib/report-quality.js):
+  - customer bundles now repair when they drift into generic process/data-modeling language instead of customer-risk / renewal work
+  - analytics bundles now repair when they drift into product-management or generic strategy language
+  - finance now has its own role-native top-bundle repair path
+  - broader “native role signal” checks now trigger repairs sooner for customer, marketing, operations, HR, finance, and analytics
+- Strengthened resource matching in [`lib/course-catalog.js`](lib/course-catalog.js):
+  - rejects prompt / generative-AI resources for SQL, dashboard, modeling, forecast, and customer-workflow gaps unless the skill is truly AI-specific
+  - adds role-aware fallbacks for customer workflow work, analytics drift, and finance modeling/planning skills
+  - penalizes customer workflow gaps that drift into technical/data-science courses
+  - penalizes analytics gaps that drift into product / legal / customer-platform resources with no direct overlap
+- Expanded regression coverage in [`scripts/test-report-quality.mjs`](scripts/test-report-quality.mjs):
+  - finance top-pivot learning now repairs away from prompt-engineering starts
+  - customer top-pivot learning now repairs away from generic BPM starts
+
+Saved QA snapshots refreshed in `edward.hardrianto@live.com`:
+
+- `ae5dcf5d-0bb3-427d-8154-fbf9aa7678f6` — `Marketing Manager`
+  - top pivot: `Marketing Operations Strategist`
+  - first step: `Campaign experiment design` → `AI for Marketing Course`
+- `545898da-08ae-41df-9156-021a937ebe95` — `Data Analyst`
+  - top pivot: `Business Intelligence Lead`
+  - first step: `KPI review narrative` → `Google AI Essentials`
+- `28325476-caa6-4a7b-a95b-ecc0f2a7e897` — `Finance Manager`
+  - top pivot: `Finance Systems Manager`
+  - first step: `Financial Modeling` → `Financial modeling learning paths`
+- `0eff2943-82e6-41c8-b10d-2dde56061df3` — `Customer Success Manager`
+  - top pivot: `Customer Success Strategy Manager`
+  - first step: `Renewal risk review design` → `Service Hub Software Certification Course`
+- `231107f9-3a2a-4834-b67a-0b1a38ebdc71` — `Senior HR Business Partner`
+  - top pivot: `HR Operations Manager`
+  - first step: `Manager enablement workflow design` → `OpenAI Academy`
+
+Verification completed:
+
+- `npm run test:report-quality`
+- `npm run test:course-catalog`
+- `npm run test:broad-roles`
+- `npm run reports:regenerate -- --ids=545898da-08ae-41df-9156-021a937ebe95,28325476-caa6-4a7b-a95b-ecc0f2a7e897,0eff2943-82e6-41c8-b10d-2dde56061df3,231107f9-3a2a-4834-b67a-0b1a38ebdc71,ae5dcf5d-0bb3-427d-8154-fbf9aa7678f6`
+- `npm run build`
+- `git diff --check`
+
+Best next move:
+
+1. Improve the paid-report explanation for why a safer top move won over a flashier lower pivot.
+2. Tighten lower-ranked customer-success and finance pivots so the fallback stack is as clean as the top move.
+3. Keep using the saved QA snapshots as the final truth source for recommendation feel, not just the test fixtures.
