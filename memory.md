@@ -127,18 +127,25 @@ Branch: `main`
   - `Marketing Manager` now lands on `Marketing Operations Strategist` and starts with `Campaign experiment design`
   - `Senior HR Business Partner` now lands on `HR Operations Manager` and starts with `Manager enablement workflow design`
   - `Customer Success Manager` now lands on `Customer Success Strategy Manager` and starts with `Renewal risk review design`
+- The latest paid-report decision brief is now more explicit:
+  - it tells the user why the winning move won now
+  - it says why a flashier alternative is not leading yet
+  - it states what would have to change before the riskier path becomes the main recommendation
+- Lower-ranked customer-success and finance pivots are also cleaner and deduped:
+  - `Finance Manager` lower pivots now read as `Finance Business Partner`, `Strategic Finance Analyst`, `Commercial Finance Manager`, and `FP&A Manager`
+  - `Customer Success Manager` lower pivots now read as `Customer Success Strategy Manager`, `Customer Operations Lead`, `Renewal Strategy Lead`, and `Customer Enablement Lead`
 - Biggest remaining gap:
-  - customer-success and finance still have room to get sharper in lower-ranked pivots and second-step resources
+  - marketing and analytics still have more lower-ranked pivot noise than the now-cleaner finance/customer stacks
   - make refreshes and recommendations more obviously adaptive to new intake/progress signal
 
 ## Recommended Next Move
 Highest-leverage next build:
 
-1. Sharpen “why not this pivot yet?” explanation in paid reports
-- Use the stronger confidence copy and fixture findings to explain what is missing before a riskier pivot becomes the main move
+1. Tighten lower-ranked pivot realism for marketing and analytics
+- Finance and customer-success are cleaner now, but marketing and analytics still show noisier secondary pivots than the top move deserves
 
-2. Tighten lower-ranked pivot realism for customer success and finance
-- The top move quality is much better now, but lower pivots can still drift into thinly grounded strategy/product hybrids
+2. Keep the paid-report “why not this pivot yet?” explanation sharp
+- The top recommendation now explains itself better; the next step is making that copy feel even more premium and role-native
 
 3. Keep using saved QA snapshots plus `/internal/qa-fixtures`
 - The saved reports are more useful than fixture JSON alone because the final recommendation stack can differ from the raw pivot ordering
@@ -167,10 +174,11 @@ Latest verified before this memory update:
 - `npm run test:course-catalog`
 - `npm run test:broad-roles`
 - `npm run reports:regenerate -- --ids=545898da-08ae-41df-9156-021a937ebe95,28325476-caa6-4a7b-a95b-ecc0f2a7e897,0eff2943-82e6-41c8-b10d-2dde56061df3,231107f9-3a2a-4834-b67a-0b1a38ebdc71,ae5dcf5d-0bb3-427d-8154-fbf9aa7678f6`
+- `npm run reports:regenerate -- --ids=28325476-caa6-4a7b-a95b-ecc0f2a7e897,0eff2943-82e6-41c8-b10d-2dde56061df3`
 - `npm run build`
 - `git diff --check`
 
 ## Clean Resume Prompt
 Use this at the start of the next session:
 
-`Pick up PivotIQ from /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app. First read /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/memory.md and /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/docs/project-update-2026-04-05.md. Continue from the highest-leverage next move: sharpen the paid-report “why not this pivot yet?” explanation using the saved QA snapshots and /internal/qa-fixtures, then tighten lower-ranked customer-success and finance pivots. Keep OpenRouter on nvidia/nemotron-3-nano-30b-a3b:free. Commit and push after code changes.`
+`Pick up PivotIQ from /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app. First read /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/memory.md and /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/docs/project-update-2026-04-05.md. Continue from the highest-leverage next move: tighten lower-ranked marketing and analytics pivots using the saved QA snapshots and /internal/qa-fixtures, while keeping the paid-report decision brief explicit about why the safer move won. Keep OpenRouter on nvidia/nemotron-3-nano-30b-a3b:free. Commit and push after code changes.`

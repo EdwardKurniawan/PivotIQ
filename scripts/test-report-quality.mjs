@@ -1330,6 +1330,112 @@ function testCustomerPivotAvoidsGenericProcessCourseAsFirstStep() {
   assert.equal(normalized.pivots[0].learning_path[0].resource_title, 'Service Hub Software Certification Course');
 }
 
+function testDecisionBriefExplainsWhyRiskierMoveIsNotLeading() {
+  const report = buildDemoReportData(
+    'Customer Success Manager',
+    'SaaS',
+    ['Renewal prep', 'Account health reviews', 'Stakeholder communication'],
+    {
+      selected_tasks: [{ label: 'Renewal prep' }],
+      primary_tasks: ['Renewal prep', 'Account health reviews', 'Stakeholder communication'],
+      clarifiers: {
+        goal_now: 'hybrid_transition',
+        timeline_urgency: 'within_6_months',
+        years_experience_band: '6_10',
+        location_preference: 'united_states',
+        ai_maturity: 'weekly',
+      },
+    }
+  );
+
+  report.pivots[0] = {
+    ...report.pivots[0],
+    id: 'customer-success-platform-product-manager',
+    title: 'Customer Success Platform Product Manager',
+    live_market_signal: {
+      matched_openings_count: 0,
+      profile_fit_score: 10,
+      missing_required_skills: ['Product strategy'],
+      model_only_skill_gaps: ['Platform roadmap'],
+    },
+  };
+
+  const normalized = normalizeReportData(report);
+  assert.ok(normalized.recommendation_stack.decision_brief.why_this_won);
+  assert.ok(normalized.recommendation_stack.decision_brief.not_yet_reason);
+  assert.ok(normalized.recommendation_stack.decision_brief.unlock_condition);
+}
+
+function testCustomerLowerPivotsGetCleanerAdjacentTitles() {
+  const report = buildDemoReportData(
+    'Customer Success Manager',
+    'SaaS',
+    ['Renewal prep', 'Account health reviews', 'Stakeholder communication'],
+    {
+      selected_tasks: [{ label: 'Renewal prep' }],
+      primary_tasks: ['Renewal prep', 'Account health reviews', 'Stakeholder communication'],
+      clarifiers: {
+        goal_now: 'hybrid_transition',
+        timeline_urgency: 'within_6_months',
+        years_experience_band: '6_10',
+        location_preference: 'united_states',
+        ai_maturity: 'weekly',
+      },
+    }
+  );
+
+  report.pivots[1] = {
+    ...report.pivots[1],
+    id: 'customer-success-platform-product-manager',
+    title: 'Customer Success Platform Product Manager',
+    live_market_signal: {
+      matched_openings_count: 0,
+      profile_fit_score: 0,
+    },
+  };
+
+  report.pivots[2] = {
+    ...report.pivots[2],
+    id: 'head-of-customer-success',
+    title: 'Head of Customer Success',
+    live_market_signal: {
+      matched_openings_count: 1,
+      profile_fit_score: 10,
+    },
+  };
+
+  const normalized = normalizeReportData(report);
+  const lowerTitles = normalized.pivots.slice(1, 3).map((pivot) => pivot.title).join(' | ');
+  assert.doesNotMatch(lowerTitles, /Platform Product Manager|Head of Customer Success/);
+}
+
+function testFinanceLowerPivotsStayUniqueAfterRepair() {
+  const report = buildDemoReportData(
+    'Finance Manager',
+    'SaaS',
+    ['Forecast review', 'Budget planning', 'Variance analysis'],
+    {
+      selected_tasks: [{ label: 'Forecast review' }],
+      primary_tasks: ['Forecast review', 'Budget planning', 'Variance analysis'],
+      clarifiers: {
+        goal_now: 'hybrid_transition',
+        timeline_urgency: 'within_6_months',
+        years_experience_band: '6_10',
+        location_preference: 'united_states',
+        ai_maturity: 'weekly',
+      },
+    }
+  );
+
+  report.pivots[0] = { ...report.pivots[0], title: 'Finance Systems Manager', id: 'finance-systems-manager' };
+  report.pivots[1] = { ...report.pivots[1], title: 'Finance Systems Manager', id: 'finance-systems-manager-2', live_market_signal: { matched_openings_count: 1, profile_fit_score: 10 } };
+  report.pivots[2] = { ...report.pivots[2], title: 'Finance Systems Manager', id: 'finance-systems-manager-3', live_market_signal: { matched_openings_count: 0, profile_fit_score: 0 } };
+
+  const normalized = normalizeReportData(report);
+  const lowerTitles = normalized.pivots.slice(1, 4).map((pivot) => pivot.title);
+  assert.equal(new Set(lowerTitles).size, lowerTitles.length);
+}
+
 testTopPivotFamilyRepairAndCopy();
 testGenericAiResourceRemovedFromNonAiGap();
 testFirst30DaysReferencesFinalPivot();
@@ -1367,5 +1473,8 @@ testBroadRoleCanonicalTitleCannotJumpStraightToDirector();
 testAnalyticsPivotAvoidsOffFamilyStartingSkill();
 testFinancePivotGetsRoleNativeLearningBundle();
 testCustomerPivotAvoidsGenericProcessCourseAsFirstStep();
+testDecisionBriefExplainsWhyRiskierMoveIsNotLeading();
+testCustomerLowerPivotsGetCleanerAdjacentTitles();
+testFinanceLowerPivotsStayUniqueAfterRepair();
 
 console.log('Report quality tests passed.');

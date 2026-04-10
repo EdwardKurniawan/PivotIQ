@@ -880,6 +880,31 @@ function RecommendationStackCard({ stack, pivotColor, stayColor = palette.teal }
         )}
       </div>
 
+      {(stack?.decision_brief?.why_this_won || stack?.decision_brief?.not_yet_reason || stack?.decision_brief?.unlock_condition) && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '12px', marginBottom: '16px' }} className="two-col">
+          {stack?.decision_brief?.why_this_won && (
+            <div style={{ padding: '14px 15px', borderRadius: '18px', background: 'rgba(255,255,255,0.82)', border: `1px solid ${palette.border}` }}>
+              <div style={{ color: pivotColor, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Why this won now</div>
+              <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.6 }}>{stack.decision_brief.why_this_won}</div>
+            </div>
+          )}
+          {stack?.decision_brief?.not_yet_reason && (
+            <div style={{ padding: '14px 15px', borderRadius: '18px', background: 'rgba(255,255,255,0.82)', border: `1px solid ${palette.border}` }}>
+              <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>
+                {stack?.decision_brief?.not_yet_title ? `Why not ${stack.decision_brief.not_yet_title} yet` : 'Why not the riskier move yet'}
+              </div>
+              <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.6 }}>{stack.decision_brief.not_yet_reason}</div>
+            </div>
+          )}
+          {stack?.decision_brief?.unlock_condition && (
+            <div style={{ padding: '14px 15px', borderRadius: '18px', background: 'rgba(255,255,255,0.82)', border: `1px solid ${palette.border}` }}>
+              <div style={{ color: palette.teal, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>What would change this</div>
+              <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.6 }}>{stack.decision_brief.unlock_condition}</div>
+            </div>
+          )}
+        </div>
+      )}
+
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '12px' }} className="two-col">
         {cards.map((item) => {
           const confidenceStyle = recommendationConfidenceStyle(item.confidence_state);

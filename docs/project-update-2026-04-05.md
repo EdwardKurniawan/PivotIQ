@@ -1051,3 +1051,51 @@ Best next move:
 1. Improve the paid-report explanation for why a safer top move won over a flashier lower pivot.
 2. Tighten lower-ranked customer-success and finance pivots so the fallback stack is as clean as the top move.
 3. Keep using the saved QA snapshots as the final truth source for recommendation feel, not just the test fixtures.
+
+---
+
+## 2026-04-10 Paid Decision Brief + Backup Pivot Cleanup
+
+This pass made the paid report more explicit about recommendation tradeoffs and cleaned up the lower-ranked fallback stack for customer-success and finance reports.
+
+What shipped:
+
+- Upgraded the recommendation stack in [`lib/report-data.js`](lib/report-data.js):
+  - added `why_this_won`
+  - added `not_yet_title`
+  - added `not_yet_reason`
+  - added `unlock_condition`
+- Upgraded the top paid-report explanation in [`components/report-experience.js`](components/report-experience.js):
+  - new `Why this won now`
+  - new `Why not X yet`
+  - new `What would change this`
+- Added lower-ranked customer/finance cleanup in [`lib/report-quality.js`](lib/report-quality.js):
+  - weaker or duplicated backup pivots now get reframed into cleaner adjacent canonical titles
+  - customer and finance backup stacks now dedupe against the top pivot and against each other
+- Expanded regression coverage in [`scripts/test-report-quality.mjs`](scripts/test-report-quality.mjs):
+  - decision brief now must explain why the riskier move is not leading
+  - customer lower pivots now repair away from awkward titles
+  - finance lower pivots now stay unique after repair
+
+Saved QA snapshots refreshed again:
+
+- `28325476-caa6-4a7b-a95b-ecc0f2a7e897` — `Finance Manager`
+  - top pivot: `Finance Systems Manager`
+  - lower pivots: `Finance Business Partner`, `Strategic Finance Analyst`, `Commercial Finance Manager`, `FP&A Manager`
+- `0eff2943-82e6-41c8-b10d-2dde56061df3` — `Customer Success Manager`
+  - top pivot: `Account Strategy Lead`
+  - lower pivots: `Customer Success Strategy Manager`, `Customer Operations Lead`, `Renewal Strategy Lead`, `Customer Enablement Lead`
+
+Verification completed:
+
+- `npm run test:report-quality`
+- `npm run test:broad-roles`
+- `npm run reports:regenerate -- --ids=28325476-caa6-4a7b-a95b-ecc0f2a7e897,0eff2943-82e6-41c8-b10d-2dde56061df3`
+- `npm run build`
+- `git diff --check`
+
+Best next move:
+
+1. Tighten lower-ranked marketing and analytics pivots so their fallback stacks are as clean as the customer/finance ones.
+2. Keep improving the paid-report explanation tone so the “safer move won” copy feels premium, not defensive.
+3. Continue using the saved QA snapshots as the final trust source for recommendation feel.
