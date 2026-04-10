@@ -14,7 +14,7 @@ export const SENIOR_ROLE_FIXTURES = Object.freeze([
     industry: 'SaaS',
     tasks: ['Board-ready variance narratives', 'Scenario planning and tradeoff modeling', 'Budget review leadership'],
     topPivotPattern: /(finance|strategic finance|fp&a|finance systems|business operations)/i,
-    stayPattern: /(strategic finance manager|finance manager|finance systems manager|higher-leverage version)/i,
+    stayPattern: /(finance planning lead|finance manager|finance systems manager|higher-leverage version)/i,
     clarifiers: {
       technical_capability: 'advanced_spreadsheets',
       proof_state: 'dashboard_or_analysis',
@@ -64,7 +64,7 @@ export const SENIOR_ROLE_FIXTURES = Object.freeze([
     industry: 'SaaS',
     tasks: ['Executive account reviews', 'Renewal strategy', 'Team coaching'],
     topPivotPattern: /(customer|account|operations|revenue operations|enablement)/i,
-    stayPattern: /(customer success director|customer strategy lead|customer operations lead|higher-leverage version)/i,
+    stayPattern: /(customer success director|customer success strategy lead|customer operations lead|higher-leverage version)/i,
     allowSeniorTitles: true,
     clarifiers: {
       proof_state: 'internal_project',

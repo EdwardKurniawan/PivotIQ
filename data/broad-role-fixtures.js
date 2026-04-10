@@ -12,14 +12,14 @@ export const BROAD_ROLE_FIXTURES = Object.freeze([
     industry: 'SaaS',
     tasks: ['Dashboard creation', 'SQL analysis', 'Stakeholder insights'],
     topPivotPattern: /(data|analytics|business operations|business intelligence|strategy and operations|operations manager)/i,
-    stayPattern: /(strategic operations manager|analytics|operations lead|higher-leverage version)/i,
+    stayPattern: /(business intelligence lead|analytics|operations lead|higher-leverage version)/i,
   },
   {
     jobTitle: 'Customer Success Manager',
     industry: 'SaaS',
     tasks: ['Renewal prep', 'Account health reviews', 'Stakeholder communication'],
     topPivotPattern: /(customer|account|enablement|operations)/i,
-    stayPattern: /(customer strategy lead|customer success lead|customer operations lead|higher-leverage version)/i,
+    stayPattern: /(customer success strategy lead|customer success lead|customer operations lead|higher-leverage version)/i,
   },
   {
     jobTitle: 'Executive Assistant',

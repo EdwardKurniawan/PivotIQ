@@ -121,20 +121,26 @@ Branch: `main`
   - better stay-and-advance logic
   - proof assets now feel more useful
   - learning recommendations are much cleaner
+- Latest broad-role QA pass tightened the saved report experience itself:
+  - `Data Analyst` now lands on `Business Intelligence Lead` instead of vague strategy/ops language
+  - `Finance Manager` now lands on `Finance Planning Lead`
+  - `Senior HR Business Partner` no longer jumps to a director-level stay title
+  - `Customer Success Manager` still needs more pivot-family tuning even though the stay path is cleaner
 - Biggest remaining gap:
+  - customer-success broad-role pivot realism is still noisier than finance / analytics / HR
   - make refreshes and recommendations more obviously adaptive to new intake/progress signal
 
 ## Recommended Next Move
 Highest-leverage next build:
 
-1. Review the new saved QA snapshots in-account
-- The reports now exist as real saved reports, so the next leverage is qualitative review of the actual recommendation language and pacing in the dashboard/report flow
+1. Tighten customer-success pivot family behavior
+- The saved `Customer Success Manager` QA report still promotes an awkward raw pivot (`Customer Success Data Analyst`) even though the stay path is much cleaner
 
-2. Tune senior-fixture behavior if needed
-- Senior catalogs are live, but we still need to watch for over-flattening into stay-first language on legitimately stronger managers/leads
-
-3. Sharpen “why not this pivot yet?” explanation in paid reports
+2. Sharpen “why not this pivot yet?” explanation in paid reports
 - Use the stronger confidence copy and fixture findings to explain what is missing before a riskier pivot becomes the main move
+
+3. Keep using saved QA snapshots plus `/internal/qa-fixtures`
+- The saved reports are more useful than fixture JSON alone because the final recommendation stack can differ from the raw pivot ordering
 
 ## Files Most Likely To Matter Next Session
 - [`app/audit/page.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/audit/page.js)
@@ -156,15 +162,13 @@ Highest-leverage next build:
 
 ## Verification State
 Latest verified before this memory update:
-- `npm run reports:seed-qa-fixtures -- --email=edward.hardrianto@live.com --catalog=mixed --limit=4`
-- `npm run test:broad-roles`
 - `npm run test:report-quality`
-- `npm run test:refresh`
-- `npm run test:recommendation-quality`
+- `npm run test:broad-roles`
+- `npm run reports:regenerate -- --ids=545898da-08ae-41df-9156-021a937ebe95,28325476-caa6-4a7b-a95b-ecc0f2a7e897,0eff2943-82e6-41c8-b10d-2dde56061df3,231107f9-3a2a-4834-b67a-0b1a38ebdc71`
 - `npm run build`
 - `git diff --check`
 
 ## Clean Resume Prompt
 Use this at the start of the next session:
 
-`Pick up PivotIQ from /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app. First read /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/memory.md and /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/docs/project-update-2026-04-05.md. Continue from the highest-leverage next move: review the new saved QA snapshots in-account, then tune any senior-fixture over-correction and sharpen “why not this pivot yet?” copy in paid reports. Keep OpenRouter on nvidia/nemotron-3-nano-30b-a3b:free. Commit and push after code changes.`
+`Pick up PivotIQ from /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app. First read /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/memory.md and /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/docs/project-update-2026-04-05.md. Continue from the highest-leverage next move: tighten the customer-success pivot family using the saved QA snapshot and /internal/qa-fixtures, then sharpen “why not this pivot yet?” copy in paid reports. Keep OpenRouter on nvidia/nemotron-3-nano-30b-a3b:free. Commit and push after code changes.`

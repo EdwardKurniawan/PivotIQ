@@ -947,3 +947,52 @@ Next best product move:
 1. Open the saved QA snapshots in-account and do a qualitative review of the actual user-facing recommendation text.
 2. Tune the senior fixture defaults if the reports feel too flattened into stay-first language.
 3. Add one more fixture family for high-judgment executive-support / chief-of-staff type roles if that lane becomes important.
+
+---
+
+## 2026-04-10 Qualitative QA Pass
+
+This pass reviewed the saved QA snapshots as real user-facing reports and tightened the broad-role stay-and-advance layer where the recommendation feel was still too synthetic or too flat.
+
+What shipped:
+
+- Added explicit `analytics` role-family detection in [`lib/report-data.js`](lib/report-data.js) so `Data Analyst` no longer falls into a generic strategy/operations bucket.
+- Replaced vague stay-path growth titles with cleaner role-native defaults for the broad families:
+  - `Data Analyst` stay path now normalizes toward `Business Intelligence Lead`
+  - `Finance Manager` stay path now normalizes toward `Finance Planning Lead`
+  - `Customer Success Manager` stay path now normalizes toward `Customer Success Strategy Lead`
+  - `product` / strategy-adjacent stay titles now use `Business Operations Lead` instead of `Strategic Operations Manager`
+- Added stay-path repair logic in [`lib/report-data.js`](lib/report-data.js) so model-generated inflated titles get replaced when they:
+  - are basically the same role with a seniority prefix
+  - jump to director-level scope from a non-director current role
+  - fail the role-native growth-title pattern for that family
+- Adjusted the learning-path picker so advanced users can still start with `AI workflow design` when the skill is practical, even if the course provider is beginner-friendly.
+- Expanded quality/canonical matching in [`lib/report-quality.js`](lib/report-quality.js) for analytics, finance-planning, and customer-success-strategy labels.
+- Updated fixture expectations and added regression coverage in:
+  - [`data/broad-role-fixtures.js`](data/broad-role-fixtures.js)
+  - [`data/senior-role-fixtures.js`](data/senior-role-fixtures.js)
+  - [`scripts/test-report-quality.mjs`](scripts/test-report-quality.mjs)
+
+Saved QA snapshot status after refresh:
+
+- `545898da-08ae-41df-9156-021a937ebe95` — `Data Analyst`
+  - primary now resolves to stay-first `Business Intelligence Lead`
+- `28325476-caa6-4a7b-a95b-ecc0f2a7e897` — `Finance Manager`
+  - primary now resolves to stay-first `Finance Planning Lead`
+- `0eff2943-82e6-41c8-b10d-2dde56061df3` — `Customer Success Manager`
+  - stay path is cleaner, but the active pivot family is still somewhat noisy and worth another tuning pass
+- `231107f9-3a2a-4834-b67a-0b1a38ebdc71` — `Senior HR Business Partner`
+  - stay path now resolves to `People Operations Lead` instead of a director-level leap
+
+Verification completed:
+
+- `npm run test:report-quality`
+- `npm run test:broad-roles`
+- `npm run reports:regenerate -- --ids=545898da-08ae-41df-9156-021a937ebe95,28325476-caa6-4a7b-a95b-ecc0f2a7e897,0eff2943-82e6-41c8-b10d-2dde56061df3,231107f9-3a2a-4834-b67a-0b1a38ebdc71`
+- `npm run build`
+
+Best next move:
+
+1. Tighten the customer-success pivot family so top pivots stop drifting into awkward data/ops hybrids like `Customer Success Data Analyst`.
+2. Use the saved QA fixture viewer plus account snapshots together when tuning broad families, because the final user-facing recommendation stack can still differ from the raw pivot ordering.
+3. Consider making the report UI explicitly say when the stay path is the cleaner recommendation even if a pivot still ranks first in the raw pivot set.

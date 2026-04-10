@@ -851,6 +851,85 @@ function testAdvancedAiMaturitySkipsBeginnerLearningStart() {
   assert.equal(normalized.pivots[0].learning_path[0].skill_name, 'Workflow automation design');
 }
 
+function testAnalyticsRoleGetsRoleNativeStayPath() {
+  const normalized = normalizeReportData(buildDemoReportData(
+    'Data Analyst',
+    'SaaS',
+    ['Dashboard creation', 'SQL analysis', 'Stakeholder insights'],
+    {
+      selected_tasks: [{ label: 'Dashboard creation' }],
+      primary_tasks: ['Dashboard creation', 'SQL analysis', 'Stakeholder insights'],
+      clarifiers: {
+        goal_now: 'hybrid_transition',
+        timeline_urgency: 'within_6_months',
+        years_experience_band: '6_10',
+        location_preference: 'united_states',
+        ai_maturity: 'weekly',
+      },
+    }
+  ));
+
+  assert.match(normalized.stay_path.title, /Business Intelligence Lead/i);
+  assert.match(normalized.recommendation_stack.primary.title, /Business Intelligence Lead|Business Intelligence Manager/i);
+  assert.match(normalized.stay_and_advance.recommendation, /analytics|decision support|KPI/i);
+}
+
+function testAdvancedStayPathStillStartsWithWorkflowDesign() {
+  const normalized = normalizeReportData(buildDemoReportData(
+    'Finance Manager',
+    'SaaS',
+    ['Board-ready variance narratives', 'Scenario planning and tradeoff modeling'],
+    {
+      selected_tasks: [{ label: 'Board-ready variance narratives' }],
+      primary_tasks: ['Board-ready variance narratives', 'Scenario planning and tradeoff modeling'],
+      clarifiers: {
+        goal_now: 'hybrid_transition',
+        timeline_urgency: 'within_6_months',
+        years_experience_band: '11_plus',
+        location_preference: 'united_states',
+        ai_maturity: 'repeatable_workflows',
+      },
+    }
+  ));
+
+  assert.equal(normalized.stay_path.learning_path[0].skill_name, 'AI workflow design');
+  assert.match(normalized.stay_path.title, /Finance Planning Lead|Finance/i);
+}
+
+function testInflatedStayTitlesFallBackToRoleNativeGrowthPath() {
+  const report = buildDemoReportData(
+    'Customer Success Manager',
+    'SaaS',
+    ['Renewal prep', 'Account health reviews', 'Stakeholder communication'],
+    {
+      selected_tasks: [{ label: 'Renewal prep' }],
+      primary_tasks: ['Renewal prep', 'Account health reviews', 'Stakeholder communication'],
+      clarifiers: {
+        goal_now: 'hybrid_transition',
+        timeline_urgency: 'within_6_months',
+        years_experience_band: '6_10',
+        location_preference: 'united_states',
+        ai_maturity: 'weekly',
+      },
+    }
+  );
+
+  report.stay_and_advance = {
+    ...report.stay_and_advance,
+    recommendation: 'Deploy AI health scoring and move into a senior version of the same role.',
+    rationale: 'Position yourself for Senior Customer Success Manager within six months.',
+    promotion_path: {
+      ...(report.stay_and_advance?.promotion_path || {}),
+      next_title: 'Senior Customer Success Manager',
+    },
+  };
+
+  const normalized = normalizeReportData(report);
+  assert.match(normalized.stay_path.title, /Customer Success Strategy Lead|Customer Operations Lead/i);
+  assert.match(normalized.stay_and_advance.recommendation, /customer|renewal|proactive health/i);
+  assert.ok(normalized.quality_audit.repairs.some((item) => /stay-and-advance title/i.test(item)));
+}
+
 testTopPivotFamilyRepairAndCopy();
 testGenericAiResourceRemovedFromNonAiGap();
 testFirst30DaysReferencesFinalPivot();
@@ -877,5 +956,8 @@ testBroadRoleThinSignalDefaultsToStayBeforeTitleJump();
 testExistingProofUpgradesProofBuildersInsteadOfStartingFromScratch();
 testLowExperienceStretchTitleFallsBackToStayFirst();
 testAdvancedAiMaturitySkipsBeginnerLearningStart();
+testAnalyticsRoleGetsRoleNativeStayPath();
+testAdvancedStayPathStillStartsWithWorkflowDesign();
+testInflatedStayTitlesFallBackToRoleNativeGrowthPath();
 
 console.log('Report quality tests passed.');
