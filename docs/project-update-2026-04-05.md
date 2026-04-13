@@ -4,6 +4,42 @@ This file captures the current PivotIQ state so the next session can continue wi
 
 ## Recent platform upgrades — 2026-04-13
 
+### Latest broad-role quality pass
+
+The newest quality pass focused on two things:
+
+- weaker lower-ranked `operations` backup pivots
+- making the stay-first decision brief sound role-native instead of generic
+
+What changed:
+
+- `lib/report-quality.js` now applies lower-pivot repair to `operations`, not just customer / finance / marketing / analytics
+- operations backup stacks now repair toward cleaner adjacent titles like:
+  - `Delivery Operations Manager`
+  - `Program Operations Manager`
+  - `Project Operations Manager`
+  - `Program Operations Lead`
+  - `PMO Manager`
+- weak-signal architect / product / consultant / head-of drift is now repaired earlier in operations and customer backup stacks
+- `lib/report-data.js` now uses role-native stay-first decision-brief copy for:
+  - customer success
+  - operations
+  - finance
+  - analytics
+
+Regression coverage added:
+
+- operations lower-pivot cleanup
+- operations role-native decision-brief wording
+
+Saved founder-account broad QA snapshots were refreshed:
+
+- `bf2c0a5a-2b46-4b25-937b-8828bc103536` `Data Analyst` → `Business Intelligence Lead`
+- `06f9b67e-694d-4cba-8dcb-cc377cf00c34` `Customer Success Manager` → `Customer Success Strategy Lead`
+- `d41d304e-bab9-4c6f-af26-41c2fd9ef271` `Executive Assistant` → `Executive Operations Lead`
+- `114267cc-fd53-4e6e-8873-547ff831efe6` `Operations Manager` → `Program Operations Lead`
+- `58f0bd10-62f5-4afd-9702-5cb44871b75f` `Marketing Manager` → `Marketing Strategy Lead`
+
 PivotIQ is no longer just a one-time report generator. The product now has a real execution and feedback loop:
 
 - `recommendation_stack` now drives a narrower decision layer with:

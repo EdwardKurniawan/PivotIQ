@@ -50,9 +50,18 @@ Worktree state: local changes present for current quality pass
   - finance
   - marketing
   - analytics
+- Lower-ranked backup pivots are now also cleaned for `operations`, with missing repair coverage fixed in the quality gate.
+- Stay-first decision-brief copy is now more role-native for broad roles, especially:
+  - customer success
+  - operations
+  - finance
+  - analytics
 - Saved QA snapshots were refreshed after the latest cleanup:
-  - `Marketing Manager` now has a fully in-family backup stack led by `Marketing Operations Strategist`
-  - `Data Analyst` now has a cleaner analytics stack without `Revenue Operations Analyst` drift
+  - `Data Analyst` → `Business Intelligence Lead`
+  - `Customer Success Manager` → `Customer Success Strategy Lead`
+  - `Executive Assistant` → `Executive Operations Lead`
+  - `Operations Manager` → `Program Operations Lead`
+  - `Marketing Manager` → `Marketing Strategy Lead`
 
 ## In-Progress Work
 
@@ -61,14 +70,13 @@ Worktree state: local changes present for current quality pass
 
 ## Next Steps
 
-1. Tighten lower-ranked active pivots for the next broad families that still feel weakest in practice:
+1. Tighten the next weakest lower-ranked active pivots after operations:
    - customer success
-   - marketing
-   - operations
    - finance
-   Use the saved QA snapshots and `/internal/qa-fixtures` as the source of truth.
-2. Keep sharpening the paid-report decision brief so “why this won now” and “why not this yet” feel premium, role-native, and decisive.
-3. Continue improving learning-path coherence where the gap-to-resource pairing is only acceptable instead of obviously sharp.
+   - marketing
+   Focus on premium-feeling backup stacks when market evidence is thin.
+2. Continue sharpening learning-path coherence where the gap-to-resource pairing is only acceptable instead of obviously sharp.
+3. Review the new saved broad QA snapshots in-account and improve wording quality on the actual rendered reports, not just fixture tests.
 4. Expand the saved QA snapshot set when a new role family becomes important so recommendation feel is validated on real stored reports, not just fixture tests.
 5. Keep the recommendation-quality dashboard aligned with real outcome patterns so future tuning is based on user signal, not intuition.
 

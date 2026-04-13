@@ -1607,6 +1607,86 @@ function testAnalyticsLowerPivotsAvoidWeakRevOpsDrift() {
   assert.doesNotMatch(lowerTitles, /Revenue Operations Analyst/);
 }
 
+function testOperationsLowerPivotsGetCleanerAdjacentTitles() {
+  const report = buildDemoReportData(
+    'Operations Manager',
+    'Manufacturing',
+    ['Process mapping', 'Workflow coordination', 'Status reporting'],
+    {
+      selected_tasks: [{ label: 'Process mapping' }],
+      primary_tasks: ['Process mapping', 'Workflow coordination', 'Status reporting'],
+      clarifiers: {
+        goal_now: 'hybrid_transition',
+        timeline_urgency: 'within_6_months',
+        years_experience_band: '6_10',
+        location_preference: 'united_states',
+        ai_maturity: 'weekly',
+      },
+    }
+  );
+
+  report.pivots[1] = {
+    ...report.pivots[1],
+    id: 'strategy-and-operations-architect',
+    title: 'Strategy and Operations Architect',
+    live_market_signal: { matched_openings_count: 0, profile_fit_score: 0 },
+  };
+  report.pivots[2] = {
+    ...report.pivots[2],
+    id: 'customer-success-operations-lead',
+    title: 'Customer Success Operations Lead',
+    live_market_signal: { matched_openings_count: 1, profile_fit_score: 4 },
+  };
+  report.pivots[3] = {
+    ...report.pivots[3],
+    id: 'head-of-operational-excellence',
+    title: 'Head of Operational Excellence',
+    live_market_signal: { matched_openings_count: 0, profile_fit_score: 8 },
+  };
+
+  const normalized = normalizeReportData(report);
+  const lowerTitles = normalized.pivots.slice(1, 4).map((pivot) => pivot.title).join(' | ');
+  assert.doesNotMatch(lowerTitles, /Strategy and Operations Architect|Customer Success Operations Lead|Head of Operational Excellence/);
+  assert.equal(new Set(normalized.pivots.slice(0, 4).map((pivot) => pivot.title)).size, normalized.pivots.slice(0, 4).length);
+}
+
+function testOperationsDecisionBriefUsesRoleNativeStayLanguage() {
+  const report = buildDemoReportData(
+    'Operations Manager',
+    'Manufacturing',
+    ['Process mapping', 'Workflow coordination', 'Status reporting'],
+    {
+      selected_tasks: [{ label: 'Process mapping' }],
+      primary_tasks: ['Process mapping', 'Workflow coordination', 'Status reporting'],
+      clarifiers: {
+        goal_now: 'hybrid_transition',
+        timeline_urgency: 'within_6_months',
+        years_experience_band: '6_10',
+        location_preference: 'united_states',
+        ai_maturity: 'weekly',
+      },
+    }
+  );
+
+  report.pivots[0] = {
+    ...report.pivots[0],
+    id: 'strategy-and-operations-architect',
+    title: 'Strategy and Operations Architect',
+    live_market_signal: {
+      matched_openings_count: 0,
+      profile_fit_score: 10,
+      missing_required_skills: ['Systems redesign'],
+      model_only_skill_gaps: ['Program architecture'],
+    },
+  };
+
+  const normalized = normalizeReportData(report);
+  assert.equal(normalized.recommendation_stack.primary.type, 'stay');
+  assert.match(normalized.recommendation_stack.decision_brief.why_this_won, /workflow|handoff|operating system/i);
+  assert.match(normalized.recommendation_stack.decision_brief.not_yet_reason, /workflow|handoff|operating proof/i);
+  assert.match(normalized.recommendation_stack.decision_brief.unlock_condition, /workflow redesign|operating review|handoff system/i);
+}
+
 testTopPivotFamilyRepairAndCopy();
 testGenericAiResourceRemovedFromNonAiGap();
 testFirst30DaysReferencesFinalPivot();
@@ -1653,5 +1733,7 @@ testCustomerLowerPivotsGetCleanerAdjacentTitles();
 testFinanceLowerPivotsStayUniqueAfterRepair();
 testMarketingLowerPivotsGetCleanerAdjacentTitles();
 testAnalyticsLowerPivotsAvoidWeakRevOpsDrift();
+testOperationsLowerPivotsGetCleanerAdjacentTitles();
+testOperationsDecisionBriefUsesRoleNativeStayLanguage();
 
 console.log('Report quality tests passed.');

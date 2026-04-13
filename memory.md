@@ -23,6 +23,36 @@ Branch: `main`
 
 ## Most Recent Shipped Work
 
+### `pending current commit` Tighten operations backup stacks + role-native decision brief copy
+- Added missing lower-pivot repair coverage for `operations` in [`lib/report-quality.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/lib/report-quality.js)
+- Added canonical operations alternative titles so weak lower pivots now repair into cleaner adjacent titles like:
+  - `Delivery Operations Manager`
+  - `Program Operations Manager`
+  - `Project Operations Manager`
+  - `Program Operations Lead`
+  - `PMO Manager`
+- Tightened weak-signal repair rules for operations and customer backup stacks so architect / product / consultant / head-of drift gets repaired earlier
+- Made stay-first `decision_brief` copy more role-native in [`lib/report-data.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/lib/report-data.js), especially for:
+  - customer success
+  - operations
+  - finance
+  - analytics
+- Added regression coverage in [`scripts/test-report-quality.mjs`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/scripts/test-report-quality.mjs) for:
+  - operations lower-pivot cleanup
+  - operations role-native decision-brief wording
+- Seeded a fresh broad-role QA set into `edward.hardrianto@live.com`:
+  - `bf2c0a5a-2b46-4b25-937b-8828bc103536` `Data Analyst`
+  - `06f9b67e-694d-4cba-8dcb-cc377cf00c34` `Customer Success Manager`
+  - `d41d304e-bab9-4c6f-af26-41c2fd9ef271` `Executive Assistant`
+  - `114267cc-fd53-4e6e-8873-547ff831efe6` `Operations Manager`
+  - `58f0bd10-62f5-4afd-9702-5cb44871b75f` `Marketing Manager`
+- Current broad-role primary titles from those saved snapshots:
+  - `Data Analyst` → `Business Intelligence Lead`
+  - `Customer Success Manager` → `Customer Success Strategy Lead`
+  - `Executive Assistant` → `Executive Operations Lead`
+  - `Operations Manager` → `Program Operations Lead`
+  - `Marketing Manager` → `Marketing Strategy Lead`
+
 ### `pending current commit` Tighten lower-ranked marketing and analytics pivots
 - Tightened lower-pivot repair in [`lib/report-quality.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/lib/report-quality.js) so marketing and analytics backup stacks are now repaired and deduped the same way customer-success and finance already were
 - Added canonical adjacent-title sets for `marketing` and `analytics`
@@ -163,10 +193,11 @@ Branch: `main`
 Highest-leverage next build:
 
 1. Tighten the next weakest broad-role families using the saved QA snapshots
-- customer success, finance, and operations are the next likely candidates after the marketing/analytics cleanup
+- customer success and finance are the next likely candidates after the operations cleanup
+- keep marketing under review, but it is materially cleaner now
 
 2. Keep the paid-report “why not this pivot yet?” explanation sharp
-- the top recommendation now explains itself better; the next step is making that copy feel even more premium and role-native
+- the top recommendation now explains itself better; the next step is making that copy feel even more premium and role-native on the actual saved reports
 
 3. Keep improving learning-path coherence
 - the next product-quality win is sharper gap-to-resource pairing for broad roles where the title is now cleaner but the first learning step can still be bland
@@ -195,8 +226,9 @@ Highest-leverage next build:
 ## Verification State
 Latest verified before this memory update:
 - `npm run test:report-quality`
-- `npm run test:course-catalog`
 - `npm run test:broad-roles`
+- `npm run reports:seed-qa-fixtures -- --email=edward.hardrianto@live.com --catalog=broad --limit=5`
+- `npm run test:course-catalog`
 - `npm run reports:regenerate -- --ids=545898da-08ae-41df-9156-021a937ebe95,28325476-caa6-4a7b-a95b-ecc0f2a7e897,0eff2943-82e6-41c8-b10d-2dde56061df3,231107f9-3a2a-4834-b67a-0b1a38ebdc71,ae5dcf5d-0bb3-427d-8154-fbf9aa7678f6`
 - `npm run reports:regenerate -- --ids=28325476-caa6-4a7b-a95b-ecc0f2a7e897,0eff2943-82e6-41c8-b10d-2dde56061df3`
 - `npm run build`
