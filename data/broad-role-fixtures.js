@@ -26,7 +26,7 @@ export const BROAD_ROLE_FIXTURES = Object.freeze([
     industry: 'Healthcare',
     tasks: ['Calendar coordination', 'Meeting prep', 'Executive follow-up'],
     topPivotPattern: /(operations|administrative|business operations|executive operations)/i,
-    stayPattern: /(higher-leverage version|operations lead|executive operations lead)/i,
+    stayPattern: /(executive operations lead|executive operations manager|operations lead|higher-leverage version)/i,
   },
   {
     jobTitle: 'Operations Manager',

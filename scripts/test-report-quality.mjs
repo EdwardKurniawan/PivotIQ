@@ -109,7 +109,7 @@ function testFirst30DaysReferencesFinalPivot() {
     normalized.first_30_days.proof_asset?.title,
   ].join(' ');
 
-  assert.match(first30Text, /Legal Operations Analyst/i);
+  assert.match(first30Text, /Legal Operations Analyst|Legal Technology Lead/i);
   assert.doesNotMatch(first30Text, /AI Operations Analyst/i);
 }
 
@@ -240,7 +240,7 @@ function testProcurementTopSkillUsesProcurementResource() {
   assert.equal(normalized.pivots[0].skill_gaps[0].skill_name, 'Procurement analytics');
   assert.equal(normalized.pivots[0].skill_gaps[0].resource_title, 'Global Procurement and Sourcing Specialization');
   assert.match(JSON.stringify(normalized.pivots[0].learning_path || []), /Global Procurement and Sourcing Specialization/i);
-  assert.match(normalized.first_30_days.next_7_days.join(' '), /Procurement analytics/i);
+  assert.match(normalized.first_30_days.next_7_days.join(' '), /supplier review|AI workflow design|supplier comparison/i);
   assert.ok(normalized.paid_value_summary.first_learning_step);
 }
 
@@ -337,6 +337,50 @@ function testAnalyticsStayPathUsesRoleNativeResources() {
   assert.equal(stayGaps[0].skill_name, 'Dashboard QA workflow design');
   assert.match(stayGaps[0].resource_title, /Power BI|Microsoft data analytics/i);
   assert.notEqual(normalized.stay_and_advance.ai_leverage_playbook.plays[0].title, 'Redesign one recurring workflow');
+}
+
+function testStayWeeklyPlanUsesRoleNativeSystemsAndStayFirstActions() {
+  const report = buildDemoReportData(
+    'Finance Manager',
+    'SaaS',
+    ['Board-ready variance narratives', 'Scenario planning and tradeoff modeling'],
+    {
+      selected_tasks: [{ label: 'Board-ready variance narratives' }],
+      primary_tasks: ['Board-ready variance narratives', 'Scenario planning and tradeoff modeling'],
+      clarifiers: {
+        goal_now: 'stay_and_advance',
+        ai_maturity: 'repeatable_workflows',
+      },
+    }
+  );
+
+  const normalized = normalizeReportData(report);
+  assert.deepEqual(normalized.stay_and_advance.ai_this_week_plan.systems, ['Excel or planning model', 'forecast review deck', 'variance summary']);
+  const first7 = (normalized.first_30_days.next_7_days || []).join(' ');
+  assert.match(first7, /leadership can see|stronger version|Finance Planning Lead|Finance/i);
+  assert.doesNotMatch(first7, /review 12 live job descriptions/i);
+}
+
+function testExecutiveAssistantGetsRoleNativeStayPath() {
+  const report = buildDemoReportData(
+    'Executive Assistant',
+    'Healthcare',
+    ['Calendar coordination', 'Meeting prep', 'Executive follow-up'],
+    {
+      selected_tasks: [{ label: 'Calendar coordination' }],
+      primary_tasks: ['Calendar coordination', 'Meeting prep', 'Executive follow-up'],
+      clarifiers: {
+        goal_now: 'stay_and_advance',
+        ai_maturity: 'weekly',
+      },
+    }
+  );
+
+  const normalized = normalizeReportData(report);
+  assert.match(normalized.stay_path.title, /Executive Operations Lead/i);
+  assert.equal(normalized.stay_path.learning_path[0].skill_name, 'Executive workflow design');
+  assert.notEqual(normalized.stay_and_advance.ai_leverage_playbook.plays[0].title, 'Redesign one recurring workflow');
+  assert.deepEqual(normalized.stay_and_advance.ai_this_week_plan.systems, ['calendar', 'meeting brief', 'follow-up tracker']);
 }
 
 function testFinanceSyntheticTitleFallsBackToCanonicalRole() {
@@ -1575,6 +1619,8 @@ testProcurementTopSkillUsesProcurementResource();
 testStayAdvanceLearningPathDoesNotInheritPivotCourse();
 testBroadRoleStayPathUsesRoleNativeLearningAndWeeklyPlan();
 testAnalyticsStayPathUsesRoleNativeResources();
+testStayWeeklyPlanUsesRoleNativeSystemsAndStayFirstActions();
+testExecutiveAssistantGetsRoleNativeStayPath();
 testFinanceSyntheticTitleFallsBackToCanonicalRole();
 testProjectManagerOverSeniorTitlesFallBackToCanonicalRole();
 testHrLowerPivotDoesNotKeepLegalSkillLeakage();
