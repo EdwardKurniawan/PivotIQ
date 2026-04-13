@@ -431,7 +431,7 @@ export default async function DashboardPage() {
                 </p>
               </div>
             ) : (
-              sortedReportCards.map(({ report, snapshot, attention }) => {
+              sortedReportCards.map(({ report, snapshot, attention }, index) => {
                 const tone = riskTone(report.risk_level);
                 return (
                   <Link
