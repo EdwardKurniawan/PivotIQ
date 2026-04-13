@@ -1436,6 +1436,79 @@ function testFinanceLowerPivotsStayUniqueAfterRepair() {
   assert.equal(new Set(lowerTitles).size, lowerTitles.length);
 }
 
+function testMarketingLowerPivotsGetCleanerAdjacentTitles() {
+  const report = buildDemoReportData(
+    'Marketing Manager',
+    'Retail',
+    ['Campaign planning', 'Performance reporting', 'Cross-functional launch coordination'],
+    {
+      selected_tasks: [{ label: 'Campaign planning' }],
+      primary_tasks: ['Campaign planning', 'Performance reporting', 'Cross-functional launch coordination'],
+      clarifiers: {
+        goal_now: 'hybrid_transition',
+        timeline_urgency: 'within_6_months',
+        years_experience_band: '6_10',
+        location_preference: 'united_states',
+        ai_maturity: 'weekly',
+      },
+    }
+  );
+
+  report.pivots[1] = {
+    ...report.pivots[1],
+    id: 'ai-program-manager',
+    title: 'AI Program Manager',
+    live_market_signal: { matched_openings_count: 0, profile_fit_score: 0 },
+  };
+  report.pivots[2] = {
+    ...report.pivots[2],
+    id: 'customer-success-manager-saas-platform',
+    title: 'Customer Success Manager - SaaS Platform',
+    live_market_signal: { matched_openings_count: 1, profile_fit_score: 0 },
+  };
+  report.pivots[3] = {
+    ...report.pivots[3],
+    id: 'senior-marketing-strategy-consultant',
+    title: 'Senior Marketing Strategy Consultant',
+    live_market_signal: { matched_openings_count: 0, profile_fit_score: 8 },
+  };
+
+  const normalized = normalizeReportData(report);
+  const lowerTitles = normalized.pivots.slice(1, 4).map((pivot) => pivot.title).join(' | ');
+  assert.doesNotMatch(lowerTitles, /AI Program Manager|Customer Success Manager|Consultant/);
+  assert.equal(new Set(normalized.pivots.slice(0, 4).map((pivot) => pivot.title)).size, normalized.pivots.slice(0, 4).length);
+}
+
+function testAnalyticsLowerPivotsAvoidWeakRevOpsDrift() {
+  const report = buildDemoReportData(
+    'Data Analyst',
+    'SaaS',
+    ['Dashboard creation', 'SQL analysis', 'Stakeholder insights'],
+    {
+      selected_tasks: [{ label: 'Dashboard creation' }],
+      primary_tasks: ['Dashboard creation', 'SQL analysis', 'Stakeholder insights'],
+      clarifiers: {
+        goal_now: 'hybrid_transition',
+        timeline_urgency: 'within_6_months',
+        years_experience_band: '6_10',
+        location_preference: 'united_states',
+        ai_maturity: 'weekly',
+      },
+    }
+  );
+
+  report.pivots[3] = {
+    ...report.pivots[3],
+    id: 'revenue-operations-analyst',
+    title: 'Revenue Operations Analyst',
+    live_market_signal: { matched_openings_count: 0, profile_fit_score: 0 },
+  };
+
+  const normalized = normalizeReportData(report);
+  const lowerTitles = normalized.pivots.slice(1, 5).map((pivot) => pivot.title).join(' | ');
+  assert.doesNotMatch(lowerTitles, /Revenue Operations Analyst/);
+}
+
 testTopPivotFamilyRepairAndCopy();
 testGenericAiResourceRemovedFromNonAiGap();
 testFirst30DaysReferencesFinalPivot();
@@ -1476,5 +1549,7 @@ testCustomerPivotAvoidsGenericProcessCourseAsFirstStep();
 testDecisionBriefExplainsWhyRiskierMoveIsNotLeading();
 testCustomerLowerPivotsGetCleanerAdjacentTitles();
 testFinanceLowerPivotsStayUniqueAfterRepair();
+testMarketingLowerPivotsGetCleanerAdjacentTitles();
+testAnalyticsLowerPivotsAvoidWeakRevOpsDrift();
 
 console.log('Report quality tests passed.');

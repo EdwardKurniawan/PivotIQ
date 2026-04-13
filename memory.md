@@ -1,6 +1,6 @@
 # PivotIQ Memory
 
-Last updated: 2026-04-09
+Last updated: 2026-04-13
 Repo: `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app`
 Branch: `main`
 
@@ -22,6 +22,26 @@ Branch: `main`
   - internal recommendation-quality dashboard
 
 ## Most Recent Shipped Work
+
+### `pending current commit` Tighten lower-ranked marketing and analytics pivots
+- Tightened lower-pivot repair in [`lib/report-quality.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/lib/report-quality.js) so marketing and analytics backup stacks are now repaired and deduped the same way customer-success and finance already were
+- Added canonical adjacent-title sets for `marketing` and `analytics`
+- Added regression coverage in [`scripts/test-report-quality.mjs`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/scripts/test-report-quality.mjs) so:
+  - marketing lower pivots no longer drift into `AI Program Manager`, customer-success, or consultant-style noise under weak signal
+  - analytics lower pivots no longer drift into `Revenue Operations Analyst`-style weak adjacent titles
+- Regenerated saved QA snapshots so the founder account reflects the cleanup:
+  - `Marketing Manager` (`ae5dcf5d-0bb3-427d-8154-fbf9aa7678f6`) now reads:
+    - `Marketing Operations Strategist`
+    - `Marketing Operations Lead`
+    - `Growth Strategy Lead`
+    - `Marketing Strategy Lead`
+    - `Product Marketing Manager`
+  - `Data Analyst` (`545898da-08ae-41df-9156-021a937ebe95`) now reads:
+    - `Analytics Manager`
+    - `Analytics Operations Lead`
+    - `Analytics Strategy Manager`
+    - `Business Intelligence Lead`
+    - `Insights Operations Manager`
 
 ### `pending current commit` Add senior fixtures + save mixed QA snapshots
 - Added senior-role QA catalog in [`data/senior-role-fixtures.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/data/senior-role-fixtures.js)
@@ -135,20 +155,24 @@ Branch: `main`
   - `Finance Manager` lower pivots now read as `Finance Business Partner`, `Strategic Finance Analyst`, `Commercial Finance Manager`, and `FP&A Manager`
   - `Customer Success Manager` lower pivots now read as `Customer Success Strategy Manager`, `Customer Operations Lead`, `Renewal Strategy Lead`, and `Customer Enablement Lead`
 - Biggest remaining gap:
-  - marketing and analytics still have more lower-ranked pivot noise than the now-cleaner finance/customer stacks
+  - some broad-role lower pivots still need the same premium-quality pass, especially customer-success, finance, and operations when market evidence is thin
+  - some learning-path pairings are improved but still merely acceptable instead of obviously sharp
   - make refreshes and recommendations more obviously adaptive to new intake/progress signal
 
 ## Recommended Next Move
 Highest-leverage next build:
 
-1. Tighten lower-ranked pivot realism for marketing and analytics
-- Finance and customer-success are cleaner now, but marketing and analytics still show noisier secondary pivots than the top move deserves
+1. Tighten the next weakest broad-role families using the saved QA snapshots
+- customer success, finance, and operations are the next likely candidates after the marketing/analytics cleanup
 
 2. Keep the paid-report “why not this pivot yet?” explanation sharp
-- The top recommendation now explains itself better; the next step is making that copy feel even more premium and role-native
+- the top recommendation now explains itself better; the next step is making that copy feel even more premium and role-native
 
-3. Keep using saved QA snapshots plus `/internal/qa-fixtures`
-- The saved reports are more useful than fixture JSON alone because the final recommendation stack can differ from the raw pivot ordering
+3. Keep improving learning-path coherence
+- the next product-quality win is sharper gap-to-resource pairing for broad roles where the title is now cleaner but the first learning step can still be bland
+
+4. Keep using saved QA snapshots plus `/internal/qa-fixtures`
+- the saved reports are more useful than fixture JSON alone because the final recommendation stack can differ from the raw pivot ordering
 
 ## Files Most Likely To Matter Next Session
 - [`app/audit/page.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/audit/page.js)
@@ -181,4 +205,4 @@ Latest verified before this memory update:
 ## Clean Resume Prompt
 Use this at the start of the next session:
 
-`Pick up PivotIQ from /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app. First read /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/memory.md and /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/docs/project-update-2026-04-05.md. Continue from the highest-leverage next move: tighten lower-ranked marketing and analytics pivots using the saved QA snapshots and /internal/qa-fixtures, while keeping the paid-report decision brief explicit about why the safer move won. Keep OpenRouter on nvidia/nemotron-3-nano-30b-a3b:free. Commit and push after code changes.`
+`Pick up PivotIQ from /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app. First read /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/memory.md and /Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/docs/project-update-2026-04-05.md. Continue from the highest-leverage next move: use the saved QA snapshots and /internal/qa-fixtures to tighten the next weakest broad-role pivots and sharpen learning-path coherence, while keeping the paid-report decision brief explicit about why the safer move won. Keep OpenRouter on nvidia/nemotron-3-nano-30b-a3b:free. Commit and push after code changes.`

@@ -2,7 +2,7 @@
 
 This file captures the current PivotIQ state so the next session can continue without rebuilding context.
 
-## Recent platform upgrades — 2026-04-09
+## Recent platform upgrades — 2026-04-13
 
 PivotIQ is no longer just a one-time report generator. The product now has a real execution and feedback loop:
 
@@ -44,6 +44,41 @@ This means the current product direction is:
 - help the user execute
 - capture what really happened
 - refresh the plan around real-world signal
+
+## Most recent recommendation-quality pass
+
+The latest saved broad-role QA pass was focused on making the visible backup stacks feel premium instead of noisy.
+
+What was tightened:
+
+- lower-ranked backup pivots for `marketing` now stay in-family under weak signal instead of drifting into titles like:
+  - `AI Program Manager`
+  - customer-success titles
+  - consultant-style strategy titles
+- lower-ranked backup pivots for `analytics` now stay in-family instead of drifting into weak adjacent roles like:
+  - `Revenue Operations Analyst`
+
+Files changed in the latest quality pass:
+
+- [`lib/report-quality.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/lib/report-quality.js)
+- [`scripts/test-report-quality.mjs`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/scripts/test-report-quality.mjs)
+
+Saved founder-account QA reports were regenerated after the cleanup:
+
+- `Marketing Manager` (`ae5dcf5d-0bb3-427d-8154-fbf9aa7678f6`) now has a clean backup stack:
+  - `Marketing Operations Strategist`
+  - `Marketing Operations Lead`
+  - `Growth Strategy Lead`
+  - `Marketing Strategy Lead`
+  - `Product Marketing Manager`
+- `Data Analyst` (`545898da-08ae-41df-9156-021a937ebe95`) now has a clean analytics backup stack:
+  - `Analytics Manager`
+  - `Analytics Operations Lead`
+  - `Analytics Strategy Manager`
+  - `Business Intelligence Lead`
+  - `Insights Operations Manager`
+
+This matters because the product now reads as more intentional on the actual stored reports, not just in test fixtures.
 
 ## Next recommendation-quality spec
 
@@ -241,23 +276,22 @@ What they do:
 
 ## Current high-priority read
 
-1. Expand role-pure catalog coverage for procurement and education so top pivots are not forced to stay model-led.
-2. Continue shrinking the remaining `general -> engineering` and `general -> legal` drift after the first deterministic cleanup pass.
-3. Keep regenerating seeded fixtures with the direct script after each catalog cleanup so regressions are visible immediately.
+1. Keep using saved QA snapshots and `/internal/qa-fixtures` to tighten the next weakest broad-role families after the marketing/analytics cleanup.
+2. Keep sharpening paid-report tradeoff copy so “why this won” and “why not this yet” read premium and decisive.
+3. Improve broad-role learning-path coherence where the title stack is now cleaner but the gap-to-resource pairing still feels merely acceptable.
 
 ## Latest seeded report rerun
 
-After the engineering-vs-product cleanup, all 3 seeded reports were regenerated again with:
+After the latest broad-role cleanup, the most important founder-account QA reports were regenerated again with:
 
 ```bash
-npm run reports:regenerate -- --ids=075b8ed5-0b26-4d1c-b904-5f886329d262,30be2b01-c0a5-4cca-a70e-1a017339896c,98172726-3059-412b-869e-119bff813e4a
+npm run reports:regenerate -- --ids=ae5dcf5d-0bb3-427d-8154-fbf9aa7678f6,545898da-08ae-41df-9156-021a937ebe95
 ```
 
-Current stored featured pivots:
+Current stored QA pivots:
 
-- Procurement Analyst: `Procurement Data Strategist`
-- Customer Education Manager: `Operations Enablement Manager`
-- Legal Operations Manager: `Contract Lifecycle Manager`
+- Marketing Manager: `Marketing Operations Strategist`
+- Data Analyst: `Analytics Manager`
 
 Read on current quality:
 

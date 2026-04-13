@@ -1,0 +1,80 @@
+# TASK STATE
+
+Last updated: 2026-04-13
+Repo: `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app`
+Branch: `main`
+Worktree state: local changes present for current quality pass
+
+## Completed Work
+
+- PivotIQ reports now behave more like a career execution system instead of a static report.
+- Full reports include:
+  - decision brief
+  - primary move / conservative backup / stay-and-advance path
+  - confidence states
+  - AI leverage playbook
+  - proof asset builder
+  - promotion conversation pack
+  - weekly progress loop
+  - outcome tracking
+  - refresh-from-progress flow
+  - internal recommendation-quality dashboard
+- Intake quality was upgraded with Phase 1 and Phase 2 clarifiers:
+  - `goal_now`
+  - `timeline_urgency`
+  - `years_experience_band`
+  - `location_preference`
+  - `ai_maturity`
+  - `technical_capability`
+  - `salary_tolerance`
+  - `proof_state`
+- Broad-role QA infrastructure is live:
+  - broad-role fixture catalog
+  - senior-role fixture catalog
+  - internal QA fixture viewer at `/internal/qa-fixtures`
+  - saved QA snapshot seeding into the founder account
+- Recommendation safety for broad roles was tightened:
+  - low-confidence active pivots are suppressed more aggressively
+  - broader role families lean toward stay-and-advance when market signal is thin
+  - strategy-led active pivots require better proof / overlap to stay primary
+- Learning catalog was expanded and cleaned, with stronger matching and audit coverage.
+- Broad-role learning coherence was tightened:
+  - customer, analytics, finance, marketing, HR, and ops top bundles now repair more aggressively when the learning sequence is off-domain
+  - prompt-engineering / generic AI resources are penalized much harder for non-AI business gaps
+- Paid-report explanation quality improved:
+  - the report now explains why the winning move won now
+  - it explicitly explains why a flashier alternative is not leading yet
+  - it explains what would need to change before the riskier path becomes the main recommendation
+- Lower-ranked backup pivots were cleaned and deduped for:
+  - customer success
+  - finance
+  - marketing
+  - analytics
+- Saved QA snapshots were refreshed after the latest cleanup:
+  - `Marketing Manager` now has a fully in-family backup stack led by `Marketing Operations Strategist`
+  - `Data Analyst` now has a cleaner analytics stack without `Revenue Operations Analyst` drift
+
+## In-Progress Work
+
+- No unfinished code path is mid-edit after this handoff update.
+- The active product frontier is now recommendation polish and remaining broad-role realism, not missing platform infrastructure.
+
+## Next Steps
+
+1. Tighten lower-ranked active pivots for the next broad families that still feel weakest in practice:
+   - customer success
+   - marketing
+   - operations
+   - finance
+   Use the saved QA snapshots and `/internal/qa-fixtures` as the source of truth.
+2. Keep sharpening the paid-report decision brief so “why this won now” and “why not this yet” feel premium, role-native, and decisive.
+3. Continue improving learning-path coherence where the gap-to-resource pairing is only acceptable instead of obviously sharp.
+4. Expand the saved QA snapshot set when a new role family becomes important so recommendation feel is validated on real stored reports, not just fixture tests.
+5. Keep the recommendation-quality dashboard aligned with real outcome patterns so future tuning is based on user signal, not intuition.
+
+## Blockers Or Assumptions
+
+- OpenRouter must remain on `nvidia/nemotron-3-nano-30b-a3b:free`.
+- Reminder-email delivery exists in the product but is not the current priority.
+- The strongest source of truth for report quality is now the saved in-account QA snapshots, not just fixture JSON or isolated test results.
+- Broad-role quality is much safer than before, but some lower-ranked active pivots and some learning bundles can still be improved to feel more premium.
