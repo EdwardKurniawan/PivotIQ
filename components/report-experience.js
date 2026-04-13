@@ -242,6 +242,17 @@ function buildLearningPathSteps(skillGaps = []) {
   ].filter((step, index, steps) => step.skill && steps.findIndex((item) => item.label === step.label && item.skill?.resource_title === step.skill?.resource_title) === index);
 }
 
+function buildPersistedLearningPathSteps(path = null) {
+  const steps = Array.isArray(path?.learning_path) ? path.learning_path : [];
+  return steps
+    .filter((step) => step?.resource_title && step?.resource_url)
+    .map((step) => ({
+      label: step.label || 'Step',
+      helper: step.helper || 'Turn this into a visible output before moving deeper.',
+      skill: step,
+    }));
+}
+
 function IconGlyph({ name, color }) {
   const common = {
     width: '64%',
@@ -1290,6 +1301,73 @@ function AiLeveragePlaybookCard({ playbook, color }) {
   );
 }
 
+function UseAiThisWeekCard({ plan, color }) {
+  if (!plan?.headline) return null;
+
+  return (
+    <div className="piq-card" style={{ padding: '24px', marginBottom: '18px', background: `linear-gradient(135deg, ${color}16 0%, rgba(255,255,255,0.96) 60%, rgba(255,247,237,0.92) 100%)`, border: `1px solid ${color}28`, boxShadow: '0 22px 46px rgba(19, 32, 42, 0.08)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', alignItems: 'end', flexWrap: 'wrap', marginBottom: '18px' }}>
+        <div>
+          <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1.4px', textTransform: 'uppercase', marginBottom: '8px' }}>Use AI this week</div>
+          <h3 style={{ color: palette.text, fontSize: '22px', fontWeight: 950, letterSpacing: '-0.04em', margin: '0 0 6px' }}>{plan.headline}</h3>
+          <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.7, margin: 0, maxWidth: '760px' }}>
+            This is the fastest way to create visible leverage inside your current job without waiting for a full pivot.
+          </p>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.15fr) minmax(280px, 0.85fr)', gap: '14px' }} className="two-col">
+        <div style={{ padding: '18px', borderRadius: '22px', background: 'rgba(255,255,255,0.82)', border: `1px solid ${palette.border}` }}>
+          <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Workflow to redesign</div>
+          <div style={{ color: palette.text, fontSize: '17px', fontWeight: 850, lineHeight: 1.45, marginBottom: '12px' }}>{plan.workflow}</div>
+          <div style={{ display: 'grid', gap: '10px' }}>
+            <div>
+              <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>How AI helps</div>
+              <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{plan.ai_role}</div>
+            </div>
+            <div>
+              <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>Human checkpoint</div>
+              <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{plan.human_checkpoint}</div>
+            </div>
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gap: '14px' }}>
+          <div style={{ padding: '18px', borderRadius: '22px', background: 'rgba(255,255,255,0.82)', border: `1px solid ${palette.border}` }}>
+            <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Ship this output</div>
+            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{plan.output}</div>
+          </div>
+          <div style={{ padding: '18px', borderRadius: '22px', background: 'rgba(255,255,255,0.82)', border: `1px solid ${palette.border}` }}>
+            <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Metric to move</div>
+            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{plan.metric}</div>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '14px', marginTop: '14px' }} className="two-col">
+        <div style={{ padding: '18px', borderRadius: '20px', background: `${color}0D`, border: `1px solid ${color}20` }}>
+          <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Start in these systems</div>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            {(plan.systems || []).length ? (plan.systems || []).map((system) => (
+              <span key={system} style={{ padding: '7px 10px', borderRadius: '999px', background: 'rgba(255,255,255,0.82)', border: `1px solid ${palette.border}`, color: palette.textMuted, fontSize: '12px', fontWeight: 700 }}>
+                {system}
+              </span>
+            )) : (
+              <span style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>Start with the system where the workflow already lives today.</span>
+            )}
+          </div>
+        </div>
+        <div style={{ padding: '18px', borderRadius: '20px', background: 'rgba(255,255,255,0.82)', border: `1px solid ${palette.border}` }}>
+          <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Stop when this is true</div>
+          <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65, marginBottom: '10px' }}>{plan.stop_condition}</div>
+          <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>Use this with your manager</div>
+          <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{plan.share_with_manager}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function PromotionConversationPackCard({ pack, color }) {
   if (!pack?.meeting_goal) return null;
 
@@ -1456,7 +1534,8 @@ function SkillGapCard({ skill, color, messages }) {
 }
 
 function LearningPathCard({ path, color }) {
-  const steps = buildLearningPathSteps(path?.skill_gaps || []);
+  const persistedSteps = buildPersistedLearningPathSteps(path);
+  const steps = persistedSteps.length ? persistedSteps : buildLearningPathSteps(path?.skill_gaps || []);
   if (!steps.length) return null;
 
   return (
@@ -3428,6 +3507,8 @@ export default function ReportExperience({ payload, embedded = false }) {
                   </div>
                 </div>
               )}
+
+              {isStayPlan && <UseAiThisWeekCard plan={stayAndAdvance?.ai_this_week_plan} color={planColor} />}
 
               <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap' }}>
                 <div>

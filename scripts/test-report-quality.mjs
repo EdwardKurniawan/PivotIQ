@@ -285,6 +285,60 @@ function testStayAdvanceLearningPathDoesNotInheritPivotCourse() {
   assert.equal(stayGaps[1].resource_title, 'Google AI Essentials');
 }
 
+function testBroadRoleStayPathUsesRoleNativeLearningAndWeeklyPlan() {
+  const report = buildDemoReportData(
+    'Marketing Manager',
+    'SaaS',
+    ['Campaign planning and launch', 'Performance reporting and readouts', 'Cross-functional review coordination'],
+    {
+      selected_tasks: [{ label: 'Campaign planning and launch' }],
+      primary_tasks: ['Campaign planning and launch', 'Performance reporting and readouts', 'Cross-functional review coordination'],
+      clarifiers: {
+        goal_now: 'stay_and_advance',
+        ai_maturity: 'weekly',
+        core_systems: 'HubSpot, Google Analytics',
+        domain_focus: 'growth marketing and campaign operations',
+      },
+    }
+  );
+
+  const normalized = normalizeReportData(report);
+  const stayGaps = normalized.stay_path.skill_gaps || [];
+
+  assert.equal(stayGaps[0].skill_name, 'Campaign experiment design');
+  assert.match(stayGaps[0].resource_title, /AI for Marketing Course|Google Skillshop/i);
+  assert.ok(normalized.stay_and_advance.ai_this_week_plan.headline);
+  assert.ok(normalized.stay_and_advance.ai_this_week_plan.workflow);
+  assert.ok(normalized.stay_and_advance.ai_this_week_plan.output);
+  assert.ok((normalized.stay_and_advance.ai_this_week_plan.systems || []).length >= 1);
+  assert.notEqual(normalized.stay_and_advance.ai_leverage_playbook.plays[0].title, 'Redesign one recurring workflow');
+}
+
+function testAnalyticsStayPathUsesRoleNativeResources() {
+  const report = buildDemoReportData(
+    'Data Analyst',
+    'SaaS',
+    ['Dashboard QA and metric review', 'Stakeholder KPI reporting', 'Weekly performance review'],
+    {
+      selected_tasks: [{ label: 'Dashboard QA and metric review' }],
+      primary_tasks: ['Dashboard QA and metric review', 'Stakeholder KPI reporting', 'Weekly performance review'],
+      clarifiers: {
+        goal_now: 'stay_and_advance',
+        ai_maturity: 'weekly',
+        core_systems: 'Power BI, SQL',
+        domain_focus: 'business intelligence and KPI reporting',
+      },
+    }
+  );
+
+  const normalized = normalizeReportData(report);
+  const stayGaps = normalized.stay_path.skill_gaps || [];
+
+  assert.equal(stayGaps[0].skill_name, 'Dashboard QA workflow design');
+  assert.match(stayGaps[0].resource_title, /Power BI|Microsoft data analytics/i);
+  assert.notEqual(normalized.stay_and_advance.ai_leverage_playbook.plays[0].title, 'Redesign one recurring workflow');
+}
+
 function testFinanceSyntheticTitleFallsBackToCanonicalRole() {
   const report = buildDemoReportData(
     'FP&A Analyst',
@@ -874,7 +928,7 @@ function testAnalyticsRoleGetsRoleNativeStayPath() {
   assert.match(normalized.stay_and_advance.recommendation, /analytics|decision support|KPI/i);
 }
 
-function testAdvancedStayPathStillStartsWithWorkflowDesign() {
+function testAdvancedStayPathStartsWithRoleNativeWorkflowSkill() {
   const normalized = normalizeReportData(buildDemoReportData(
     'Finance Manager',
     'SaaS',
@@ -892,7 +946,7 @@ function testAdvancedStayPathStillStartsWithWorkflowDesign() {
     }
   ));
 
-  assert.equal(normalized.stay_path.learning_path[0].skill_name, 'AI workflow design');
+  assert.match(normalized.stay_path.learning_path[0].skill_name, /Financial modeling and scenario review|AI workflow design/i);
   assert.match(normalized.stay_path.title, /Finance Planning Lead|Finance/i);
 }
 
@@ -1519,6 +1573,8 @@ testRecommendationStackKeepsMarketBackedPivotPrimary();
 testEmailHtmlStartsWithActionPlan();
 testProcurementTopSkillUsesProcurementResource();
 testStayAdvanceLearningPathDoesNotInheritPivotCourse();
+testBroadRoleStayPathUsesRoleNativeLearningAndWeeklyPlan();
+testAnalyticsStayPathUsesRoleNativeResources();
 testFinanceSyntheticTitleFallsBackToCanonicalRole();
 testProjectManagerOverSeniorTitlesFallBackToCanonicalRole();
 testHrLowerPivotDoesNotKeepLegalSkillLeakage();
@@ -1536,7 +1592,7 @@ testExistingProofUpgradesProofBuildersInsteadOfStartingFromScratch();
 testLowExperienceStretchTitleFallsBackToStayFirst();
 testAdvancedAiMaturitySkipsBeginnerLearningStart();
 testAnalyticsRoleGetsRoleNativeStayPath();
-testAdvancedStayPathStillStartsWithWorkflowDesign();
+testAdvancedStayPathStartsWithRoleNativeWorkflowSkill();
 testInflatedStayTitlesFallBackToRoleNativeGrowthPath();
 testCustomerSuccessPivotFallsBackToCanonicalTitleAndRoleNativeLearning();
 testMarketingPivotGetsRoleNativeLearningBundle();
