@@ -2649,12 +2649,18 @@ export default function ReportExperience({ payload, embedded = false }) {
     createdAt: payload.createdAt || reportData.generated_at || '',
     refreshedAt: reportData.refreshed_at || '',
   }), [outcomeState, payload.createdAt, reportData, startDate, weekProgressState]);
-  const reportPaths = useMemo(() => (tier === 'full' && stayPath ? [stayPath, ...pivots] : pivots), [tier, stayPath, pivots]);
-  const activePath = reportPaths[selectedPlanPath] || reportPaths[0] || pivot || {};
-  const isStayPlan = tier === 'full' && Boolean(stayPath) && selectedPlanPath === 0;
-  const planColor = isStayPlan ? palette.teal : getPivotColor(Math.max(selectedPlanPath - (stayPath ? 1 : 0), 0)) || pColor;
-  const activeMarketSignal = activePath.live_market_signal || null;
+  const planPaths = useMemo(() => pivots, [pivots]);
+  const activePath = planPaths[selectedPlanPath] || planPaths[0] || pivot || {};
+  const planColor = getPivotColor(selectedPlanPath) || pColor;
+  const stayColor = palette.teal;
+  const activeMarketSignal = activePath?.live_market_signal || null;
   const showOutcomeTracker = tier === 'full' && Boolean(payload.reportId);
+  const staySkillGapCounts = useMemo(() => {
+    return (stayPath?.skill_gaps || []).reduce((acc, skill) => {
+      acc[skill.gap_priority] = (acc[skill.gap_priority] || 0) + 1;
+      return acc;
+    }, { critical: 0, medium: 0, low: 0 });
+  }, [stayPath]);
 
   useEffect(() => {
     setReportData(payload.reportData);
@@ -2670,11 +2676,11 @@ export default function ReportExperience({ payload, embedded = false }) {
   }, [payload.reportData, payload.tier]);
 
   useEffect(() => {
-    if (!reportPaths.length) return;
-    if (selectedPlanPath > reportPaths.length - 1) {
+    if (!planPaths.length) return;
+    if (selectedPlanPath > planPaths.length - 1) {
       setSelectedPlanPath(0);
     }
-  }, [reportPaths, selectedPlanPath]);
+  }, [planPaths, selectedPlanPath]);
 
   useEffect(() => {
     const storedTier = payload.tier || localStorage.getItem('pivotiq_tier') || 'free';
@@ -3328,7 +3334,7 @@ export default function ReportExperience({ payload, embedded = false }) {
         )}
 
         <div className="tab-bar">
-          {[['breakdown', 'tab-breakdown', messages.report.tabs[0]], ['pivots', 'tab-pivots', messages.report.tabs[1]], ...(tier === 'full' ? [['plan', 'tab-plan', messages.report.tabs[2]]] : [])].map(([key, icon, label]) => (
+          {[['breakdown', 'tab-breakdown', messages.report.tabs[0]], ['pivots', 'tab-pivots', messages.report.tabs[1]], ...(tier === 'full' && stayPath ? [['stay', 'decision', messages.report.tabs[2]]] : []), ...(tier === 'full' ? [['plan', 'tab-plan', messages.report.tabs[3] || messages.report.tabs[2]]] : [])].map(([key, icon, label]) => (
             <button key={key} onClick={() => setActiveTab(key)} className={`tab-btn ${activeTab === key ? 'active' : ''}`}>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}><MonoIcon name={icon} size={22} />{label}</span>
             </button>
@@ -3381,8 +3387,7 @@ export default function ReportExperience({ payload, embedded = false }) {
               <div
                 className="piq-card piq-card-clickable"
                 onClick={() => {
-                  setSelectedPlanPath(0);
-                  setActiveTab('plan');
+                  setActiveTab('stay');
                 }}
                 style={{ padding: '24px', border: `1px solid ${palette.teal}33`, background: 'linear-gradient(180deg, rgba(27,111,99,0.08), rgba(255,255,255,0.92))' }}
               >
@@ -3451,7 +3456,7 @@ export default function ReportExperience({ payload, embedded = false }) {
                   key={item.id}
                   className="piq-card piq-card-clickable"
                   onClick={() => {
-                    setSelectedPlanPath(stayPath && tier === 'full' ? index + 1 : index);
+                    setSelectedPlanPath(index);
                     if (tier === 'full') setActiveTab('plan');
                   }}
                   style={{ padding: '24px', border: `1px solid ${itemColor}33` }}
@@ -3531,21 +3536,102 @@ export default function ReportExperience({ payload, embedded = false }) {
           </div>
         )}
 
+        {activeTab === 'stay' && tier === 'full' && stayPath && (
+          <>
+            <div className="piq-card" style={{ padding: '24px', marginBottom: '22px', background: 'linear-gradient(160deg, rgba(27,111,99,0.12) 0%, rgba(255,255,255,0.96) 64%)', border: `1px solid ${stayColor}24`, boxShadow: '0 24px 50px rgba(19, 32, 42, 0.08)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', alignItems: 'start', flexWrap: 'wrap', marginBottom: '18px' }}>
+                <div style={{ maxWidth: '760px' }}>
+                  <div style={{ color: stayColor, fontSize: '11px', fontWeight: 900, letterSpacing: '1.4px', textTransform: 'uppercase', marginBottom: '8px' }}>{messages.report.stayAndAdvance}</div>
+                  <h2 style={{ color: palette.text, fontSize: 'clamp(26px, 4vw, 38px)', fontWeight: 950, letterSpacing: '-0.05em', lineHeight: 1.02, margin: '0 0 10px', fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif' }}>
+                    {stayPath.title}
+                  </h2>
+                  <p style={{ color: palette.textMuted, fontSize: '15px', lineHeight: 1.75, margin: '0 0 10px' }}>
+                    {stayAndAdvance.recommendation || stayPath.fit_summary}
+                  </p>
+                  <p style={{ color: palette.textSoft, fontSize: '14px', lineHeight: 1.7, margin: 0 }}>
+                    {stayAndAdvance.rationale || messages.report.stayAndAdvanceBody}
+                  </p>
+                </div>
+                <div style={{ padding: '14px 16px', borderRadius: '18px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${stayColor}24`, minWidth: '210px' }}>
+                  <div style={{ color: stayColor, fontSize: '11px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>{messages.report.promotionPath}</div>
+                  <div style={{ color: palette.text, fontSize: '17px', fontWeight: 900, marginBottom: '4px' }}>{stayAndAdvance.promotion_path?.next_title || stayPath.title}</div>
+                  <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.6 }}>{stayAndAdvance.promotion_path?.timeline || '3-9 months'}</div>
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '12px' }} className="two-col">
+                {[
+                  [messages.report.match, `${stayPath.match_score || 0}%`],
+                  [messages.report.transitionWindow, stayAndAdvance.promotion_path?.timeline || stayPath.transition_time],
+                  [messages.report.advance30DayLabels[2], stayAndAdvance.thirty_day_plan?.metric_to_move],
+                  [messages.report.proofAssetToShip, stayAndAdvance.thirty_day_plan?.proof_asset?.title],
+                ].map(([label, value]) => (
+                  <div key={label} style={{ padding: '14px 16px', borderRadius: '18px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
+                    <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>{label}</div>
+                    <div style={{ color: palette.text, fontSize: '14px', fontWeight: 800, lineHeight: 1.5 }}>{value}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ marginBottom: '28px' }}>
+              <div style={{ display: 'grid', gap: '14px', marginBottom: '14px' }}>
+                {!stayPath.live_market_signal && (
+                  <div className="piq-card" style={{ padding: '20px', background: 'linear-gradient(180deg, rgba(27,111,99,0.08), rgba(255,255,255,0.92))', border: `1px solid ${stayColor}22` }}>
+                    <div style={{ color: stayColor, fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>
+                      Market reality check
+                    </div>
+                    <div style={{ color: palette.text, fontSize: '18px', fontWeight: 800, marginBottom: '6px' }}>
+                      Stay-and-advance is strategy-led for a reason
+                    </div>
+                    <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.7 }}>
+                      We currently ground adjacent pivot roles against live openings. The stay path is grounded differently: by current-role leverage, workflow redesign potential, and how quickly AI can turn your existing job into broader, more visible scope.
+                    </div>
+                  </div>
+                )}
+                <UseAiThisWeekCard plan={stayAndAdvance?.ai_this_week_plan} color={stayColor} />
+                <JobSafetyCaseCard safetyCase={jobSafetyCase} color={stayColor} />
+                <PromotionCaseCard promotionCase={promotionCase} color={stayColor} />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap' }}>
+                <div>
+                  <div className="section-label" style={{ marginBottom: '4px' }}>{messages.report.skillGapMap}</div>
+                  <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.7 }}>
+                    {staySkillGapCounts.critical} critical gaps, {staySkillGapCounts.medium} medium gaps, {staySkillGapCounts.low} lower-priority gaps. This section is focused on how to use AI to get stronger inside your current lane first.
+                  </div>
+                </div>
+              </div>
+
+              <RoleOperatingSystemCard system={roleOperatingSystem} color={stayColor} />
+              <AiLeveragePlaybookCard playbook={aiLeveragePlaybook} color={stayColor} />
+              <ProofAssetBuilderCard builder={stayProofAssetBuilder} color={stayColor} />
+              <PromotionConversationPackCard pack={promotionConversationPack} color={stayColor} />
+              <LearningPathCard path={stayPath} color={stayColor} />
+              <div style={{ display: 'grid', gap: '14px' }}>
+                {(stayPath.skill_gaps || []).map((skill) => (
+                  <SkillGapCard key={`${stayPath.id}-${skill.skill_name}`} skill={skill} color={stayColor} messages={messages} />
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+
         {activeTab === 'plan' && tier === 'full' && (
           <>
             <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '18px' }}>
-              {reportPaths.map((item, index) => (
+              {planPaths.map((item, index) => (
                 <button
                   key={item.id}
                   onClick={() => setSelectedPlanPath(index)}
                   className="chip"
                   style={{
-                    background: selectedPlanPath === index ? `${index === 0 && stayPath ? palette.teal : getPivotColor(Math.max(index - (stayPath ? 1 : 0), 0))}20` : 'var(--bg-card)',
-                    color: selectedPlanPath === index ? (index === 0 && stayPath ? palette.teal : getPivotColor(Math.max(index - (stayPath ? 1 : 0), 0))) : 'var(--text-muted)',
-                    outline: selectedPlanPath === index ? `1.5px solid ${index === 0 && stayPath ? palette.teal : getPivotColor(Math.max(index - (stayPath ? 1 : 0), 0))}` : '1.5px solid var(--border)',
+                    background: selectedPlanPath === index ? `${getPivotColor(index)}20` : 'var(--bg-card)',
+                    color: selectedPlanPath === index ? getPivotColor(index) : 'var(--text-muted)',
+                    outline: selectedPlanPath === index ? `1.5px solid ${getPivotColor(index)}` : '1.5px solid var(--border)',
                   }}
                 >
-                  {index === 0 && stayPath ? 'AI' : getPivotIcon(Math.max(index - (stayPath ? 1 : 0), 0))} {item.title}
+                  {getPivotIcon(index)} {item.title}
                 </button>
               ))}
             </div>
@@ -3628,24 +3714,6 @@ export default function ReportExperience({ payload, embedded = false }) {
                 />
               )}
               {activeMarketSignal && <MarketSignalCard signal={activeMarketSignal} color={planColor} />}
-              {!activeMarketSignal && isStayPlan && (
-                <div className="piq-card" style={{ padding: '20px', marginBottom: '24px', background: 'linear-gradient(180deg, rgba(27,111,99,0.08), rgba(255,255,255,0.92))', border: `1px solid ${palette.teal}22` }}>
-                  <div style={{ color: palette.teal, fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>
-                    Market reality check
-                  </div>
-                  <div style={{ color: palette.text, fontSize: '18px', fontWeight: 800, marginBottom: '6px' }}>
-                    Stay-and-advance is still strategy-led
-                  </div>
-                  <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.7 }}>
-                    We currently ground adjacent pivot roles against live openings. The stay path is still generated from your current-role leverage, redesign opportunities, and AI adoption logic rather than external hiring-market samples.
-                  </div>
-                </div>
-              )}
-
-              {isStayPlan && <UseAiThisWeekCard plan={stayAndAdvance?.ai_this_week_plan} color={planColor} />}
-              {isStayPlan && <JobSafetyCaseCard safetyCase={jobSafetyCase} color={planColor} />}
-              {isStayPlan && <PromotionCaseCard promotionCase={promotionCase} color={planColor} />}
-
               <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap' }}>
                 <div>
                   <div className="section-label" style={{ marginBottom: '4px' }}>{messages.report.skillGapMap}</div>
@@ -3654,10 +3722,7 @@ export default function ReportExperience({ payload, embedded = false }) {
                   </div>
                 </div>
               </div>
-              {isStayPlan && <RoleOperatingSystemCard system={roleOperatingSystem} color={planColor} />}
-              {isStayPlan && <AiLeveragePlaybookCard playbook={aiLeveragePlaybook} color={planColor} />}
-              <ProofAssetBuilderCard builder={isStayPlan ? stayProofAssetBuilder : proofAssetBuilder} color={planColor} />
-              {isStayPlan && <PromotionConversationPackCard pack={promotionConversationPack} color={planColor} />}
+              <ProofAssetBuilderCard builder={proofAssetBuilder} color={planColor} />
               <LearningPathCard path={activePath} color={planColor} />
               <div style={{ display: 'grid', gap: '14px' }}>
                 {(activePath.skill_gaps || []).map((skill) => (
