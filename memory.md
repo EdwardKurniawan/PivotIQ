@@ -1,6 +1,6 @@
 # PivotIQ Memory
 
-Last updated: 2026-04-13
+Last updated: 2026-04-14
 Repo: `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app`
 Branch: `main`
 
@@ -22,6 +22,35 @@ Branch: `main`
   - internal recommendation-quality dashboard
 
 ## Most Recent Shipped Work
+
+### `pending current commit` Add career-safety, promotion-case, and proof-shipping layers
+- Added richer stay-path premium-value fields in [`lib/report-data.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/lib/report-data.js):
+  - `stay_and_advance.job_safety_case`
+  - `stay_and_advance.promotion_case`
+  - `proof_asset_builder.execution_guide`
+  - `stay_proof_asset_builder.execution_guide`
+- The new job-safety layer explains:
+  - why the stay path makes the user harder to cut
+  - what changes if they do it
+  - what happens if they keep defending raw execution
+- The new promotion-case layer explains:
+  - how the work turns into the next internal title
+  - what leadership needs to see
+  - what proof to bring
+  - what sentence to say to a manager
+- The proof-asset builder now feels more execution-ready:
+  - what to ship this week
+  - artifact format
+  - inputs to collect
+  - good-enough bar
+  - manager readout
+  - resume / LinkedIn line
+- Rendered the new sections in [`components/report-experience.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/components/report-experience.js) so they appear prominently on the stay path
+- Added regression coverage in [`scripts/test-report-quality.mjs`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/scripts/test-report-quality.mjs)
+- Spot-checked broad-role fixtures and confirmed the new sections are present for:
+  - `Data Analyst`
+  - `Customer Success Manager`
+  - `Executive Assistant`
 
 ### `pending current commit` Tighten operations backup stacks + role-native decision brief copy
 - Added missing lower-pivot repair coverage for `operations` in [`lib/report-quality.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/lib/report-quality.js)

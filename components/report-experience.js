@@ -1172,6 +1172,35 @@ function ProofAssetBuilderCard({ builder, color }) {
         )}
       </div>
 
+      {builder.execution_guide && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '14px', marginTop: '14px' }} className="two-col">
+          <div style={{ padding: '18px', borderRadius: '20px', background: `${color}0F`, border: `1px solid ${color}22` }}>
+            <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Ship it this week</div>
+            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65, marginBottom: '10px' }}>{builder.execution_guide.one_week_ship}</div>
+            <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>Artifact format</div>
+            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65, marginBottom: '10px' }}>{builder.execution_guide.artifact_format}</div>
+            <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>Inputs to collect</div>
+            <div style={{ display: 'grid', gap: '8px' }}>
+              {(builder.execution_guide.inputs_to_collect || []).map((item) => (
+                <div key={item} style={{ display: 'flex', gap: '8px', color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>
+                  <span style={{ color, fontWeight: 950 }}>•</span>
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div style={{ padding: '18px', borderRadius: '20px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
+            <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Make it career-useful</div>
+            <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>Good enough bar</div>
+            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65, marginBottom: '10px' }}>{builder.execution_guide.good_enough_bar}</div>
+            <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>Manager readout</div>
+            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65, marginBottom: '10px' }}>{builder.execution_guide.manager_readout}</div>
+            <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>Resume / LinkedIn line</div>
+            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{builder.execution_guide.resume_bullet_formula}</div>
+          </div>
+        </div>
+      )}
+
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '14px', marginTop: '14px' }} className="two-col">
         {builder.internal_version && (
           <div style={{ padding: '18px', borderRadius: '20px', background: `${color}0F`, border: `1px solid ${color}22` }}>
@@ -1362,6 +1391,109 @@ function UseAiThisWeekCard({ plan, color }) {
           <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65, marginBottom: '10px' }}>{plan.stop_condition}</div>
           <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>Use this with your manager</div>
           <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{plan.share_with_manager}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function JobSafetyCaseCard({ safetyCase, color }) {
+  if (!safetyCase?.headline) return null;
+
+  return (
+    <div className="piq-card" style={{ padding: '24px', marginBottom: '18px', background: `linear-gradient(135deg, ${color}12 0%, rgba(255,255,255,0.96) 58%)`, border: `1px solid ${color}24`, boxShadow: '0 22px 46px rgba(19, 32, 42, 0.08)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', alignItems: 'end', flexWrap: 'wrap', marginBottom: '18px' }}>
+        <div>
+          <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1.4px', textTransform: 'uppercase', marginBottom: '8px' }}>Career safety read</div>
+          <h3 style={{ color: palette.text, fontSize: '22px', fontWeight: 950, letterSpacing: '-0.04em', margin: '0 0 6px' }}>{safetyCase.headline}</h3>
+          <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.7, margin: 0, maxWidth: '760px' }}>{safetyCase.summary}</p>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.05fr) minmax(280px, 0.95fr)', gap: '14px' }} className="two-col">
+        <div style={{ padding: '18px', borderRadius: '20px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}` }}>
+          <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Why this makes you safer</div>
+          <div style={{ display: 'grid', gap: '8px' }}>
+            {(safetyCase.safer_because || []).map((item) => (
+              <div key={item} style={{ display: 'flex', gap: '8px', color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>
+                <span style={{ color, fontWeight: 950 }}>•</span>
+                <span>{item}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div style={{ display: 'grid', gap: '14px' }}>
+          <div style={{ padding: '18px', borderRadius: '20px', background: `${color}0F`, border: `1px solid ${color}22` }}>
+            <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>What changes if you do this</div>
+            <div style={{ display: 'grid', gap: '8px' }}>
+              {(safetyCase.what_changes_if_you_do_this || []).map((item) => (
+                <div key={item} style={{ display: 'flex', gap: '8px', color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>
+                  <span style={{ color, fontWeight: 950 }}>•</span>
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div style={{ padding: '18px', borderRadius: '20px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}` }}>
+            <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>If you ignore this</div>
+            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65, marginBottom: '10px' }}>{safetyCase.if_you_ignore_this}</div>
+            <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>Metric to watch</div>
+            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{safetyCase.metric_to_watch}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PromotionCaseCard({ promotionCase, color }) {
+  if (!promotionCase?.headline) return null;
+
+  return (
+    <div className="piq-card" style={{ padding: '24px', marginBottom: '18px', background: 'linear-gradient(135deg, rgba(255,255,255,0.96), rgba(255,247,237,0.94))', border: `1px solid ${color}20`, boxShadow: '0 22px 46px rgba(19, 32, 42, 0.08)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', alignItems: 'end', flexWrap: 'wrap', marginBottom: '18px' }}>
+        <div>
+          <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1.4px', textTransform: 'uppercase', marginBottom: '8px' }}>Promotion case</div>
+          <h3 style={{ color: palette.text, fontSize: '22px', fontWeight: 950, letterSpacing: '-0.04em', margin: '0 0 6px' }}>{promotionCase.headline}</h3>
+          <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.7, margin: 0, maxWidth: '760px' }}>{promotionCase.why_now}</p>
+        </div>
+        {promotionCase.target_title && (
+          <span style={{ borderRadius: '999px', padding: '7px 12px', background: `${color}12`, border: `1px solid ${color}28`, color, fontSize: '12px', fontWeight: 900 }}>
+            {promotionCase.target_title}
+          </span>
+        )}
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(300px, 0.9fr)', gap: '14px' }} className="two-col">
+        <div style={{ padding: '18px', borderRadius: '20px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}` }}>
+          <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Leadership case to make</div>
+          <div style={{ display: 'grid', gap: '8px' }}>
+            {(promotionCase.leadership_case || []).map((item) => (
+              <div key={item} style={{ display: 'flex', gap: '8px', color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>
+                <span style={{ color, fontWeight: 950 }}>•</span>
+                <span>{item}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div style={{ display: 'grid', gap: '14px' }}>
+          <div style={{ padding: '18px', borderRadius: '20px', background: `${color}0F`, border: `1px solid ${color}22` }}>
+            <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Proof to show</div>
+            <div style={{ display: 'grid', gap: '8px' }}>
+              {(promotionCase.proof_to_show || []).map((item) => (
+                <div key={item} style={{ display: 'flex', gap: '8px', color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>
+                  <span style={{ color, fontWeight: 950 }}>•</span>
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div style={{ padding: '18px', borderRadius: '20px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}` }}>
+            <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>Say this to your manager</div>
+            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65, marginBottom: '10px' }}>{promotionCase.manager_sentence}</div>
+            <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>If this lands well</div>
+            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{promotionCase.what_changes_if_yes}</div>
+          </div>
         </div>
       </div>
     </div>
@@ -2497,6 +2629,8 @@ export default function ReportExperience({ payload, embedded = false }) {
   const refreshSummary = reportData.refresh_summary || null;
   const aiLeveragePlaybook = stayAndAdvance.ai_leverage_playbook || {};
   const roleOperatingSystem = stayAndAdvance.role_operating_system || {};
+  const jobSafetyCase = stayAndAdvance.job_safety_case || {};
+  const promotionCase = stayAndAdvance.promotion_case || {};
   const promotionConversationPack = stayAndAdvance.promotion_conversation_pack || {};
   const storageScope = useMemo(() => getStorageScope(reportData, payload.reportId), [reportData, payload.reportId]);
   const messages = getMessages(payload.uiLocale || payload.locale || getBrowserLocale() || reportData.locale);
@@ -3509,6 +3643,8 @@ export default function ReportExperience({ payload, embedded = false }) {
               )}
 
               {isStayPlan && <UseAiThisWeekCard plan={stayAndAdvance?.ai_this_week_plan} color={planColor} />}
+              {isStayPlan && <JobSafetyCaseCard safetyCase={jobSafetyCase} color={planColor} />}
+              {isStayPlan && <PromotionCaseCard promotionCase={promotionCase} color={planColor} />}
 
               <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap' }}>
                 <div>

@@ -124,6 +124,8 @@ function testProofAssetBuilderAndPaidSummaryArePresent() {
   assert.ok(normalized.proof_asset_builder.sample_metrics.length >= 2);
   assert.ok(normalized.proof_asset_builder.internal_version?.title);
   assert.ok(normalized.proof_asset_builder.external_version?.title);
+  assert.ok(normalized.proof_asset_builder.execution_guide?.one_week_ship);
+  assert.ok(normalized.proof_asset_builder.execution_guide?.manager_readout);
   assert.match(normalized.paid_value_summary.headline, /Legal Technology Lead|Legal Operations Analyst/i);
 }
 
@@ -146,10 +148,16 @@ function testStayAdvancePremiumSectionsArePresent() {
   assert.ok(normalized.stay_and_advance.role_operating_system.headline);
   assert.ok(normalized.stay_and_advance.role_operating_system.automate.length >= 1);
   assert.ok(normalized.stay_and_advance.role_operating_system.lead.length >= 1);
+  assert.ok(normalized.stay_and_advance.job_safety_case.headline);
+  assert.ok(normalized.stay_and_advance.job_safety_case.safer_because.length >= 3);
+  assert.ok(normalized.stay_and_advance.promotion_case.headline);
+  assert.ok(normalized.stay_and_advance.promotion_case.leadership_case.length >= 3);
   assert.ok(normalized.stay_and_advance.promotion_conversation_pack.meeting_goal);
   assert.ok(normalized.stay_and_advance.promotion_conversation_pack.talk_track.length >= 3);
   assert.ok(normalized.stay_proof_asset_builder.title);
   assert.ok(normalized.stay_proof_asset_builder.internal_version?.title);
+  assert.ok(normalized.stay_proof_asset_builder.execution_guide?.artifact_format);
+  assert.ok(normalized.stay_proof_asset_builder.execution_guide?.resume_bullet_formula);
   assert.match(normalized.stay_proof_asset_builder.target_role, /Strategic Sourcing Manager|current role/i);
 }
 

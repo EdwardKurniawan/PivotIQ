@@ -1,6 +1,6 @@
 # TASK STATE
 
-Last updated: 2026-04-13
+Last updated: 2026-04-14
 Repo: `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app`
 Branch: `main`
 Worktree state: local changes present for current quality pass
@@ -60,6 +60,16 @@ Worktree state: local changes present for current quality pass
   - `Operations Manager` now starts with `Learn Zapier in 14 days` instead of `OpenAI Academy`
   - `Finance Manager` now starts with `Financial modeling paths` / `FP&A learning paths` instead of generic finance search results
   - `Customer Success Manager` now gets a cleaner customer-ops sequence with `Customer success operations courses` in the build-proof layer
+- Results value for stay-and-advance was upgraded again:
+  - reports now include a direct `Why this makes you safer in the AI shift` section
+  - reports now include a sharper `Promotion case` section
+  - proof asset builders now include an execution guide with:
+    - what to ship this week
+    - artifact format
+    - inputs to collect
+    - manager readout
+    - resume / LinkedIn line
+- These new sections are now rendered on the stay-path results page, above the broader operating-system and promotion-conversation blocks.
 - Saved QA snapshots were refreshed after the latest cleanup:
   - `Data Analyst` → `Business Intelligence Lead`
   - `Customer Success Manager` → `Customer Success Strategy Lead`
@@ -74,13 +84,13 @@ Worktree state: local changes present for current quality pass
 
 ## Next Steps
 
-1. Tighten the next weakest lower-ranked active pivots after operations:
+1. Reassess the actual stay-path wording in saved reports and make the new safety / promotion copy feel even more inevitable and less templated.
+2. Tighten the next weakest lower-ranked active pivots after operations:
    - customer success
    - finance
    - marketing
    Focus on premium-feeling backup stacks when market evidence is thin.
-2. Continue sharpening learning-path coherence where step 2 and step 3 still lean on generic communication/AI resources instead of role-native ones.
-3. Review the new saved broad QA snapshots in-account and improve wording quality on the actual rendered reports, not just fixture tests.
+3. Continue sharpening learning-path coherence where step 2 and step 3 still lean on generic communication/AI resources instead of role-native ones.
 4. Expand the saved QA snapshot set when a new role family becomes important so recommendation feel is validated on real stored reports, not just fixture tests.
 5. Keep the recommendation-quality dashboard aligned with real outcome patterns so future tuning is based on user signal, not intuition.
 

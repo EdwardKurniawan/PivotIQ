@@ -2,7 +2,47 @@
 
 This file captures the current PivotIQ state so the next session can continue without rebuilding context.
 
-## Recent platform upgrades — 2026-04-13
+## Recent platform upgrades — 2026-04-14
+
+### Latest premium-value pass
+
+The latest product-quality pass focused on the emotional core of the report for worried professionals:
+
+- why the stay path makes them safer
+- how the work turns into promotion signal
+- what exact proof asset they should ship
+
+What changed:
+
+- `lib/report-data.js` now builds:
+  - `stay_and_advance.job_safety_case`
+  - `stay_and_advance.promotion_case`
+  - `proof_asset_builder.execution_guide`
+  - `stay_proof_asset_builder.execution_guide`
+- `components/report-experience.js` now renders:
+  - `Career safety read`
+  - `Promotion case`
+  - a stronger proof-asset execution section with:
+    - what to ship this week
+    - artifact format
+    - inputs to collect
+    - manager readout
+    - resume / LinkedIn line
+
+Why this matters:
+
+- the result now answers not just “what should I do next?”
+- it also answers:
+  - “why does this make me harder to replace?”
+  - “how does this become a promotion case?”
+  - “what exactly do I ship this week?”
+
+Regression coverage added:
+
+- proof-asset builders now must include execution-guide fields
+- stay-path premium sections now must include:
+  - job safety case
+  - promotion case
 
 ### Latest broad-role quality pass
 
