@@ -79,6 +79,15 @@ function formatDate(dateString, locale = 'en') {
   });
 }
 
+function compactCopy(text, maxLength = 140) {
+  if (!text) return '';
+  const normalized = String(text).replace(/\s+/g, ' ').trim();
+  if (normalized.length <= maxLength) return normalized;
+  const sliced = normalized.slice(0, maxLength);
+  const breakIndex = Math.max(sliced.lastIndexOf('. '), sliced.lastIndexOf('; '), sliced.lastIndexOf(', '), sliced.lastIndexOf(' '));
+  return `${sliced.slice(0, breakIndex > 60 ? breakIndex : maxLength).trim()}...`;
+}
+
 function getPivotColor(index) {
   return pivotColors[index % pivotColors.length];
 }
@@ -941,17 +950,17 @@ function RecommendationStackCard({ stack, pivotColor, stayColor = palette.teal }
               </div>
 
               <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7, marginBottom: '12px' }}>
-                {item.why}
+                {compactCopy(item.why, 120)}
               </div>
 
               <div style={{ display: 'grid', gap: '10px' }}>
                 <div style={{ padding: '12px 13px', borderRadius: '16px', background: 'rgba(255,255,255,0.72)', border: `1px solid ${palette.border}` }}>
                   <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '4px' }}>Why PivotIQ trusts this level</div>
-                  <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.55 }}>{item.confidence_reason}</div>
+                  <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.55 }}>{compactCopy(item.confidence_reason, 110)}</div>
                 </div>
                 <div style={{ padding: '12px 13px', borderRadius: '16px', background: 'rgba(255,255,255,0.72)', border: `1px solid ${palette.border}` }}>
                   <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '4px' }}>What is backing this</div>
-                  <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.55 }}>{item.market_evidence}</div>
+                  <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.55 }}>{compactCopy(item.market_evidence, 110)}</div>
                 </div>
                 <div style={{ display: 'grid', gap: '8px', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' }}>
                   <div style={{ padding: '12px 13px', borderRadius: '16px', background: 'rgba(255,255,255,0.72)', border: `1px solid ${palette.border}` }}>
@@ -1042,7 +1051,7 @@ function RoleOperatingSystemCard({ system, color }) {
         <div>
           <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1.4px', textTransform: 'uppercase', marginBottom: '8px' }}>How to work now</div>
           <h3 style={{ color: palette.text, fontSize: '22px', fontWeight: 950, letterSpacing: '-0.04em', margin: '0 0 6px' }}>{system.headline}</h3>
-          <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.7, margin: 0, maxWidth: '760px' }}>{system.summary}</p>
+          <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.65, margin: 0, maxWidth: '760px' }}>{compactCopy(system.summary, 150)}</p>
         </div>
         <span style={{ borderRadius: '999px', padding: '7px 12px', background: `${color}12`, border: `1px solid ${color}24`, color, fontSize: '12px', fontWeight: 900 }}>
           {system.weekly_time_budget || '3-5 focused hours'}
@@ -1092,7 +1101,7 @@ function ProofAssetBuilderCard({ builder, color }) {
         <div>
           <div style={{ color, fontSize: '11px', fontWeight: 950, letterSpacing: '1.4px', textTransform: 'uppercase', marginBottom: '8px' }}>Proof Asset Builder</div>
           <h3 style={{ color: palette.text, fontSize: '24px', fontWeight: 950, letterSpacing: '-0.045em', margin: '0 0 6px' }}>{builder.title}</h3>
-          <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.7, margin: 0, maxWidth: '760px' }}>{builder.objective}</p>
+          <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.65, margin: 0, maxWidth: '760px' }}>{compactCopy(builder.objective, 150)}</p>
         </div>
         <span style={{ borderRadius: '999px', padding: '7px 12px', background: `${color}12`, border: `1px solid ${color}28`, color, fontSize: '12px', fontWeight: 900 }}>
           {builder.target_role || 'Target role'}
@@ -1266,7 +1275,7 @@ function AiLeveragePlaybookCard({ playbook, color }) {
         <div>
           <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1.4px', textTransform: 'uppercase', marginBottom: '8px' }}>AI leverage playbook</div>
           <h3 style={{ color: palette.text, fontSize: '22px', fontWeight: 950, letterSpacing: '-0.04em', margin: '0 0 6px' }}>{playbook.headline}</h3>
-          <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.7, margin: 0, maxWidth: '760px' }}>{playbook.operator_shift}</p>
+          <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.65, margin: 0, maxWidth: '760px' }}>{compactCopy(playbook.operator_shift, 150)}</p>
         </div>
       </div>
 
@@ -1280,23 +1289,23 @@ function AiLeveragePlaybookCard({ playbook, color }) {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '12px' }} className="two-col">
               <div>
                 <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>Workflow to own</div>
-                <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{play.workflow}</div>
+                <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{compactCopy(play.workflow, 88)}</div>
               </div>
               <div>
                 <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>How AI helps</div>
-                <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{play.ai_role}</div>
+                <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{compactCopy(play.ai_role, 88)}</div>
               </div>
               <div>
                 <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>Human checkpoint</div>
-                <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{play.human_checkpoint}</div>
+                <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{compactCopy(play.human_checkpoint, 88)}</div>
               </div>
               <div>
                 <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>What this changes</div>
-                <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{play.business_impact}</div>
+                <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{compactCopy(play.business_impact, 88)}</div>
               </div>
             </div>
             <div style={{ marginTop: '12px', padding: '12px 13px', borderRadius: '16px', background: `${color}0E`, border: `1px solid ${color}20`, color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>
-              <strong style={{ color: palette.text }}>What to show leadership:</strong> {play.what_to_share}
+              <strong style={{ color: palette.text }}>What to show leadership:</strong> {compactCopy(play.what_to_share, 120)}
             </div>
           </div>
         ))}
@@ -1340,7 +1349,7 @@ function UseAiThisWeekCard({ plan, color }) {
           <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1.4px', textTransform: 'uppercase', marginBottom: '8px' }}>Use AI this week</div>
           <h3 style={{ color: palette.text, fontSize: '22px', fontWeight: 950, letterSpacing: '-0.04em', margin: '0 0 6px' }}>{plan.headline}</h3>
           <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.7, margin: 0, maxWidth: '760px' }}>
-            This is the fastest way to create visible leverage inside your current job without waiting for a full pivot.
+            Ship one visible AI-assisted workflow before you change anything bigger.
           </p>
         </div>
       </div>
@@ -1348,27 +1357,27 @@ function UseAiThisWeekCard({ plan, color }) {
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.15fr) minmax(280px, 0.85fr)', gap: '14px' }} className="two-col">
         <div style={{ padding: '18px', borderRadius: '22px', background: 'rgba(255,255,255,0.82)', border: `1px solid ${palette.border}` }}>
           <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Workflow to redesign</div>
-          <div style={{ color: palette.text, fontSize: '17px', fontWeight: 850, lineHeight: 1.45, marginBottom: '12px' }}>{plan.workflow}</div>
-          <div style={{ display: 'grid', gap: '10px' }}>
-            <div>
-              <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>How AI helps</div>
-              <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{plan.ai_role}</div>
+            <div style={{ color: palette.text, fontSize: '17px', fontWeight: 850, lineHeight: 1.45, marginBottom: '12px' }}>{compactCopy(plan.workflow, 100)}</div>
+            <div style={{ display: 'grid', gap: '10px' }}>
+              <div>
+                <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>How AI helps</div>
+                <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{compactCopy(plan.ai_role, 88)}</div>
+              </div>
+              <div>
+                <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>Human checkpoint</div>
+                <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{compactCopy(plan.human_checkpoint, 88)}</div>
+              </div>
             </div>
-            <div>
-              <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>Human checkpoint</div>
-              <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{plan.human_checkpoint}</div>
-            </div>
-          </div>
         </div>
 
         <div style={{ display: 'grid', gap: '14px' }}>
           <div style={{ padding: '18px', borderRadius: '22px', background: 'rgba(255,255,255,0.82)', border: `1px solid ${palette.border}` }}>
             <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Ship this output</div>
-            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{plan.output}</div>
+            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{compactCopy(plan.output, 88)}</div>
           </div>
           <div style={{ padding: '18px', borderRadius: '22px', background: 'rgba(255,255,255,0.82)', border: `1px solid ${palette.border}` }}>
             <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Metric to move</div>
-            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{plan.metric}</div>
+            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{compactCopy(plan.metric, 88)}</div>
           </div>
         </div>
       </div>
@@ -1388,9 +1397,9 @@ function UseAiThisWeekCard({ plan, color }) {
         </div>
         <div style={{ padding: '18px', borderRadius: '20px', background: 'rgba(255,255,255,0.82)', border: `1px solid ${palette.border}` }}>
           <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Stop when this is true</div>
-          <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65, marginBottom: '10px' }}>{plan.stop_condition}</div>
+          <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6, marginBottom: '10px' }}>{compactCopy(plan.stop_condition, 90)}</div>
           <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>Use this with your manager</div>
-          <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{plan.share_with_manager}</div>
+          <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{compactCopy(plan.share_with_manager, 100)}</div>
         </div>
       </div>
     </div>
@@ -1406,7 +1415,7 @@ function JobSafetyCaseCard({ safetyCase, color }) {
         <div>
           <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1.4px', textTransform: 'uppercase', marginBottom: '8px' }}>Career safety read</div>
           <h3 style={{ color: palette.text, fontSize: '22px', fontWeight: 950, letterSpacing: '-0.04em', margin: '0 0 6px' }}>{safetyCase.headline}</h3>
-          <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.7, margin: 0, maxWidth: '760px' }}>{safetyCase.summary}</p>
+          <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.65, margin: 0, maxWidth: '760px' }}>{compactCopy(safetyCase.summary, 150)}</p>
         </div>
       </div>
 
@@ -1455,7 +1464,7 @@ function PromotionCaseCard({ promotionCase, color }) {
         <div>
           <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1.4px', textTransform: 'uppercase', marginBottom: '8px' }}>Promotion case</div>
           <h3 style={{ color: palette.text, fontSize: '22px', fontWeight: 950, letterSpacing: '-0.04em', margin: '0 0 6px' }}>{promotionCase.headline}</h3>
-          <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.7, margin: 0, maxWidth: '760px' }}>{promotionCase.why_now}</p>
+          <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.65, margin: 0, maxWidth: '760px' }}>{compactCopy(promotionCase.why_now, 140)}</p>
         </div>
         {promotionCase.target_title && (
           <span style={{ borderRadius: '999px', padding: '7px 12px', background: `${color}12`, border: `1px solid ${color}28`, color, fontSize: '12px', fontWeight: 900 }}>
@@ -1509,7 +1518,7 @@ function PromotionConversationPackCard({ pack, color }) {
         <div>
           <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1.4px', textTransform: 'uppercase', marginBottom: '8px' }}>Promotion conversation pack</div>
           <h3 style={{ color: palette.text, fontSize: '22px', fontWeight: 950, letterSpacing: '-0.04em', margin: '0 0 6px' }}>Use your AI work to earn more scope</h3>
-          <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.7, margin: 0, maxWidth: '760px' }}>{pack.meeting_goal}</p>
+          <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.65, margin: 0, maxWidth: '760px' }}>{compactCopy(pack.meeting_goal, 140)}</p>
         </div>
       </div>
 
@@ -1619,19 +1628,19 @@ function SkillGapCard({ skill, color, messages }) {
         }} />
       </div>
 
-      <div style={{ display: 'grid', gap: '10px' }}>
-        <div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: '10px' }} className="two-col">
+        <div style={{ padding: '12px 13px', borderRadius: '16px', background: 'rgba(255,255,255,0.74)', border: `1px solid ${palette.border}` }}>
           <div style={{ color: palette.text, fontSize: '12px', fontWeight: 700, marginBottom: '4px' }}>{messages.report.whyThisMatters}</div>
-          <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{skill.why_it_matters}</div>
+          <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{compactCopy(skill.why_it_matters, 120)}</div>
         </div>
-        <div>
-          <div style={{ color: palette.text, fontSize: '12px', fontWeight: 700, marginBottom: '4px' }}>{messages.report.evidenceAlready}</div>
-          <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{skill.evidence_you_already_have}</div>
+        <div style={{ padding: '12px 13px', borderRadius: '16px', background: `${color}10`, border: `1px solid ${color}22` }}>
+          <div style={{ color: color, fontSize: '12px', fontWeight: 700, marginBottom: '4px' }}>{messages.report.closeGap}</div>
+          <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{compactCopy(skill.how_to_close_gap, 110)}</div>
         </div>
-        <div>
-          <div style={{ color: palette.text, fontSize: '12px', fontWeight: 700, marginBottom: '4px' }}>{messages.report.closeGap}</div>
-          <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{skill.how_to_close_gap}</div>
-        </div>
+      </div>
+
+      <div style={{ padding: '12px 13px', borderRadius: '16px', background: 'rgba(19,32,42,0.04)', border: `1px solid ${palette.border}`, color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>
+        <strong style={{ color: palette.text }}>{messages.report.evidenceAlready}:</strong> {compactCopy(skill.evidence_you_already_have, 120)}
       </div>
 
       <a
@@ -1677,7 +1686,7 @@ function LearningPathCard({ path, color }) {
           <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1.4px', textTransform: 'uppercase', marginBottom: '8px' }}>Learning path</div>
           <h3 style={{ color: palette.text, fontSize: '22px', fontWeight: 950, letterSpacing: '-0.04em', margin: '0 0 6px' }}>The fastest credible learning sequence</h3>
           <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.7, margin: 0, maxWidth: '720px' }}>
-            Start with the highest-priority gap, turn it into proof, then go deeper only after you have a visible artifact.
+            Learn just enough to ship proof, then go deeper.
           </p>
         </div>
         <span style={{ borderRadius: '999px', padding: '7px 12px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}`, color: palette.textMuted, fontSize: '12px', fontWeight: 850 }}>
@@ -1695,7 +1704,7 @@ function LearningPathCard({ path, color }) {
                 <span style={{ color: skillPriorityColor(step.skill.gap_priority, color), fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{step.skill.gap_priority || 'skill'}</span>
               </div>
               <div style={{ color: palette.text, fontSize: '16px', fontWeight: 900, lineHeight: 1.25, marginBottom: '6px' }}>{step.skill.skill_name}</div>
-              <p style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6, margin: '0 0 12px' }}>{step.helper}</p>
+              <p style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.55, margin: '0 0 12px' }}>{compactCopy(step.helper, 88)}</p>
               <a href={step.skill.resource_url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', color, fontSize: '13px', fontWeight: 850, textDecoration: 'none', marginBottom: '12px' }}>
                 {step.skill.resource_title} →
               </a>
@@ -3470,7 +3479,7 @@ export default function ReportExperience({ payload, embedded = false }) {
                         {index === 0 ? `${decisionFrameLabel(item.decision_frame, messages)} · ${messages.report.bestFitDirection}` : decisionFrameLabel(item.decision_frame, messages)}
                       </div>
                       <div style={{ color: palette.text, fontSize: '18px', fontWeight: 800, marginBottom: '6px' }}>{item.title}</div>
-                      <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.7 }}>{item.fit_summary}</div>
+                      <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.6 }}>{compactCopy(item.fit_summary, 120)}</div>
                     </div>
                     <div style={{ textAlign: 'right' }}>
                       <div style={{ color: itemColor, fontSize: '28px', fontWeight: 900 }}>{item.match_score}%</div>
@@ -3493,41 +3502,41 @@ export default function ReportExperience({ payload, embedded = false }) {
                     ))}
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }} className="two-col">
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '12px' }} className="two-col">
                     <div style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '14px', padding: '14px' }}>
                       <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>{messages.report.whoThisIsFor}</div>
-                      <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7, marginBottom: '10px' }}>{item.who_this_is_for || item.fit_summary}</div>
-                      <div style={{ color: '#10B981', fontSize: '11px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '8px' }}>{messages.report.strengthsToLeverage}</div>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                        {(item.strengths_to_leverage || []).map((strength) => (
-                          <span key={strength} style={{ padding: '6px 10px', borderRadius: '999px', background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.25)', color: '#10B981', fontSize: '12px', fontWeight: 700 }}>
-                            {strength}
-                          </span>
-                        ))}
-                      </div>
+                      <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{compactCopy(item.who_this_is_for || item.fit_summary, 100)}</div>
                     </div>
                     <div style={{ background: `${itemColor}10`, border: `1px solid ${itemColor}24`, borderRadius: '14px', padding: '14px' }}>
                       <div style={{ color: itemColor, fontSize: '11px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '8px' }}>{messages.report.whyThisPathWins}</div>
-                      <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7, marginBottom: '10px' }}>{item.why_this_path_wins || item.outcome}</div>
-                      {item.what_you_are_betting_on && (
-                        <>
-                          <div style={{ color: itemColor, fontSize: '11px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '6px' }}>{messages.report.whatYouAreBettingOn}</div>
-                          <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7 }}>{item.what_you_are_betting_on}</div>
-                        </>
-                      )}
+                      <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{compactCopy(item.why_this_path_wins || item.outcome, 100)}</div>
+                    </div>
+                    <div style={{ background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}`, borderRadius: '14px', padding: '14px' }}>
+                      <div style={{ color: palette.textSoft, fontSize: '11px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '8px' }}>{messages.report.whatYouAreBettingOn}</div>
+                      <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{compactCopy(item.what_you_are_betting_on || item.next_step, 100)}</div>
                     </div>
                   </div>
+
+                  {(item.strengths_to_leverage || []).length > 0 && (
+                    <div style={{ marginTop: '12px', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                      {(item.strengths_to_leverage || []).slice(0, 4).map((strength) => (
+                        <span key={strength} style={{ padding: '6px 10px', borderRadius: '999px', background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.25)', color: '#10B981', fontSize: '12px', fontWeight: 700 }}>
+                          {strength}
+                        </span>
+                      ))}
+                    </div>
+                  )}
 
                   {item.live_market_signal && <MarketSignalCard signal={item.live_market_signal} color={itemColor} compact />}
 
                   {Array.isArray(item.tradeoffs) && item.tradeoffs.length > 0 && (
-                    <div style={{ marginTop: '14px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}`, borderRadius: '14px', padding: '14px' }}>
-                      <div style={{ color: '#8B4A1B', fontSize: '11px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '8px' }}>{messages.report.tradeoffs}</div>
-                      <div style={{ display: 'grid', gap: '7px' }}>
-                        {item.tradeoffs.map((tradeoff) => (
-                        <div key={tradeoff} style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{tradeoff}</div>
-                        ))}
-                      </div>
+                    <div style={{ marginTop: '12px', display: 'grid', gap: '7px' }}>
+                      {item.tradeoffs.slice(0, 2).map((tradeoff) => (
+                        <div key={tradeoff} style={{ display: 'flex', gap: '8px', color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>
+                          <span style={{ color: '#8B4A1B', fontWeight: 900 }}>•</span>
+                          <span>{compactCopy(tradeoff, 110)}</span>
+                        </div>
+                      ))}
                     </div>
                   )}
                 </div>
@@ -3545,11 +3554,8 @@ export default function ReportExperience({ payload, embedded = false }) {
                   <h2 style={{ color: palette.text, fontSize: 'clamp(26px, 4vw, 38px)', fontWeight: 950, letterSpacing: '-0.05em', lineHeight: 1.02, margin: '0 0 10px', fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif' }}>
                     {stayPath.title}
                   </h2>
-                  <p style={{ color: palette.textMuted, fontSize: '15px', lineHeight: 1.75, margin: '0 0 10px' }}>
-                    {stayAndAdvance.recommendation || stayPath.fit_summary}
-                  </p>
-                  <p style={{ color: palette.textSoft, fontSize: '14px', lineHeight: 1.7, margin: 0 }}>
-                    {stayAndAdvance.rationale || messages.report.stayAndAdvanceBody}
+                  <p style={{ color: palette.textMuted, fontSize: '15px', lineHeight: 1.65, margin: 0 }}>
+                    {compactCopy(stayAndAdvance.recommendation || stayPath.fit_summary, 155)}
                   </p>
                 </div>
                 <div style={{ padding: '14px 16px', borderRadius: '18px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${stayColor}24`, minWidth: '210px' }}>
@@ -3572,6 +3578,19 @@ export default function ReportExperience({ payload, embedded = false }) {
                   </div>
                 ))}
               </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '12px', marginTop: '12px' }} className="two-col">
+                {[
+                  ['Own this workflow', stayAndAdvance?.ai_this_week_plan?.workflow],
+                  ['Ship this', stayAndAdvance?.ai_this_week_plan?.output],
+                  ['Tell leadership', stayAndAdvance?.ai_this_week_plan?.share_with_manager],
+                ].map(([label, value]) => (
+                  <div key={label} style={{ padding: '14px 16px', borderRadius: '18px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
+                    <div style={{ color: stayColor, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>{label}</div>
+                    <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.55 }}>{compactCopy(value, 92)}</div>
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div style={{ marginBottom: '28px' }}>
@@ -3584,8 +3603,15 @@ export default function ReportExperience({ payload, embedded = false }) {
                     <div style={{ color: palette.text, fontSize: '18px', fontWeight: 800, marginBottom: '6px' }}>
                       Stay-and-advance is strategy-led for a reason
                     </div>
-                    <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.7 }}>
-                      We currently ground adjacent pivot roles against live openings. The stay path is grounded differently: by current-role leverage, workflow redesign potential, and how quickly AI can turn your existing job into broader, more visible scope.
+                    <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.65, marginBottom: '10px' }}>
+                      We validate this path through current-role leverage, workflow ownership, and how fast you can create visible proof inside your job.
+                    </div>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                      {['Current-lane leverage', 'Workflow redesign', 'Faster visible proof'].map((item) => (
+                        <span key={item} style={{ padding: '7px 10px', borderRadius: '999px', background: 'rgba(255,255,255,0.82)', border: `1px solid ${palette.border}`, color: palette.textMuted, fontSize: '12px', fontWeight: 700 }}>
+                          {item}
+                        </span>
+                      ))}
                     </div>
                   </div>
                 )}
@@ -3597,8 +3623,8 @@ export default function ReportExperience({ payload, embedded = false }) {
               <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap' }}>
                 <div>
                   <div className="section-label" style={{ marginBottom: '4px' }}>{messages.report.skillGapMap}</div>
-                  <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.7 }}>
-                    {staySkillGapCounts.critical} critical gaps, {staySkillGapCounts.medium} medium gaps, {staySkillGapCounts.low} lower-priority gaps. This section is focused on how to use AI to get stronger inside your current lane first.
+                  <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.6 }}>
+                    {staySkillGapCounts.critical} critical, {staySkillGapCounts.medium} medium, {staySkillGapCounts.low} lower-priority. Build these in your current lane first.
                   </div>
                 </div>
               </div>
@@ -3640,17 +3666,17 @@ export default function ReportExperience({ payload, embedded = false }) {
               <div className="piq-card" style={{ padding: '24px', background: `linear-gradient(160deg, ${planColor}12 0%, rgba(255, 255, 255, 0.94) 62%)`, border: `1px solid ${planColor}24`, boxShadow: '0 24px 50px rgba(19, 32, 42, 0.08)' }}>
                 <div style={{ color: planColor, fontSize: '11px', fontWeight: 800, letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '10px' }}>{messages.report.currentFocus}</div>
                 <h2 style={{ color: palette.text, fontSize: '24px', fontWeight: 900, marginBottom: '8px' }}>{currentFocus?.week?.title || activePath.title}</h2>
-                <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.75, marginBottom: '14px' }}>{currentFocus?.week?.goal || activePath.fit_summary}</p>
+                <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.65, marginBottom: '14px' }}>{compactCopy(currentFocus?.week?.goal || activePath.fit_summary, 140)}</p>
                 {currentFocus?.week && (
                   <>
-                    <div style={{ display: 'grid', gap: '10px', marginBottom: '14px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '14px' }} className="two-col">
                       <div style={{ background: 'rgba(255,255,255,0.72)', border: `1px solid ${palette.border}`, borderRadius: '14px', padding: '14px' }}>
                         <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>{messages.report.whyThisWeekExists}</div>
-                        <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{currentFocus.week.why_this_week}</div>
+                        <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.55 }}>{compactCopy(currentFocus.week.why_this_week, 95)}</div>
                       </div>
                       <div style={{ background: 'rgba(255,255,255,0.72)', border: `1px solid ${palette.border}`, borderRadius: '14px', padding: '14px' }}>
                         <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>{messages.report.problemThisWeekSolves}</div>
-                        <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{currentFocus.week.problem_being_solved}</div>
+                        <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.55 }}>{compactCopy(currentFocus.week.problem_being_solved, 95)}</div>
                       </div>
                     </div>
                     <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
@@ -3777,7 +3803,16 @@ export default function ReportExperience({ payload, embedded = false }) {
                           </div>
                         </div>
 
-                        <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.7, marginBottom: '12px' }}>{week.goal}</div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: '10px', marginBottom: '12px' }} className="two-col">
+                          <div style={{ padding: '12px 13px', borderRadius: '14px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
+                            <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '6px' }}>Goal</div>
+                            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.55 }}>{compactCopy(week.goal, 130)}</div>
+                          </div>
+                          <div style={{ padding: '12px 13px', borderRadius: '14px', background: `${planColor}10`, border: `1px solid ${planColor}22` }}>
+                            <div style={{ color: planColor, fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '6px' }}>{messages.report.successSignal}</div>
+                            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.55 }}>{compactCopy(week.success_signal, 90)}</div>
+                          </div>
+                        </div>
 
                         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '14px' }}>
                           <button className="btn-ghost" style={{ width: 'auto', padding: '9px 14px' }} onClick={() => toggleExpandedWeek(week.week_number)}>
@@ -3835,17 +3870,6 @@ export default function ReportExperience({ payload, embedded = false }) {
                               </div>
                             </div>
 
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }} className="two-col">
-                              <div style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '14px', padding: '14px' }}>
-                                <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>{messages.report.whyThisWeekMatters}</div>
-                                <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7 }}>{week.why_this_week}</div>
-                              </div>
-                              <div style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '14px', padding: '14px' }}>
-                                <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>{messages.report.problemBeingSolved}</div>
-                                <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7 }}>{week.problem_being_solved}</div>
-                              </div>
-                            </div>
-
                             <div style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '14px', padding: '14px' }}>
                               <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '8px' }}>{messages.report.whatToDo}</div>
                               <div style={{ display: 'grid', gap: '8px' }}>
@@ -3869,25 +3893,43 @@ export default function ReportExperience({ payload, embedded = false }) {
                               </div>
                             </div>
 
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }} className="two-col">
-                              <div style={{ background: 'rgba(239,68,68,0.10)', border: '1px solid rgba(239,68,68,0.22)', borderRadius: '14px', padding: '14px' }}>
-                                <div style={{ color: '#EF4444', fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>{messages.report.commonBlockers}</div>
-                                <ul style={{ margin: 0, paddingLeft: '18px', color: palette.textMuted, fontSize: '13px', lineHeight: 1.7 }}>
-                                  {(week.common_blockers || []).map((blocker) => (
-                                    <li key={blocker}>{blocker}</li>
-                                  ))}
-                                </ul>
-                              </div>
-                              <div style={{ background: 'rgba(245,158,11,0.10)', border: '1px solid rgba(245,158,11,0.22)', borderRadius: '14px', padding: '14px' }}>
-                                <div style={{ color: '#F59E0B', fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>{messages.report.catchUpPlan}</div>
-                                <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7 }}>{week.catch_up_plan}</div>
-                              </div>
-                            </div>
+                            <details style={{ borderRadius: '14px', background: 'rgba(19,32,42,0.04)', border: `1px solid ${palette.border}`, padding: '14px' }}>
+                              <summary style={{ cursor: 'pointer', color: palette.text, fontSize: '12px', fontWeight: 800 }}>
+                                See rationale and recovery notes
+                              </summary>
+                              <div style={{ display: 'grid', gap: '12px', marginTop: '12px' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }} className="two-col">
+                                  <div style={{ background: 'rgba(255,255,255,0.82)', border: '1px solid var(--border)', borderRadius: '14px', padding: '14px' }}>
+                                    <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>{messages.report.whyThisWeekMatters}</div>
+                                    <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{compactCopy(week.why_this_week, 120)}</div>
+                                  </div>
+                                  <div style={{ background: 'rgba(255,255,255,0.82)', border: '1px solid var(--border)', borderRadius: '14px', padding: '14px' }}>
+                                    <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>{messages.report.problemBeingSolved}</div>
+                                    <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{compactCopy(week.problem_being_solved, 120)}</div>
+                                  </div>
+                                </div>
 
-                            <div style={{ background: 'rgba(99,102,241,0.10)', border: '1px solid rgba(99,102,241,0.22)', borderRadius: '14px', padding: '14px' }}>
-                              <div style={{ color: '#5B65C6', fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>{messages.report.encouragement}</div>
-                              <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7 }}>{week.encouragement}</div>
-                            </div>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }} className="two-col">
+                                  <div style={{ background: 'rgba(239,68,68,0.10)', border: '1px solid rgba(239,68,68,0.22)', borderRadius: '14px', padding: '14px' }}>
+                                    <div style={{ color: '#EF4444', fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>{messages.report.commonBlockers}</div>
+                                    <ul style={{ margin: 0, paddingLeft: '18px', color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>
+                                      {(week.common_blockers || []).slice(0, 3).map((blocker) => (
+                                        <li key={blocker}>{blocker}</li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                  <div style={{ background: 'rgba(245,158,11,0.10)', border: '1px solid rgba(245,158,11,0.22)', borderRadius: '14px', padding: '14px' }}>
+                                    <div style={{ color: '#F59E0B', fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>{messages.report.catchUpPlan}</div>
+                                    <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{compactCopy(week.catch_up_plan, 120)}</div>
+                                  </div>
+                                </div>
+
+                                <div style={{ background: 'rgba(99,102,241,0.10)', border: '1px solid rgba(99,102,241,0.22)', borderRadius: '14px', padding: '14px' }}>
+                                  <div style={{ color: '#5B65C6', fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>{messages.report.encouragement}</div>
+                                  <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{compactCopy(week.encouragement, 120)}</div>
+                                </div>
+                              </div>
+                            </details>
 
                             <div style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '14px', padding: '14px' }}>
                               <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>Last active step</div>
