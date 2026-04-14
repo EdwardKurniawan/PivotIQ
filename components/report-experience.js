@@ -3334,7 +3334,7 @@ export default function ReportExperience({ payload, embedded = false }) {
         )}
 
         <div className="tab-bar">
-          {[['breakdown', 'tab-breakdown', messages.report.tabs[0]], ['pivots', 'tab-pivots', messages.report.tabs[1]], ...(tier === 'full' && stayPath ? [['stay', 'decision', messages.report.tabs[2]]] : []), ...(tier === 'full' ? [['plan', 'tab-plan', messages.report.tabs[3] || messages.report.tabs[2]]] : [])].map(([key, icon, label]) => (
+          {[['breakdown', 'tab-breakdown', messages.report.tabs[0]], ...(tier === 'full' && stayPath ? [['stay', 'decision', messages.report.tabs[1]]] : []), ['pivots', 'tab-pivots', tier === 'full' && stayPath ? messages.report.tabs[2] : messages.report.tabs[1]], ...(tier === 'full' ? [['plan', 'tab-plan', tier === 'full' && stayPath ? messages.report.tabs[3] : messages.report.tabs[2]]] : [])].map(([key, icon, label]) => (
             <button key={key} onClick={() => setActiveTab(key)} className={`tab-btn ${activeTab === key ? 'active' : ''}`}>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}><MonoIcon name={icon} size={22} />{label}</span>
             </button>
