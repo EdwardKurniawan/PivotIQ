@@ -1745,6 +1745,93 @@ function testOperationsDecisionBriefUsesRoleNativeStayLanguage() {
   assert.match(normalized.recommendation_stack.decision_brief.unlock_condition, /workflow redesign|operating review|handoff system/i);
 }
 
+function testMarketBackedAnalyticsHardSkillsArePreserved() {
+  const report = buildDemoReportData(
+    'Data Analyst',
+    'SaaS',
+    ['Dashboard creation', 'SQL analysis', 'Stakeholder insights'],
+    {
+      selected_tasks: [{ label: 'Dashboard creation' }],
+      primary_tasks: ['Dashboard creation', 'SQL analysis', 'Stakeholder insights'],
+      clarifiers: {
+        goal_now: 'hybrid_transition',
+        timeline_urgency: 'within_6_months',
+        years_experience_band: '6_10',
+        location_preference: 'united_states',
+        ai_maturity: 'weekly',
+        technical_capability: 'sql_bi',
+        core_systems: 'Power BI, SQL',
+      },
+    }
+  );
+
+  report.pivots[0] = {
+    ...report.pivots[0],
+    id: 'business-intelligence-manager',
+    title: 'Business Intelligence Manager',
+    live_market_signal: {
+      matched_openings_count: 7,
+      profile_fit_score: 34,
+      market_required_skills: ['Database architecture', 'ETL pipeline design', 'Python', 'Data modeling'],
+      market_tools: ['Snowflake', 'dbt'],
+    },
+    skill_gaps: [
+      {
+        skill_name: 'Database architecture',
+        category: 'technical stack',
+        gap_priority: 'critical',
+        market_backed: true,
+        why_it_matters: 'BI roles need stronger data structure judgment.',
+        how_to_close_gap: 'Model one analytics dataset into a cleaner semantic layer.',
+        resource_title: 'Data engineering learning paths',
+        resource_url: 'https://www.pluralsight.com/paths/data-engineering',
+        resource_provider: 'Pluralsight',
+      },
+      {
+        skill_name: 'ETL pipeline design',
+        category: 'technical stack',
+        gap_priority: 'critical',
+        market_backed: true,
+        why_it_matters: 'BI roles often own the movement from raw data to trusted reporting.',
+        how_to_close_gap: 'Document and rebuild one recurring ETL workflow with validation checks.',
+        resource_title: 'Data engineering learning paths',
+        resource_url: 'https://www.pluralsight.com/paths/data-engineering',
+        resource_provider: 'Pluralsight',
+      },
+      {
+        skill_name: 'Snowflake',
+        category: 'platform fluency',
+        gap_priority: 'medium',
+        market_backed: true,
+        why_it_matters: 'Warehouse fluency shows you can work in the stack hiring teams already use.',
+        how_to_close_gap: 'Use Snowflake on one analytics proof asset tied to a real business question.',
+        resource_title: 'Snowflake Learning Tracks',
+        resource_url: 'https://learn.snowflake.com/en/',
+        resource_provider: 'Snowflake',
+      },
+      {
+        skill_name: 'Python for analytics',
+        category: 'technical analytics',
+        gap_priority: 'medium',
+        market_backed: true,
+        why_it_matters: 'Python widens the analysis and automation work you can do without waiting on engineering.',
+        how_to_close_gap: 'Automate one recurring QA or transformation step with Python.',
+        resource_title: 'Python for Everybody',
+        resource_url: 'https://www.coursera.org/specializations/python',
+        resource_provider: 'Coursera',
+      },
+    ],
+  };
+
+  const normalized = normalizeReportData(report);
+  const topSkillNames = normalized.pivots[0].skill_gaps.slice(0, 4).map((skill) => skill.skill_name).join(' | ');
+  const learningPathNames = normalized.pivots[0].learning_path.map((step) => step.skill_name).join(' | ');
+
+  assert.match(topSkillNames, /Database architecture|ETL pipeline design|Snowflake|Python for analytics/i);
+  assert.doesNotMatch(topSkillNames, /KPI review narrative/i);
+  assert.match(learningPathNames, /Database architecture|ETL pipeline design|Snowflake|Python for analytics/i);
+}
+
 testTopPivotFamilyRepairAndCopy();
 testGenericAiResourceRemovedFromNonAiGap();
 testFirst30DaysReferencesFinalPivot();
@@ -1795,5 +1882,6 @@ testMarketingLowerPivotsGetCleanerAdjacentTitles();
 testAnalyticsLowerPivotsAvoidWeakRevOpsDrift();
 testOperationsLowerPivotsGetCleanerAdjacentTitles();
 testOperationsDecisionBriefUsesRoleNativeStayLanguage();
+testMarketBackedAnalyticsHardSkillsArePreserved();
 
 console.log('Report quality tests passed.');
