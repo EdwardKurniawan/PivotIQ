@@ -339,6 +339,56 @@ function testAnalyticsStayPathUsesRoleNativeResources() {
   assert.notEqual(normalized.stay_and_advance.ai_leverage_playbook.plays[0].title, 'Redesign one recurring workflow');
 }
 
+function testFinanceStayPathUsesSharperRoleNativeResources() {
+  const report = buildDemoReportData(
+    'Finance Manager',
+    'SaaS',
+    ['Forecast review and planning', 'Variance analysis', 'Leadership updates'],
+    {
+      selected_tasks: [{ label: 'Forecast review and planning' }],
+      primary_tasks: ['Forecast review and planning', 'Variance analysis', 'Leadership updates'],
+      clarifiers: {
+        goal_now: 'stay_and_advance',
+        ai_maturity: 'weekly',
+        core_systems: 'Excel, ERP',
+        domain_focus: 'planning and commercial finance',
+      },
+    }
+  );
+
+  const normalized = normalizeReportData(report);
+  const stayGaps = normalized.stay_path.skill_gaps || [];
+
+  assert.equal(stayGaps[0].skill_name, 'Financial modeling and scenario review');
+  assert.match(stayGaps[0].resource_title, /FP&A learning paths|Financial modeling paths/i);
+  assert.notEqual(stayGaps[2].resource_title, 'Digital Transformation');
+}
+
+function testOperationsStayPathAvoidsGenericAiAcademyDefault() {
+  const report = buildDemoReportData(
+    'Operations Manager',
+    'Manufacturing',
+    ['Process mapping', 'Workflow coordination', 'Status reporting'],
+    {
+      selected_tasks: [{ label: 'Process mapping' }],
+      primary_tasks: ['Process mapping', 'Workflow coordination', 'Status reporting'],
+      clarifiers: {
+        goal_now: 'stay_and_advance',
+        ai_maturity: 'weekly',
+        domain_focus: 'operations improvement',
+      },
+    }
+  );
+
+  const normalized = normalizeReportData(report);
+  const stayGaps = normalized.stay_path.skill_gaps || [];
+
+  assert.equal(stayGaps[0].skill_name, 'Workflow automation design');
+  assert.notEqual(stayGaps[0].resource_title, 'OpenAI Academy');
+  assert.match(stayGaps[0].resource_title, /Zapier|Power Automate|Atlassian/i);
+  assert.notEqual(stayGaps[2].resource_title, 'Digital Transformation');
+}
+
 function testStayWeeklyPlanUsesRoleNativeSystemsAndStayFirstActions() {
   const report = buildDemoReportData(
     'Finance Manager',
@@ -1699,6 +1749,8 @@ testProcurementTopSkillUsesProcurementResource();
 testStayAdvanceLearningPathDoesNotInheritPivotCourse();
 testBroadRoleStayPathUsesRoleNativeLearningAndWeeklyPlan();
 testAnalyticsStayPathUsesRoleNativeResources();
+testFinanceStayPathUsesSharperRoleNativeResources();
+testOperationsStayPathAvoidsGenericAiAcademyDefault();
 testStayWeeklyPlanUsesRoleNativeSystemsAndStayFirstActions();
 testExecutiveAssistantGetsRoleNativeStayPath();
 testFinanceSyntheticTitleFallsBackToCanonicalRole();

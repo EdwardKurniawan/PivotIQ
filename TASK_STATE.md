@@ -56,6 +56,10 @@ Worktree state: local changes present for current quality pass
   - operations
   - finance
   - analytics
+- Broad-role stay-path learning resources were sharpened so they default less often to generic AI courses and more often to role-native workflow resources:
+  - `Operations Manager` now starts with `Learn Zapier in 14 days` instead of `OpenAI Academy`
+  - `Finance Manager` now starts with `Financial modeling paths` / `FP&A learning paths` instead of generic finance search results
+  - `Customer Success Manager` now gets a cleaner customer-ops sequence with `Customer success operations courses` in the build-proof layer
 - Saved QA snapshots were refreshed after the latest cleanup:
   - `Data Analyst` → `Business Intelligence Lead`
   - `Customer Success Manager` → `Customer Success Strategy Lead`
@@ -75,7 +79,7 @@ Worktree state: local changes present for current quality pass
    - finance
    - marketing
    Focus on premium-feeling backup stacks when market evidence is thin.
-2. Continue sharpening learning-path coherence where the gap-to-resource pairing is only acceptable instead of obviously sharp.
+2. Continue sharpening learning-path coherence where step 2 and step 3 still lean on generic communication/AI resources instead of role-native ones.
 3. Review the new saved broad QA snapshots in-account and improve wording quality on the actual rendered reports, not just fixture tests.
 4. Expand the saved QA snapshot set when a new role family becomes important so recommendation feel is validated on real stored reports, not just fixture tests.
 5. Keep the recommendation-quality dashboard aligned with real outcome patterns so future tuning is based on user signal, not intuition.

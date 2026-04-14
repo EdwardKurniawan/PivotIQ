@@ -53,6 +53,28 @@ Branch: `main`
   - `Operations Manager` → `Program Operations Lead`
   - `Marketing Manager` → `Marketing Strategy Lead`
 
+### `pending current commit` Sharpen broad-role stay-path learning resources
+- Tightened [`buildStayLearningResources`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/lib/report-data.js) so broad-role stay paths rely less on generic AI-course defaults and more on role-native workflow resources
+- Key improvements:
+  - `Operations Manager` workflow learning now defaults to `Learn Zapier in 14 days` instead of `OpenAI Academy` when no stronger workflow tool signal is present
+  - `Operations Manager` deeper steps now use `Business analysis learning paths` and `Change management learning paths` instead of generic AI/default transformation picks
+  - `Finance Manager` workflow learning now points to `FP&A learning paths` or `Financial modeling paths` instead of a generic Coursera financial-modeling search result
+  - `Finance Manager` governance learning now points to `Finance automation learning paths` instead of `Digital Transformation`
+  - `Customer Success Manager` build-proof layer now uses `Customer success operations courses` instead of falling back too early to generic AI material
+- Added regression coverage in [`scripts/test-report-quality.mjs`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/scripts/test-report-quality.mjs) for:
+  - finance stay-path resource sharpness
+  - operations stay-path avoiding generic `OpenAI Academy` fallback
+- Seeded a fresh broad-role QA set into `edward.hardrianto@live.com`:
+  - `a7eefe61-05be-427a-8efa-a1728ca851f9` `Data Analyst`
+  - `f6cd108a-3796-4632-9f6a-7fd1aa870d28` `Customer Success Manager`
+  - `7f4e9b5f-21c8-48b0-8ff4-7d2b0b9896bd` `Executive Assistant`
+  - `e57f029b-030f-40f1-a022-289ffaf2a036` `Operations Manager`
+  - `46fbde44-e802-4438-bb9d-f5ec6b857070` `Marketing Manager`
+- Current learning-path spot check:
+  - `Customer Success Manager`: `Renewal risk review design` → `Service Hub Software Certification Course`, `Customer workflow orchestration` → `Customer success operations courses`
+  - `Operations Manager`: `Workflow automation design` → `Learn Zapier in 14 days`, `Team workflow governance` → `Change management learning paths`
+  - `Finance Manager`: `Financial modeling and scenario review` → `Financial modeling paths`, `Planning workflow governance` → `Finance automation learning paths`
+
 ### `pending current commit` Tighten lower-ranked marketing and analytics pivots
 - Tightened lower-pivot repair in [`lib/report-quality.js`](/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/lib/report-quality.js) so marketing and analytics backup stacks are now repaired and deduped the same way customer-success and finance already were
 - Added canonical adjacent-title sets for `marketing` and `analytics`
@@ -200,7 +222,7 @@ Highest-leverage next build:
 - the top recommendation now explains itself better; the next step is making that copy feel even more premium and role-native on the actual saved reports
 
 3. Keep improving learning-path coherence
-- the next product-quality win is sharper gap-to-resource pairing for broad roles where the title is now cleaner but the first learning step can still be bland
+- the next product-quality win is sharper step-2 / step-3 gap-to-resource pairing for broad roles where the first step is now cleaner but the deeper steps can still be bland
 
 4. Keep using saved QA snapshots plus `/internal/qa-fixtures`
 - the saved reports are more useful than fixture JSON alone because the final recommendation stack can differ from the raw pivot ordering
@@ -229,6 +251,7 @@ Latest verified before this memory update:
 - `npm run test:broad-roles`
 - `npm run reports:seed-qa-fixtures -- --email=edward.hardrianto@live.com --catalog=broad --limit=5`
 - `npm run test:course-catalog`
+- `node --input-type=module -e '...buildQaFixtureSnapshotGroups...'` spot-check on customer / finance / operations stay learning
 - `npm run reports:regenerate -- --ids=545898da-08ae-41df-9156-021a937ebe95,28325476-caa6-4a7b-a95b-ecc0f2a7e897,0eff2943-82e6-41c8-b10d-2dde56061df3,231107f9-3a2a-4834-b67a-0b1a38ebdc71,ae5dcf5d-0bb3-427d-8154-fbf9aa7678f6`
 - `npm run reports:regenerate -- --ids=28325476-caa6-4a7b-a95b-ecc0f2a7e897,0eff2943-82e6-41c8-b10d-2dde56061df3`
 - `npm run build`

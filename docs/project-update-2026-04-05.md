@@ -40,6 +40,39 @@ Saved founder-account broad QA snapshots were refreshed:
 - `114267cc-fd53-4e6e-8873-547ff831efe6` `Operations Manager` → `Program Operations Lead`
 - `58f0bd10-62f5-4afd-9702-5cb44871b75f` `Marketing Manager` → `Marketing Strategy Lead`
 
+### Latest broad-role learning-path pass
+
+The next pass focused on trust in the stay-and-advance learning path itself.
+
+What changed:
+
+- broad-role stay learning now defaults less often to generic AI resources and more often to role-native workflow resources
+- operations stay paths now prefer:
+  - `Learn Zapier in 14 days`
+  - `Business analysis learning paths`
+  - `Change management learning paths`
+  instead of falling back to `OpenAI Academy` / `Digital Transformation`
+- finance stay paths now prefer:
+  - `FP&A learning paths`
+  - `Financial modeling paths`
+  - `Finance automation learning paths`
+  instead of generic finance search or generic transformation learning
+- customer success stay paths now use a cleaner build-proof layer:
+  - `Customer success operations courses`
+
+Regression coverage added:
+
+- finance stay-path resource sharpness
+- operations stay-path avoiding the generic `OpenAI Academy` fallback
+
+Fresh founder-account QA reports were saved after this pass:
+
+- `a7eefe61-05be-427a-8efa-a1728ca851f9` `Data Analyst`
+- `f6cd108a-3796-4632-9f6a-7fd1aa870d28` `Customer Success Manager`
+- `7f4e9b5f-21c8-48b0-8ff4-7d2b0b9896bd` `Executive Assistant`
+- `e57f029b-030f-40f1-a022-289ffaf2a036` `Operations Manager`
+- `46fbde44-e802-4438-bb9d-f5ec6b857070` `Marketing Manager`
+
 PivotIQ is no longer just a one-time report generator. The product now has a real execution and feedback loop:
 
 - `recommendation_stack` now drives a narrower decision layer with:
