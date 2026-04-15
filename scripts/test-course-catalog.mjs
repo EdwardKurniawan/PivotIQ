@@ -169,6 +169,111 @@ function testAgenticAiMatchesAgentCourseOverGenericAiLiteracy() {
   assert.equal(match.entry.title, 'AI Agents in LangGraph');
 }
 
+function testLookerExactToolMatchBeatsOtherAnalyticsPlatform() {
+  const match = buildCatalogMatch(
+    {
+      skill_name: 'Looker',
+      category: 'technical',
+      gap_priority: 'critical',
+      how_to_close_gap: 'Build BI reporting and dashboard workflows in Looker.',
+    },
+    {
+      title: 'Analytics Manager',
+      decision_frame: 'strongest leverage fit',
+    },
+    [
+      entry({
+        provider: 'Snowflake',
+        title: 'Snowflake Learning Tracks',
+        summary: 'Data warehousing, SQL workflows, and analytics platform fundamentals.',
+        skills: ['snowflake', 'sql', 'data warehousing'],
+        tags: ['analytics', 'warehouse'],
+        role_families: ['analytics', 'technical'],
+      }),
+      entry({
+        provider: 'Google Cloud Skills Boost',
+        title: 'Looker reporting and BI paths',
+        summary: 'Build business intelligence workflows and reporting narratives with Looker.',
+        skills: ['looker', 'business intelligence', 'dashboards', 'reporting'],
+        tags: ['analytics', 'bi'],
+        role_families: ['analytics', 'operations'],
+      }),
+    ]
+  );
+
+  assert.equal(match.entry.title, 'Looker reporting and BI paths');
+}
+
+function testWorkdayBeatsGenericAiCourseForHrisSkill() {
+  const match = buildCatalogMatch(
+    {
+      skill_name: 'Workday reporting',
+      category: 'technical',
+      gap_priority: 'critical',
+      how_to_close_gap: 'Use Workday reporting and people-systems workflows more fluently.',
+    },
+    {
+      title: 'People Operations Lead',
+      decision_frame: 'strongest leverage fit',
+    },
+    [
+      entry({
+        provider: 'OpenAI',
+        title: 'OpenAI Academy',
+        summary: 'General AI literacy and workflow productivity.',
+        skills: ['ai literacy', 'prompting', 'workflow redesign'],
+        tags: ['ai'],
+        role_families: ['ai-automation', 'operations'],
+      }),
+      entry({
+        provider: 'Udemy',
+        title: 'Workday reporting and HRIS courses',
+        summary: 'Improve HRIS reporting, people-systems workflows, and Workday reporting fluency.',
+        skills: ['workday', 'hris', 'reporting', 'people systems'],
+        tags: ['hris', 'people operations'],
+        role_families: ['hr', 'operations'],
+      }),
+    ]
+  );
+
+  assert.equal(match.entry.title, 'Workday reporting and HRIS courses');
+}
+
+function testDbtBeatsGenericDataEngineeringMatch() {
+  const match = buildCatalogMatch(
+    {
+      skill_name: 'dbt',
+      category: 'technical',
+      gap_priority: 'critical',
+      how_to_close_gap: 'Build transformation and analytics engineering fluency in dbt.',
+    },
+    {
+      title: 'Business Intelligence Manager',
+      decision_frame: 'highest upside',
+    },
+    [
+      entry({
+        provider: 'Google Cloud Skills Boost',
+        title: 'Data engineering paths',
+        summary: 'Develop data pipeline, warehousing, and production data workflow skills.',
+        skills: ['data engineering', 'pipelines', 'warehousing', 'etl'],
+        tags: ['technical'],
+        role_families: ['technical', 'analytics'],
+      }),
+      entry({
+        provider: 'Udemy',
+        title: 'dbt analytics engineering courses',
+        summary: 'Build analytics engineering, transformation, and data-modeling skills with dbt-focused courses.',
+        skills: ['dbt', 'analytics engineering', 'data transformation', 'data modeling'],
+        tags: ['dbt', 'transformations'],
+        role_families: ['analytics', 'technical'],
+      }),
+    ]
+  );
+
+  assert.equal(match.entry.title, 'dbt analytics engineering courses');
+}
+
 function testLegalClauseGapMatchesContractResource() {
   const match = buildCatalogMatch(
     {
@@ -535,6 +640,9 @@ testStrongCatalogMatchBeatsGenericAiFallbackShape();
 testWeakSemanticMatchIsFlagged();
 testDataCampWinsWhenItIsBetterMatch();
 testAgenticAiMatchesAgentCourseOverGenericAiLiteracy();
+testLookerExactToolMatchBeatsOtherAnalyticsPlatform();
+testWorkdayBeatsGenericAiCourseForHrisSkill();
+testDbtBeatsGenericDataEngineeringMatch();
 testLegalClauseGapMatchesContractResource();
 testProcurementForecastingRejectsEducationMatch();
 testLegalRiskRejectsMarketingMatch();

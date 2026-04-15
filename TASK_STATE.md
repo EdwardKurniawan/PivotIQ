@@ -1,102 +1,97 @@
 # TASK STATE
 
-Last updated: 2026-04-14
+Last updated: 2026-04-15
 Repo: `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app`
 Branch: `main`
-Worktree state: local changes present for current quality pass
+Worktree state: clean after latest verification
 
 ## Completed Work
 
-- PivotIQ reports now behave more like a career execution system instead of a static report.
-- Full reports include:
-  - decision brief
-  - primary move / conservative backup / stay-and-advance path
-  - confidence states
-  - AI leverage playbook
-  - proof asset builder
-  - promotion conversation pack
-  - weekly progress loop
-  - outcome tracking
-  - refresh-from-progress flow
-  - internal recommendation-quality dashboard
-- Intake quality was upgraded with Phase 1 and Phase 2 clarifiers:
-  - `goal_now`
-  - `timeline_urgency`
-  - `years_experience_band`
-  - `location_preference`
-  - `ai_maturity`
-  - `technical_capability`
-  - `salary_tolerance`
-  - `proof_state`
-- Broad-role QA infrastructure is live:
-  - broad-role fixture catalog
-  - senior-role fixture catalog
-  - internal QA fixture viewer at `/internal/qa-fixtures`
-  - saved QA snapshot seeding into the founder account
-- Recommendation safety for broad roles was tightened:
-  - low-confidence active pivots are suppressed more aggressively
-  - broader role families lean toward stay-and-advance when market signal is thin
-  - strategy-led active pivots require better proof / overlap to stay primary
-- Learning catalog was expanded and cleaned, with stronger matching and audit coverage.
-- Broad-role learning coherence was tightened:
-  - customer, analytics, finance, marketing, HR, and ops top bundles now repair more aggressively when the learning sequence is off-domain
-  - prompt-engineering / generic AI resources are penalized much harder for non-AI business gaps
-- Paid-report explanation quality improved:
-  - the report now explains why the winning move won now
-  - it explicitly explains why a flashier alternative is not leading yet
-  - it explains what would need to change before the riskier path becomes the main recommendation
-- Lower-ranked backup pivots were cleaned and deduped for:
-  - customer success
-  - finance
-  - marketing
+- Result-page structure was upgraded so the top-level tabs are now:
+  - `Task Breakdown`
+  - `Stay and advance with AI`
+  - `Pivot Paths`
+  - `Milestone Plan`
+- The stay path is no longer buried inside the plan flow. It is now a first-class report section near the top.
+- The results page got a trim-and-visual cleanup pass:
+  - shorter summaries
+  - lighter stay section
+  - more compact pivot cards
+  - compressed skill-gap cards
+  - more collapsed milestone-plan detail
+- Stay-and-advance value was strengthened with:
+  - `Career safety read`
+  - `Promotion case`
+  - stronger proof-asset execution guidance
+  - higher-visibility `Use AI this week` block
+- Broad-role stay-path quality was improved for:
   - analytics
-- Lower-ranked backup pivots are now also cleaned for `operations`, with missing repair coverage fixed in the quality gate.
-- Stay-first decision-brief copy is now more role-native for broad roles, especially:
+  - finance
   - customer success
+  - HR
   - operations
-  - finance
-  - analytics
-- Broad-role stay-path learning resources were sharpened so they default less often to generic AI courses and more often to role-native workflow resources:
-  - `Operations Manager` now starts with `Learn Zapier in 14 days` instead of `OpenAI Academy`
-  - `Finance Manager` now starts with `Financial modeling paths` / `FP&A learning paths` instead of generic finance search results
-  - `Customer Success Manager` now gets a cleaner customer-ops sequence with `Customer success operations courses` in the build-proof layer
-- Results value for stay-and-advance was upgraded again:
-  - reports now include a direct `Why this makes you safer in the AI shift` section
-  - reports now include a sharper `Promotion case` section
-  - proof asset builders now include an execution guide with:
-    - what to ship this week
-    - artifact format
-    - inputs to collect
-    - manager readout
-    - resume / LinkedIn line
-- These new sections are now rendered on the stay-path results page, above the broader operating-system and promotion-conversation blocks.
-- Saved QA snapshots were refreshed after the latest cleanup:
-  - `Data Analyst` → `Business Intelligence Lead`
-  - `Customer Success Manager` → `Customer Success Strategy Lead`
-  - `Executive Assistant` → `Executive Operations Lead`
-  - `Operations Manager` → `Program Operations Lead`
-  - `Marketing Manager` → `Marketing Strategy Lead`
+  - executive/admin support
+- `Use AI this week` now uses role-relevant systems instead of generic placeholders in broad-role reports.
+- Active-pivot realism and backup-stack cleanup were improved across broad roles, including operations.
+- Broad-role QA infrastructure is live and usable:
+  - fixture catalogs
+  - internal QA fixture viewer
+  - saved QA report seeding into the founder account
+- The learning catalog and learning-path coherence were tightened earlier in the session history and remain in place.
+- Hard-skill gap detection was improved so pivot recommendations surface concrete stack/tool gaps instead of soft filler when the target role requires real tooling fluency.
+- The latest important engine change is now live:
+  - skill gaps are model-driven instead of being replaced by authored hard-coded family bundles
+  - quality gates now sanitize and filter weak/off-family gaps instead of rewriting them into canned answers
+  - learning-path start-step selection now prefers market-backed, tool-backed, concrete hard skills over generic BPM / prompt-engineering filler
+- Report `696c14fc-dd63-4cc1-b343-228dd65893bf` was regenerated successfully after the model-driven skill-gap change.
+  - current top pivot: `Analytics Manager`
+  - current saved top hard-skill gaps include:
+    - `Looker`
+    - `Power Bi`
+    - `Snowflake`
+    - `Sql`
+    - `Python`
+- Gap-to-resource matching was improved for explicit tools and platforms:
+  - the course matcher now boosts exact tool/platform matches much more strongly
+  - mismatched tool platforms are penalized instead of floating to the top on generic analytics overlap
+  - the course catalog now includes targeted coverage for:
+    - `dbt`
+    - `Workday`
+    - `Gainsight`
+    - `Marketo`
+    - `NetSuite`
+    - `SAP`
+- The saved Data Analyst example now shows sharper pairings:
+  - `Looker` → `Looker reporting and BI paths`
+  - `Power Bi` → `Power BI and DAX courses`
+  - `Snowflake` → `Snowflake Learning Tracks`
 
 ## In-Progress Work
 
-- No unfinished code path is mid-edit after this handoff update.
-- The active product frontier is now recommendation polish and remaining broad-role realism, not missing platform infrastructure.
+- No code is currently mid-edit.
+- The main active frontier is recommendation polish, especially:
+  - stronger broad-role wording quality
+  - continued improvement of hard-skill relevance without reintroducing hard-coded authored bundles
+  - reducing duplicate / overly similar technical gaps when the model emits overlapping variants like `Python` and `Python for Data Science`
 
 ## Next Steps
 
-1. Reassess the actual stay-path wording in saved reports and make the new safety / promotion copy feel even more inevitable and less templated.
-2. Tighten the next weakest lower-ranked active pivots after operations:
-   - customer success
-   - finance
-   - marketing
-   Focus on premium-feeling backup stacks when market evidence is thin.
-3. Continue sharpening learning-path coherence where step 2 and step 3 still lean on generic communication/AI resources instead of role-native ones.
-4. Expand the saved QA snapshot set when a new role family becomes important so recommendation feel is validated on real stored reports, not just fixture tests.
-5. Keep the recommendation-quality dashboard aligned with real outcome patterns so future tuning is based on user signal, not intuition.
+1. Reassess the saved broad-role QA reports again and tune wording so the stay-path and pivot-path explanations feel less templated and more inevitable.
+2. Keep tightening lower-ranked active pivots for broad roles where the main path is solid but the backup stack still feels thinner.
+3. Extend the same model-driven hard-skill logic more deeply into the stay-path skill engine where appropriate, so “stay and advance” can also surface concrete stack/platform gaps when the job really depends on them.
+4. Reduce overlapping technical gaps from the model when two gaps are near-duplicates but with different phrasing.
+5. Continue using regenerated saved reports as the main product-quality check, not just fixtures and unit tests.
 
 ## Blockers Or Assumptions
 
-- OpenRouter must remain on `nvidia/nemotron-3-nano-30b-a3b:free`.
-- Reminder-email delivery exists in the product but is not the current priority.
-- The strongest source of truth for report quality is now the saved in-account QA snapshots, not just fixture JSON or isolated test results.
-- Broad-role quality is much safer than before, but some lower-ranked active pivots and some learning bundles can still be improved to feel more premium.
+- OpenRouter remains on `nvidia/nemotron-3-nano-30b-a3b:free`.
+- The current direction is to avoid hard-coded authored skill-gap answers and let the model + market grounding drive the gap content.
+- It is still acceptable to keep lightweight guardrails that:
+  - remove off-family leakage
+  - remove generic filler
+  - reorder or filter low-signal gaps
+  but not replace them with authored bundles.
+- The remaining weakness is not gross recommendation failure; it is refinement:
+  - sharper hard-skill resource mapping
+  - more premium wording
+  - more differentiated broad-role outputs
