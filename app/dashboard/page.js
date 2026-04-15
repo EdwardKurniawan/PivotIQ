@@ -214,6 +214,18 @@ function buildAttentionState(snapshot) {
   };
 }
 
+function buildReportHref(reportId, attention, snapshot, preferredTab = '') {
+  const resolvedTab = preferredTab
+    || (attention?.label === 'Feedback due'
+      ? 'plan'
+      : attention?.label === 'Manager conversation' || attention?.label === 'Proof sprint'
+        ? 'stay'
+        : snapshot?.refreshContext?.is_ready
+          ? 'stay'
+          : '');
+  return resolvedTab ? `/report/${reportId}?tab=${resolvedTab}` : `/report/${reportId}`;
+}
+
 export default async function DashboardPage() {
   const locale = getServerLocale();
   const messages = getMessages(locale);
@@ -286,7 +298,7 @@ export default async function DashboardPage() {
                 {dueOutcomeReports.slice(0, 4).map(({ report, snapshot }) => (
                   <Link
                     key={report.id}
-                    href={`/report/${report.id}`}
+                    href={buildReportHref(report.id, { label: 'Feedback due' }, snapshot)}
                     style={{ borderRadius: '999px', padding: '8px 12px', background: 'rgba(255,255,255,0.72)', border: `1px solid ${palette.border}`, color: palette.text, fontSize: '12px', fontWeight: 800, textDecoration: 'none' }}
                   >
                     {report.job_title} · {snapshot.outcomeFollowup.title}
@@ -345,7 +357,7 @@ export default async function DashboardPage() {
           <div style={{ display: 'grid', gap: '16px' }}>
             {latestCard && latestSnapshot && (
               <Link
-                href={`/report/${latestCard.report.id}`}
+                href={buildReportHref(latestCard.report.id, latestCard.attention, latestSnapshot)}
                 style={{
                   display: 'block',
                   borderRadius: '28px',
@@ -436,7 +448,7 @@ export default async function DashboardPage() {
                 return (
                   <Link
                     key={report.id}
-                    href={`/report/${report.id}`}
+                    href={buildReportHref(report.id, attention, snapshot)}
                     style={{
                       display: 'block',
                       borderRadius: '26px',

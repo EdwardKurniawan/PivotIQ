@@ -147,6 +147,12 @@ function gapShape(priority = 'medium') {
   return { currentSegments: 3, targetSegments: 5, label: 'Meaningful stretch', helper: 'You have a base. Now make it visible and repeatable.' };
 }
 
+function normalizeReportTab(tab = '') {
+  const value = String(tab || '').toLowerCase().trim();
+  if (['breakdown', 'stay', 'paths', 'plan'].includes(value)) return value;
+  return 'breakdown';
+}
+
 function pathSignalLabel(item, decisionLabel) {
   if (!item) return 'Not selected';
   if (item.kind === 'stay') return 'Current-lane leverage';
@@ -191,6 +197,16 @@ function StepMeter({ filled = 0, total = 5, tone = palette.orange, muted = 'rgba
           }}
         />
       ))}
+    </div>
+  );
+}
+
+function StaySectionHeader({ color, eyebrow, title, body }) {
+  return (
+    <div style={{ marginBottom: '14px' }}>
+      <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '6px' }}>{eyebrow}</div>
+      <div style={{ color: palette.text, fontSize: '20px', fontWeight: 900, letterSpacing: '-0.04em', marginBottom: '4px' }}>{title}</div>
+      <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.65, maxWidth: '760px' }}>{body}</div>
     </div>
   );
 }
@@ -1183,10 +1199,34 @@ function RoleOperatingSystemCard({ system, color }) {
   if (!system?.headline) return null;
 
   const sections = [
-    ['Automate', system.automate || []],
-    ['Augment', system.augment || []],
-    ['Protect', system.protect || []],
-    ['Lead', system.lead || []],
+    {
+      label: 'Automate',
+      subtitle: 'Let AI handle the first pass.',
+      items: system.automate || [],
+      tone: `${color}10`,
+      border: `${color}22`,
+    },
+    {
+      label: 'Augment',
+      subtitle: 'Use AI to sharpen your judgment.',
+      items: system.augment || [],
+      tone: 'rgba(255,255,255,0.82)',
+      border: palette.border,
+    },
+    {
+      label: 'Protect',
+      subtitle: 'Keep the human checkpoints here.',
+      items: system.protect || [],
+      tone: 'rgba(255,255,255,0.82)',
+      border: palette.border,
+    },
+    {
+      label: 'Lead',
+      subtitle: 'Own the operating layer others depend on.',
+      items: system.lead || [],
+      tone: 'rgba(19,32,42,0.04)',
+      border: palette.border,
+    },
   ];
 
   return (
@@ -1202,35 +1242,39 @@ function RoleOperatingSystemCard({ system, color }) {
         </span>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '12px', marginBottom: '14px' }} className="two-col">
-        {sections.map(([label, items]) => (
-          <div key={label} style={{ padding: '16px', borderRadius: '18px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
-            <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '0.09em', textTransform: 'uppercase', marginBottom: '8px' }}>{label}</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '12px', marginBottom: '14px' }} className="two-col">
+        {[
+          ['Visible scope move', system.visible_scope_move, color, `${color}10`, `${color}22`],
+          ['First-week win', system.first_week_win, palette.textSoft, 'rgba(255,255,255,0.82)', palette.border],
+          ['Leadership readout', system.manager_read, palette.textSoft, 'rgba(19,32,42,0.04)', palette.border],
+        ].map(([label, value, labelColor, background, border]) => (
+          <div key={label} style={{ padding: '15px 16px', borderRadius: '18px', background, border: `1px solid ${border}` }}>
+            <div style={{ color: labelColor, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>{label}</div>
+            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{compactCopy(value, 92)}</div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '12px' }} className="two-col">
+        {sections.map((section) => (
+          <div key={section.label} style={{ padding: '16px', borderRadius: '18px', background: section.tone, border: `1px solid ${section.border}` }}>
+            <div style={{ color: section.label === 'Automate' ? color : palette.textSoft, fontSize: '11px', fontWeight: 900, letterSpacing: '0.09em', textTransform: 'uppercase', marginBottom: '6px' }}>{section.label}</div>
+            <div style={{ color: palette.textSoft, fontSize: '12px', lineHeight: 1.5, marginBottom: '10px' }}>{section.subtitle}</div>
             <div style={{ display: 'grid', gap: '8px' }}>
-              {items.map((item) => (
+              {section.items.slice(0, 2).map((item) => (
                 <div key={item} style={{ display: 'flex', gap: '8px', color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>
                   <span style={{ color, fontWeight: 950 }}>•</span>
                   <span>{item}</span>
                 </div>
               ))}
+              {section.items.length > 2 && (
+                <div style={{ color: palette.textSoft, fontSize: '12px', fontWeight: 700 }}>
+                  +{section.items.length - 2} more signal{section.items.length - 2 === 1 ? '' : 's'}
+                </div>
+              )}
             </div>
           </div>
         ))}
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '12px' }} className="two-col">
-        <div style={{ padding: '14px 16px', borderRadius: '18px', background: `${color}0F`, border: `1px solid ${color}22` }}>
-          <div style={{ color, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Visible scope move</div>
-          <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{system.visible_scope_move}</div>
-        </div>
-        <div style={{ padding: '14px 16px', borderRadius: '18px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
-          <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>First-week win</div>
-          <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{system.first_week_win}</div>
-        </div>
-        <div style={{ padding: '14px 16px', borderRadius: '18px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
-          <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>What leadership should see</div>
-          <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{system.manager_read}</div>
-        </div>
       </div>
     </div>
   );
@@ -2832,7 +2876,7 @@ export default function ReportExperience({ payload, embedded = false }) {
   const [tier, setTier] = useState(payload.tier || 'free');
   const [loading, setLoading] = useState(null);
   const [copied, setCopied] = useState(false);
-  const [activeTab, setActiveTab] = useState('breakdown');
+  const [activeTab, setActiveTab] = useState(normalizeReportTab(payload.initialTab || 'breakdown'));
   const [selectedPlanPath, setSelectedPlanPath] = useState(0);
   const [expandedWeeks, setExpandedWeeks] = useState([1]);
   const [startDate, setStartDate] = useState(payload.startDate || '');
@@ -2863,6 +2907,7 @@ export default function ReportExperience({ payload, embedded = false }) {
   const proofAssetBuilder = reportData.proof_asset_builder || {};
   const stayProofAssetBuilder = reportData.stay_proof_asset_builder || {};
   const refreshSummary = reportData.refresh_summary || null;
+  const bestPivot = pivots[0] || null;
   const aiLeveragePlaybook = stayAndAdvance.ai_leverage_playbook || {};
   const roleOperatingSystem = stayAndAdvance.role_operating_system || {};
   const jobSafetyCase = stayAndAdvance.job_safety_case || {};
@@ -2909,7 +2954,28 @@ export default function ReportExperience({ payload, embedded = false }) {
       setGenerationStatus('idle');
     }
     setRefreshStatus('idle');
+    setActiveTab(normalizeReportTab(payload.initialTab || 'breakdown'));
   }, [payload.reportData, payload.tier]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const searchTab = new URLSearchParams(window.location.search).get('tab');
+    const normalizedTab = normalizeReportTab(payload.initialTab || searchTab || 'breakdown');
+    setActiveTab((current) => (current === normalizedTab ? current : normalizedTab));
+  }, [payload.initialTab]);
+
+  useEffect(() => {
+    if (embedded || typeof window === 'undefined') return;
+    const url = new URL(window.location.href);
+    const normalizedTab = normalizeReportTab(activeTab);
+    if (normalizedTab === 'breakdown') {
+      url.searchParams.delete('tab');
+    } else {
+      url.searchParams.set('tab', normalizedTab);
+    }
+    const nextHref = `${url.pathname}${url.search}${url.hash}`;
+    window.history.replaceState({}, '', nextHref);
+  }, [activeTab, embedded]);
 
   useEffect(() => {
     if (!planPaths.length) return;
@@ -3830,6 +3896,12 @@ export default function ReportExperience({ payload, embedded = false }) {
 
             <div style={{ marginBottom: '28px' }}>
               <div style={{ display: 'grid', gap: '14px', marginBottom: '14px' }}>
+                <StaySectionHeader
+                  color={stayColor}
+                  eyebrow="Work this role differently"
+                  title="Use AI to change the shape of the job before you chase a new title."
+                  body="Start with one workflow, one visible proof point, and one leadership signal that makes your current role harder to replace."
+                />
                 {!stayPath.live_market_signal && (
                   <div className="piq-card" style={{ padding: '20px', background: 'linear-gradient(180deg, rgba(27,111,99,0.08), rgba(255,255,255,0.92))', border: `1px solid ${stayColor}22` }}>
                     <div style={{ color: stayColor, fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>
@@ -3864,6 +3936,12 @@ export default function ReportExperience({ payload, embedded = false }) {
                 </div>
               </div>
 
+              <StaySectionHeader
+                color={stayColor}
+                eyebrow="Build visible leverage"
+                title="Make your workflow, proof, and promotion story feel like one operating system."
+                body="This is the part that turns AI from a tool you use into a reason the team trusts you with broader scope."
+              />
               <RoleOperatingSystemCard system={roleOperatingSystem} color={stayColor} />
               <AiLeveragePlaybookCard playbook={aiLeveragePlaybook} color={stayColor} />
               <ProofAssetBuilderCard builder={stayProofAssetBuilder} color={stayColor} />

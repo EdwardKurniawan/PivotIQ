@@ -114,6 +114,31 @@ function FixtureCard({ snapshot }) {
         </div>
       </div>
 
+      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '14px' }}>
+        {[
+          ['Preview report', `/internal/qa-fixtures/${snapshot.catalog}/${snapshot.slug}`],
+          ['Open stay tab', `/internal/qa-fixtures/${snapshot.catalog}/${snapshot.slug}?tab=stay`],
+          ['Open pivot paths', `/internal/qa-fixtures/${snapshot.catalog}/${snapshot.slug}?tab=paths`],
+        ].map(([label, href]) => (
+          <Link
+            key={label}
+            href={href}
+            style={{
+              borderRadius: '999px',
+              padding: '8px 12px',
+              background: 'rgba(255,255,255,0.78)',
+              border: `1px solid ${palette.border}`,
+              color: palette.navy,
+              fontSize: '12px',
+              fontWeight: 800,
+              textDecoration: 'none',
+            }}
+          >
+            {label}
+          </Link>
+        ))}
+      </div>
+
       {evaluation.issues.length > 0 && (
         <div style={{ padding: '14px 16px', borderRadius: '18px', background: 'rgba(155,61,46,0.08)', border: '1px solid rgba(155,61,46,0.16)', marginTop: '14px' }}>
           <div style={{ color: '#9B3D2E', fontSize: '11px', fontWeight: 900, letterSpacing: '0.09em', textTransform: 'uppercase', marginBottom: '8px' }}>Why this fixture failed</div>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import ReportExperience from '../../components/report-experience';
 import { normalizeReportData } from '../../lib/report-data';
 import { BrandMarkBadge } from '../../components/brand-logo';
@@ -10,6 +11,7 @@ import { getBrowserLocale, getMessages } from '../../lib/i18n';
 export default function ReportPage() {
   const [payload, setPayload] = useState(null);
   const [locale, setLocale] = useState('en');
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     setLocale(getBrowserLocale());
@@ -35,6 +37,7 @@ export default function ReportPage() {
 
       setPayload({
         ...stored,
+        initialTab: searchParams.get('tab') || 'breakdown',
         locale: stored.reportData?.locale || stored.locale || 'en',
         uiLocale: getBrowserLocale(),
         reportData,
@@ -43,7 +46,7 @@ export default function ReportPage() {
     } catch (error) {
       console.error('Failed to load stored report', error);
     }
-  }, []);
+  }, [searchParams]);
 
   if (!payload?.reportData) {
     const messages = getMessages(locale);

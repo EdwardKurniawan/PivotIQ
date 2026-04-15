@@ -40,6 +40,39 @@ Worktree state: clean before this handoff refresh; `TASK_STATE.md` is now update
   - shorter talk track
   - lighter evidence / next-scope grouping
   - trimmed `what not to say`
+- `Role operating system` is now lighter and more visual:
+  - top summary strip for scope move, first-week win, and leadership readout
+  - denser 4-lane operating matrix for:
+    - automate
+    - augment
+    - protect
+    - lead
+- The stay tab now has clearer visual section breaks:
+  - `Work this role differently`
+  - `Build visible leverage`
+- Report tabs now support query-param deep links:
+  - `/report/[id]?tab=stay`
+  - `/report/[id]?tab=paths`
+  - `/report/[id]?tab=plan`
+- Dashboard continuity is tighter:
+  - report links now open the most relevant tab for the current attention state instead of always dropping users at the default top
+- Internal fixture QA now has a true full-report preview route:
+  - `/internal/qa-fixtures/[catalog]/[slug]`
+  - preview links from fixture cards now open:
+    - default preview
+    - stay tab
+    - pivot paths
+- Real local QA improved:
+  - local fixture preview route was verified with:
+    - `200 OK` on `/internal/qa-fixtures/broad/data-analyst?tab=stay`
+    - rendered stay-tab markers like:
+      - `Decision matrix`
+      - `How to work now`
+      - `AI leverage playbook`
+      - `Promotion conversation pack`
+- Recommendation-quality polish in normalization:
+  - pivot lists are now deduped by title so repeated external recommendations do not leak through to the UI as separate paths
+  - this was kept deliberately narrow so it does not collapse pivots just because they resemble the stay-path title
 - Protected report-link auth behavior was fixed:
   - anonymous visits to `/report/[id]` now redirect to `/login?next=/report/[id]` instead of returning a fake `404`
   - the login page now respects `next` for:
@@ -176,32 +209,33 @@ Worktree state: clean before this handoff refresh; `TASK_STATE.md` is now update
 ## In-Progress Work
 
 - No code is currently mid-edit.
-- The active frontier is now result-page usability and visual clarity on top of the stronger recommendation engine:
-  - more visual comparison components
-  - less text density in high-value cards
-  - stronger scan-first behavior on the report page
+- The active frontier is now finish-quality polish on the stay tab:
+  - one more pass on dense cards that still feel text-first
+  - more consistent spacing/hierarchy across the full stay flow
+  - stronger real-report visual QA against authenticated saved reports when convenient
 
 ## Next Steps
 
-1. Continue the results-page visualization sprint:
-   - stay vs pivot comparison refinement if the first matrix feels too dense
-   - consider a compact metric/ladder treatment for proof readiness
-   - consider a compact metric/ladder treatment for proof readiness
-   - review whether `Role operating system` still needs the same compression treatment
-2. Reduce remaining text heaviness in:
-   - `Promotion conversation pack`
-   - `Role operating system`
-3. Reassess the newest broad and senior saved reports in the founder account after the next UI pass to judge actual readability, not just structure.
-4. Tighten any remaining third-step or backup-path resources that still feel like broad search placeholders rather than premium role-native learning.
-5. Continue using saved-report QA as the primary quality gate, not just fixtures and unit tests.
+1. Do one more stay-tab polish pass on:
+   - `Decision matrix`
+   - `Career safety read`
+   - any cards whose spacing still feels heavier than the new operating-system card
+2. Use the new fixture preview route for deeper visual QA on:
+   - `Data Analyst`
+   - `Marketing Director`
+   - `Customer Success Director`
+   - `Executive Assistant`
+3. Improve dashboard/report continuity further if needed:
+   - consider explicit `Open stay tab` / `Open plan` actions on saved-report cards
+4. Reassess the newest broad and senior saved reports in the founder account after the next UI pass to judge actual readability, not just structure.
+5. Tighten any remaining third-step or backup-path resources that still feel like broad search placeholders rather than premium role-native learning.
+6. Continue using saved-report QA as the primary quality gate, not just fixtures and unit tests.
 
 ## Blockers Or Assumptions
 
 - OpenRouter remains on `nvidia/nemotron-3-nano-30b-a3b:free`.
 - Live regeneration for report `696c14fc-dd63-4cc1-b343-228dd65893bf` has previously hung upstream instead of finishing, even when the local normalization logic was correct.
-- Local UI QA against persisted report IDs is limited unless the local runtime has matching saved-report data, but the auth redirect behavior was verified locally:
-  - anonymous `/report/[id]` now returns `307` to `/login?next=/report/[id]`
-  - `/login?next=...` now loads successfully
+- Local UI QA against persisted report IDs is still limited unless the local runtime has matching saved-report data, but the new internal fixture preview route now provides a reliable non-auth visual QA path for the report UI itself.
 - Production report URLs returning `404` were traced to auth-gated route behavior plus login flows that previously hard-coded `/dashboard`; this is now fixed in code and should stop the broken-link experience after deployment.
 - The current direction is still to avoid hard-coded authored skill-gap answers and let the model plus market grounding drive the gap content.
 - It is still acceptable to keep lightweight guardrails that:

@@ -86,12 +86,12 @@ async function loadPersistedReport(id) {
   };
 }
 
-export default async function PersistedReportPage({ params }) {
+export default async function PersistedReportPage({ params, searchParams }) {
   const payload = await loadPersistedReport(params.id);
   if (payload?.mode === 'anonymous') {
     redirect(`/login?next=${encodeURIComponent(`/report/${params.id}`)}`);
   }
   if (!payload?.reportData) notFound();
 
-  return <ReportExperience payload={{ ...payload, uiLocale: getServerLocale() }} embedded={false} />;
+  return <ReportExperience payload={{ ...payload, initialTab: searchParams?.tab || 'breakdown', uiLocale: getServerLocale() }} embedded={false} />;
 }
