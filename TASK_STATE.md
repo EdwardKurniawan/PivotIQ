@@ -96,6 +96,17 @@ Worktree state: modified files pending commit (`TASK_STATE.md`, `lib/report-data
   - `Senior Program Manager`: `Workflow automation design` + `Exception routing logic`
   - `Marketing Director`: `Campaign experiment design` + `Attribution and lifecycle logic`
   - `Customer Success Director`: `Renewal risk review design` + `Customer health scoring`
+- The latest wording pass also improved the third stay layer and emotional framing:
+  - `Planning workflow governance` → `Planning review cadence`
+  - `People workflow adoption` → `Manager support operating standard`
+  - `Executive operating rhythm design` → `Executive decision cadence`
+  - `Customer workflow orchestration` → `Renewal playbook governance`
+  - `Team workflow governance` → `Exception and handoff governance`
+  - `Marketing automation governance` → `Growth review operating system`
+- Stay rationale and safety-case summary text are now role-native instead of repeating the old:
+  - `The safer move is not to outrun...`
+  - `The goal is not to look "good at AI."`
+  template across roles.
 - English stay-path strategy copy was tightened so it reads more decisive and less templated:
   - stronger `stay` recommendation wording
   - stronger `stay` rationale wording
@@ -108,22 +119,19 @@ Worktree state: modified files pending commit (`TASK_STATE.md`, `lib/report-data
 
 - No code is currently mid-edit, but there are local modifications ready to commit.
 - The main active frontier is recommendation polish, especially:
-  - stronger broad-role wording quality
+  - stronger broad- and senior-role wording quality
   - continued improvement of hard-skill relevance without reintroducing hard-coded authored bundles
-  - reducing the remaining repetitive third-layer governance labels and templated safety-copy phrasing
+  - improving the remaining generic learning-resource choices on third-layer stay skills
 
 ## Next Steps
 
-1. Tighten the remaining third-layer stay labels that still feel too close to the second layer:
-   - `Marketing automation governance`
-   - `Customer workflow orchestration`
-   - `Executive operating rhythm design`
-   - `Team workflow governance`
-2. Reduce templated emotional phrasing in saved reports, especially:
-   - `stay_and_advance.rationale`
-   - `job_safety_case.summary`
-3. Reassess the newest senior saved reports in the founder account after that wording pass.
-4. Keep tightening lower-ranked active pivots for broad and senior roles where the main path is solid but the backup stack still feels thinner.
+1. Improve the resource quality on the third stay layer where the label is now good but the learning source is still generic:
+   - `Growth review operating system` → not `Google AI Essentials`
+   - `Manager support operating standard` → not generic beginner AI content
+   - `Planning review cadence` → stronger finance-operating resource if available
+2. Keep tightening lower-ranked active pivots for broad and senior roles where the main path is solid but the backup stack still feels thinner.
+3. Reassess the newest senior saved reports in the founder account after the resource pass.
+4. Continue using saved-report QA as the primary quality gate, not just fixtures and unit tests.
 
 ## Blockers Or Assumptions
 
@@ -136,6 +144,6 @@ Worktree state: modified files pending commit (`TASK_STATE.md`, `lib/report-data
   - reorder or filter low-signal gaps
   but not replace them with authored bundles.
 - The remaining weakness is not gross recommendation failure; it is refinement:
-  - sharper third-layer skill differentiation
-  - less templated safety/promotion wording
+  - sharper third-layer resource matching
+  - less generic support material on stronger stay-skill labels
   - more differentiated broad- and senior-role outputs
