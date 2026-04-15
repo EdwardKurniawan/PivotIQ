@@ -82,6 +82,20 @@ Worktree state: modified files pending commit (`TASK_STATE.md`, `lib/report-data
   - `Executive Assistant`: `Executive workflow design` + `Meeting system automation`
   - `Operations Manager`: `Workflow automation design` + `Process instrumentation`
   - `Marketing Manager`: `Campaign experiment design` + `Marketing automation`
+- The latest refinement pass reduced repetitive second-layer stay labels without reintroducing hard-coded skill bundles:
+  - finance now falls back to `Planning model governance`
+  - marketing now falls back to `Attribution and lifecycle logic`
+  - operations now falls back to `Exception routing logic`
+  - overlap detection now prevents the second layer from echoing the primary workflow too closely
+- Adjacent stay-skill resource matching now understands those newer labels:
+  - finance model-governance labels map to `Financial modeling paths`
+  - marketing lifecycle labels map to `AI for Marketing Course`
+  - operations exception-routing labels map to workflow automation resources
+- Senior-role QA snapshots were seeded into the founder account and spot-checked. Current saved stay-gap patterns are:
+  - `Finance Manager`: `Financial modeling and scenario review` + `Planning model governance`
+  - `Senior Program Manager`: `Workflow automation design` + `Exception routing logic`
+  - `Marketing Director`: `Campaign experiment design` + `Attribution and lifecycle logic`
+  - `Customer Success Director`: `Renewal risk review design` + `Customer health scoring`
 - English stay-path strategy copy was tightened so it reads more decisive and less templated:
   - stronger `stay` recommendation wording
   - stronger `stay` rationale wording
@@ -96,17 +110,20 @@ Worktree state: modified files pending commit (`TASK_STATE.md`, `lib/report-data
 - The main active frontier is recommendation polish, especially:
   - stronger broad-role wording quality
   - continued improvement of hard-skill relevance without reintroducing hard-coded authored bundles
-  - reducing a few still-repetitive stay-path pairs where the second layer is valid but semantically close to the first
+  - reducing the remaining repetitive third-layer governance labels and templated safety-copy phrasing
 
 ## Next Steps
 
-1. Tighten a few still-repetitive stay-path pairs in broad roles, especially:
-   - `Marketing automation` vs `Marketing automation governance`
-   - `Process instrumentation` vs `Workflow automation design`
-   - `Meeting system automation` vs `Executive operating rhythm design`
-2. Reassess broad-role wording in actual saved reports and tighten any remaining templated-sounding stay-path or pivot-path explanation blocks.
-3. Keep tightening lower-ranked active pivots for broad roles where the main path is solid but the backup stack still feels thinner.
-4. Continue using regenerated saved reports as the main product-quality check, not just fixtures and unit tests.
+1. Tighten the remaining third-layer stay labels that still feel too close to the second layer:
+   - `Marketing automation governance`
+   - `Customer workflow orchestration`
+   - `Executive operating rhythm design`
+   - `Team workflow governance`
+2. Reduce templated emotional phrasing in saved reports, especially:
+   - `stay_and_advance.rationale`
+   - `job_safety_case.summary`
+3. Reassess the newest senior saved reports in the founder account after that wording pass.
+4. Keep tightening lower-ranked active pivots for broad and senior roles where the main path is solid but the backup stack still feels thinner.
 
 ## Blockers Or Assumptions
 
@@ -119,6 +136,6 @@ Worktree state: modified files pending commit (`TASK_STATE.md`, `lib/report-data
   - reorder or filter low-signal gaps
   but not replace them with authored bundles.
 - The remaining weakness is not gross recommendation failure; it is refinement:
-  - sharper hard-skill resource mapping
-  - more premium wording
-  - more differentiated broad-role outputs
+  - sharper third-layer skill differentiation
+  - less templated safety/promotion wording
+  - more differentiated broad- and senior-role outputs

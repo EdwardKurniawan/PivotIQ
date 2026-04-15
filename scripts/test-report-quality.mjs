@@ -493,7 +493,7 @@ function testFinanceStayPathAddsAdjacentHardSkillLayer() {
   const normalized = normalizeReportData(report);
   const stayGaps = normalized.stay_path.skill_gaps || [];
   assert.match(stayGaps[0].skill_name, /Excel|NetSuite|planning and review governance/i);
-  assert.match(stayGaps[1].skill_name, /Financial modeling|Scenario planning/i);
+  assert.match(stayGaps[1].skill_name, /Financial modeling|Scenario planning|Planning model governance/i);
 }
 
 function testDuplicateHardSkillGapsCollapseToOneCanonicalGap() {
