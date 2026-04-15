@@ -25,6 +25,13 @@ const palette = {
   navy: '#13202A',
 };
 
+function safeNextPath(candidate) {
+  if (!candidate || typeof candidate !== 'string') return '/dashboard';
+  if (!candidate.startsWith('/')) return '/dashboard';
+  if (candidate.startsWith('//')) return '/dashboard';
+  return candidate;
+}
+
 export default function LoginPage() {
   const [locale, setLocale] = useState(getBrowserLocale());
   const router = useRouter();
@@ -40,6 +47,7 @@ export default function LoginPage() {
   const authConfigured = Boolean(supabase);
   const messages = getMessages(locale);
   const appUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://pivotiq.app').replace(/\/$/, '');
+  const nextPath = safeNextPath(searchParams.get('next'));
 
   useEffect(() => {
     const searchMode = searchParams.get('mode');
@@ -66,7 +74,7 @@ export default function LoginPage() {
     setStatus('loading');
     setMessage('');
 
-    const redirectTo = `${appUrl}/auth/callback?next=/dashboard`;
+    const redirectTo = `${appUrl}/auth/callback?next=${encodeURIComponent(nextPath)}`;
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: { emailRedirectTo: redirectTo },
@@ -107,7 +115,7 @@ export default function LoginPage() {
 
     setStatus('success');
     setMessage(messages.login.passwordSuccess);
-    router.push('/dashboard');
+    router.push(nextPath);
     router.refresh();
   };
 
@@ -121,7 +129,7 @@ export default function LoginPage() {
     setStatus('loading');
     setMessage('');
 
-    const redirectTo = `${appUrl}/auth/callback?next=/dashboard`;
+    const redirectTo = `${appUrl}/auth/callback?next=${encodeURIComponent(nextPath)}`;
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -202,7 +210,7 @@ export default function LoginPage() {
     setStatus('success');
     setMessage(messages.login.recoverySuccess);
     setTimeout(() => {
-      router.push('/dashboard');
+      router.push(nextPath);
       router.refresh();
     }, 1200);
   };

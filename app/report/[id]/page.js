@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import ReportExperience from '../../../components/report-experience';
 import { normalizeReportData } from '../../../lib/report-data';
 import { normalizeOutcomeEntry } from '../../../lib/outcome-tracking';
@@ -8,13 +8,13 @@ import { getServerLocale } from '../../../lib/i18n-server';
 
 async function loadPersistedReport(id) {
   const supabase = createSupabaseServerClient();
-  if (!supabase) return null;
+  if (!supabase) return { mode: 'unconfigured' };
 
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) return null;
+  if (!user) return { mode: 'anonymous' };
 
   const { data: report, error } = await supabase
     .from('reports')
@@ -53,7 +53,7 @@ async function loadPersistedReport(id) {
     .eq('user_id', user.id)
     .single();
 
-  if (error || !report) return null;
+  if (error || !report) return { mode: 'missing' };
 
   const persistedTimestamp = report.updated_at || report.created_at;
   const reportData = normalizeReportData({
@@ -66,6 +66,7 @@ async function loadPersistedReport(id) {
   });
 
   return {
+    mode: 'ready',
     reportId: report.id,
     reportSlug: report.slug,
     locale: report.report_data?.locale || report.report_data?.profile?.locale || 'en',
@@ -87,6 +88,9 @@ async function loadPersistedReport(id) {
 
 export default async function PersistedReportPage({ params }) {
   const payload = await loadPersistedReport(params.id);
+  if (payload?.mode === 'anonymous') {
+    redirect(`/login?next=${encodeURIComponent(`/report/${params.id}`)}`);
+  }
   if (!payload?.reportData) notFound();
 
   return <ReportExperience payload={{ ...payload, uiLocale: getServerLocale() }} embedded={false} />;

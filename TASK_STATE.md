@@ -31,6 +31,13 @@ Worktree state: clean before this handoff refresh; `TASK_STATE.md` is now update
   - quick headline tiles
   - shorter top-line summaries
   - trimmed supporting bullets
+- Protected report-link auth behavior was fixed:
+  - anonymous visits to `/report/[id]` now redirect to `/login?next=/report/[id]` instead of returning a fake `404`
+  - the login page now respects `next` for:
+    - magic-link sign-in
+    - password sign-in
+    - sign-up confirmation flow
+    - recovery completion redirect
 - The new visualization layer was implemented in `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/components/report-experience.js` and verified with a clean `npm run build`.
 - Result-page structure was upgraded so the top-level tabs are now:
   - `Task Breakdown`
@@ -182,8 +189,10 @@ Worktree state: clean before this handoff refresh; `TASK_STATE.md` is now update
 
 - OpenRouter remains on `nvidia/nemotron-3-nano-30b-a3b:free`.
 - Live regeneration for report `696c14fc-dd63-4cc1-b343-228dd65893bf` has previously hung upstream instead of finishing, even when the local normalization logic was correct.
-- Local UI QA against persisted report IDs is limited unless the local runtime has matching saved-report data; route `696c14fc-dd63-4cc1-b343-228dd65893bf` returned `404` locally during this pass even though the component compiled and the live app has persisted reports.
-- Production report URLs checked during this pass (`696c14fc-dd63-4cc1-b343-228dd65893bf`, `61d66c8e-a48e-46a9-8372-991824a5a86a`, `e95e7a17-d68f-42a0-8860-e1cfcfc0407d`) also returned `404`, so public-link visual QA is currently blocked until we identify live reachable report pages or preview routes.
+- Local UI QA against persisted report IDs is limited unless the local runtime has matching saved-report data, but the auth redirect behavior was verified locally:
+  - anonymous `/report/[id]` now returns `307` to `/login?next=/report/[id]`
+  - `/login?next=...` now loads successfully
+- Production report URLs returning `404` were traced to auth-gated route behavior plus login flows that previously hard-coded `/dashboard`; this is now fixed in code and should stop the broken-link experience after deployment.
 - The current direction is still to avoid hard-coded authored skill-gap answers and let the model plus market grounding drive the gap content.
 - It is still acceptable to keep lightweight guardrails that:
   - remove off-family leakage
