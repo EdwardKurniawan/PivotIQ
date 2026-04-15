@@ -375,6 +375,8 @@ function testFinanceStayPathUsesSharperRoleNativeResources() {
   assert.match(stayGaps[2].resource_title, /Finance Planning Operating Cadence|Finance automation learning paths/i);
   assert.doesNotMatch(normalized.stay_and_advance.rationale, /The safer move is not to outrun/i);
   assert.notEqual(stayGaps[2].resource_title, 'Digital Transformation');
+  assert.equal(normalized.stay_path.learning_path[1].resource_title, 'Finance Modeling and Planning Logic');
+  assert.equal(normalized.stay_path.learning_path[2].resource_title, 'Finance Planning Operating Cadence');
 }
 
 function testAnalyticsStayPathAddsAdjacentHardSkillLayer() {
