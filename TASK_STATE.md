@@ -31,6 +31,15 @@ Worktree state: clean before this handoff refresh; `TASK_STATE.md` is now update
   - quick headline tiles
   - shorter top-line summaries
   - trimmed supporting bullets
+- `AI leverage playbook` is now lighter and more visual:
+  - top summary tiles
+  - denser play cards with a 4-part workflow view
+  - less paragraph-heavy repetition
+- `Promotion conversation pack` is now compressed:
+  - top quick-action tiles
+  - shorter talk track
+  - lighter evidence / next-scope grouping
+  - trimmed `what not to say`
 - Protected report-link auth behavior was fixed:
   - anonymous visits to `/report/[id]` now redirect to `/login?next=/report/[id]` instead of returning a fake `404`
   - the login page now respects `next` for:
@@ -177,10 +186,11 @@ Worktree state: clean before this handoff refresh; `TASK_STATE.md` is now update
 1. Continue the results-page visualization sprint:
    - stay vs pivot comparison refinement if the first matrix feels too dense
    - consider a compact metric/ladder treatment for proof readiness
-   - make `AI leverage playbook` lighter and more visual
+   - consider a compact metric/ladder treatment for proof readiness
+   - review whether `Role operating system` still needs the same compression treatment
 2. Reduce remaining text heaviness in:
-   - `AI leverage playbook`
    - `Promotion conversation pack`
+   - `Role operating system`
 3. Reassess the newest broad and senior saved reports in the founder account after the next UI pass to judge actual readability, not just structure.
 4. Tighten any remaining third-step or backup-path resources that still feel like broad search placeholders rather than premium role-native learning.
 5. Continue using saved-report QA as the primary quality gate, not just fixtures and unit tests.

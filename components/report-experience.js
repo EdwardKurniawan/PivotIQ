@@ -1436,6 +1436,19 @@ function AiLeveragePlaybookCard({ playbook, color }) {
         </div>
       </div>
 
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '12px', marginBottom: '14px' }} className="two-col">
+        {[
+          ['Own this now', compactCopy(playbook.plays?.[0]?.workflow, 84)],
+          ['Show leadership', compactCopy(playbook.plays?.[0]?.what_to_share, 84)],
+          ['Weekly shift', compactCopy((playbook.weekly_operating_system || [])[0], 84)],
+        ].map(([label, value], index) => (
+          <div key={label} style={{ padding: '15px 16px', borderRadius: '18px', background: index === 0 ? `${color}10` : 'rgba(255,255,255,0.78)', border: `1px solid ${index === 0 ? `${color}22` : palette.border}` }}>
+            <div style={{ color: index === 0 ? color : palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>{label}</div>
+            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{value || 'Turn one repeated workflow into visible operating leverage.'}</div>
+          </div>
+        ))}
+      </div>
+
       <div style={{ display: 'grid', gap: '14px', marginBottom: '14px' }}>
         {(playbook.plays || []).map((play, index) => (
           <div key={`${play.title}-${index}`} style={{ borderRadius: '22px', padding: '18px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}` }}>
@@ -1443,23 +1456,18 @@ function AiLeveragePlaybookCard({ playbook, color }) {
               <div style={{ color: palette.text, fontSize: '17px', fontWeight: 900 }}>{play.title}</div>
               <span style={{ padding: '6px 10px', borderRadius: '999px', background: `${color}12`, border: `1px solid ${color}22`, color, fontSize: '11px', fontWeight: 900, textTransform: 'uppercase' }}>Play {index + 1}</span>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '12px' }} className="two-col">
-              <div>
-                <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>Workflow to own</div>
-                <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{compactCopy(play.workflow, 88)}</div>
-              </div>
-              <div>
-                <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>How AI helps</div>
-                <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{compactCopy(play.ai_role, 88)}</div>
-              </div>
-              <div>
-                <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>Human checkpoint</div>
-                <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{compactCopy(play.human_checkpoint, 88)}</div>
-              </div>
-              <div>
-                <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>What this changes</div>
-                <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{compactCopy(play.business_impact, 88)}</div>
-              </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '10px' }} className="two-col">
+              {[
+                ['Workflow', compactCopy(play.workflow, 74)],
+                ['AI does', compactCopy(play.ai_role, 74)],
+                ['You review', compactCopy(play.human_checkpoint, 74)],
+                ['Business shift', compactCopy(play.business_impact, 74)],
+              ].map(([label, value], itemIndex) => (
+                <div key={label} style={{ padding: '12px 13px', borderRadius: '16px', background: itemIndex === 1 ? `${color}0F` : 'rgba(255,255,255,0.82)', border: `1px solid ${itemIndex === 1 ? `${color}22` : palette.border}` }}>
+                  <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>{label}</div>
+                  <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.55 }}>{value}</div>
+                </div>
+              ))}
             </div>
             <div style={{ marginTop: '12px', padding: '12px 13px', borderRadius: '16px', background: `${color}0E`, border: `1px solid ${color}20`, color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>
               <strong style={{ color: palette.text }}>What to show leadership:</strong> {compactCopy(play.what_to_share, 120)}
@@ -1700,42 +1708,46 @@ function PromotionConversationPackCard({ pack, color }) {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.05fr) minmax(280px, 0.95fr)', gap: '14px' }} className="two-col">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '12px', marginBottom: '14px' }} className="two-col">
+        {[
+          ['Open with this', compactCopy(pack.manager_script || pack.talk_track?.[0], 86)],
+          ['Bring this proof', compactCopy((pack.evidence_to_bring || [])[0], 86)],
+          ['Make this ask', compactCopy(pack.ask || pack.next_scope_options?.[0], 86)],
+        ].map(([label, value], index) => (
+          <div key={label} style={{ padding: '15px 16px', borderRadius: '18px', background: index === 0 ? `${color}10` : 'rgba(255,255,255,0.78)', border: `1px solid ${index === 0 ? `${color}22` : palette.border}` }}>
+            <div style={{ color: index === 0 ? color : palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>{label}</div>
+            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{value}</div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(320px, 0.92fr)', gap: '14px' }} className="two-col">
         <div style={{ padding: '18px', borderRadius: '20px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}` }}>
           <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Talk track</div>
           <div style={{ display: 'grid', gap: '9px' }}>
-            {(pack.talk_track || []).map((item, index) => (
+            {(pack.talk_track || []).slice(0, 3).map((item, index) => (
               <div key={item} style={{ display: 'flex', gap: '10px', color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>
                 <span style={{ color, fontWeight: 950 }}>{index + 1}</span>
                 <span>{item}</span>
               </div>
             ))}
           </div>
-          {pack.manager_script && (
-            <div style={{ marginTop: '12px', padding: '12px 13px', borderRadius: '16px', background: `${color}0F`, border: `1px solid ${color}22`, color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>
-              <strong style={{ color: palette.text }}>Open with this:</strong> {pack.manager_script}
-            </div>
-          )}
         </div>
         <div style={{ display: 'grid', gap: '14px' }}>
           <div style={{ padding: '18px', borderRadius: '20px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}` }}>
-            <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Bring this evidence</div>
-            <div style={{ display: 'grid', gap: '8px' }}>
-              {(pack.evidence_to_bring || []).map((item) => (
+            <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Evidence and next scope</div>
+            <div style={{ display: 'grid', gap: '8px', marginBottom: '10px' }}>
+              {(pack.evidence_to_bring || []).slice(0, 2).map((item) => (
                 <div key={item} style={{ display: 'flex', gap: '8px', color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>
                   <span style={{ color, fontWeight: 950 }}>•</span>
                   <span>{item}</span>
                 </div>
               ))}
             </div>
-          </div>
-          <div style={{ padding: '18px', borderRadius: '20px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}` }}>
-            <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Make this ask</div>
-            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65, marginBottom: '10px' }}>{pack.ask}</div>
             <div style={{ display: 'grid', gap: '8px' }}>
-              {(pack.next_scope_options || []).map((item) => (
+              {(pack.next_scope_options || []).slice(0, 2).map((item) => (
                 <div key={item} style={{ display: 'flex', gap: '8px', color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>
-                  <span style={{ color, fontWeight: 950 }}>•</span>
+                  <span style={{ color, fontWeight: 950 }}>→</span>
                   <span>{item}</span>
                 </div>
               ))}
@@ -1748,7 +1760,7 @@ function PromotionConversationPackCard({ pack, color }) {
         <div style={{ marginTop: '14px', padding: '14px 16px', borderRadius: '18px', background: 'rgba(19,32,42,0.06)', border: `1px solid ${palette.border}` }}>
           <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '8px' }}>What not to say</div>
           <div style={{ display: 'grid', gap: '8px' }}>
-            {(pack.what_not_to_say || []).map((item) => (
+            {(pack.what_not_to_say || []).slice(0, 2).map((item) => (
               <div key={item} style={{ display: 'flex', gap: '8px', color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>
                 <span style={{ color: '#B45309', fontWeight: 900 }}>•</span>
                 <span>{item}</span>
