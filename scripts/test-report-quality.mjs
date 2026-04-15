@@ -371,7 +371,7 @@ function testFinanceStayPathUsesSharperRoleNativeResources() {
 
   assert.match(stayGaps[0].skill_name, /Excel|ERP|planning and review governance/i);
   assert.match(stayGaps[2].skill_name, /Planning review cadence/i);
-  assert.match(stayGaps[0].resource_title, /FP&A learning paths|Financial modeling paths|NetSuite|SAP/i);
+  assert.match(stayGaps[0].resource_title, /Finance workflow design paths|FP&A learning paths|Financial modeling paths|NetSuite|SAP/i);
   assert.match(stayGaps[2].resource_title, /Finance planning operations paths|Finance automation learning paths/i);
   assert.doesNotMatch(normalized.stay_and_advance.rationale, /The safer move is not to outrun/i);
   assert.notEqual(stayGaps[2].resource_title, 'Digital Transformation');
@@ -611,7 +611,7 @@ function testOperationsStayPathAvoidsGenericAiAcademyDefault() {
 
   assert.equal(stayGaps[0].skill_name, 'Workflow automation design');
   assert.notEqual(stayGaps[0].resource_title, 'OpenAI Academy');
-  assert.match(stayGaps[0].resource_title, /Zapier|Power Automate|Atlassian/i);
+  assert.match(stayGaps[0].resource_title, /Workflow design and process mapping paths|Zapier|Power Automate|Atlassian/i);
   assert.notEqual(stayGaps[2].resource_title, 'Digital Transformation');
 }
 
@@ -656,10 +656,55 @@ function testExecutiveAssistantGetsRoleNativeStayPath() {
   const stayGaps = normalized.stay_path.skill_gaps || [];
   assert.match(normalized.stay_path.title, /Executive Operations Lead/i);
   assert.match(normalized.stay_path.learning_path[0].skill_name, /Executive workflow design|Meeting system automation|Executive decision cadence/i);
+  assert.match(normalized.stay_path.learning_path[0].resource_title, /Executive workflow design paths|Executive operations and chief of staff paths|Build and optimize cloud flows in Power Automate/i);
   assert.match(stayGaps[2].skill_name, /Executive decision cadence/i);
   assert.match(stayGaps[2].resource_title, /Executive operations and chief of staff paths/i);
   assert.notEqual(normalized.stay_and_advance.ai_leverage_playbook.plays[0].title, 'Redesign one recurring workflow');
   assert.deepEqual(normalized.stay_and_advance.ai_this_week_plan.systems, ['calendar', 'meeting brief', 'follow-up tracker']);
+}
+
+function testHrStayPathStartsWithWorkflowContextBeforeGenericAiLiteracy() {
+  const report = buildDemoReportData(
+    'Senior HR Business Partner',
+    'SaaS',
+    ['Manager enablement', 'Workforce planning', 'Policy guidance'],
+    {
+      selected_tasks: [{ label: 'Manager enablement' }],
+      primary_tasks: ['Manager enablement', 'Workforce planning', 'Policy guidance'],
+      clarifiers: {
+        goal_now: 'stay_and_advance',
+        years_experience_band: '11_plus',
+        ai_maturity: 'weekly',
+      },
+    }
+  );
+
+  const normalized = normalizeReportData(report);
+  const learningPath = normalized.stay_path.learning_path || [];
+  assert.match(learningPath[0].resource_title, /Manager enablement workflow paths|Workday reporting and HRIS courses|People operations systems paths/i);
+  assert.notEqual(learningPath[0].resource_title, 'OpenAI Academy');
+}
+
+function testOperationsStayPathStartsWithWorkflowDesignResource() {
+  const report = buildDemoReportData(
+    'Senior Program Manager',
+    'SaaS',
+    ['Cross-functional program governance', 'Workflow follow-through', 'Stakeholder review'],
+    {
+      selected_tasks: [{ label: 'Cross-functional program governance' }],
+      primary_tasks: ['Cross-functional program governance', 'Workflow follow-through', 'Stakeholder review'],
+      clarifiers: {
+        goal_now: 'stay_and_advance',
+        years_experience_band: '11_plus',
+        ai_maturity: 'weekly',
+      },
+    }
+  );
+
+  const normalized = normalizeReportData(report);
+  const learningPath = normalized.stay_path.learning_path || [];
+  assert.match(learningPath[0].skill_name, /Workflow automation design|Workflow design/i);
+  assert.match(learningPath[0].resource_title, /Workflow design and process mapping paths|Learn Zapier in 14 days|Atlassian University/i);
 }
 
 function testFinanceSyntheticTitleFallsBackToCanonicalRole() {
@@ -2074,6 +2119,8 @@ testStayPathPrefersRoleNativeSystemOverSideTool();
 testOperationsStayPathAvoidsGenericAiAcademyDefault();
 testStayWeeklyPlanUsesRoleNativeSystemsAndStayFirstActions();
 testExecutiveAssistantGetsRoleNativeStayPath();
+testHrStayPathStartsWithWorkflowContextBeforeGenericAiLiteracy();
+testOperationsStayPathStartsWithWorkflowDesignResource();
 testFinanceSyntheticTitleFallsBackToCanonicalRole();
 testProjectManagerOverSeniorTitlesFallBackToCanonicalRole();
 testHrLowerPivotDoesNotKeepLegalSkillLeakage();

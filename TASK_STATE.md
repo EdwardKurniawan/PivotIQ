@@ -133,6 +133,14 @@ Worktree state: modified files pending commit (`TASK_STATE.md`, `lib/report-data
   - top pivot hard-skill gaps: `Looker`, `Power BI`, `Snowflake`, `SQL`, `Python`
   - stay-path hard-skill gap: `Tableau`
   - sharper stay recommendation/rationale copy
+- First-step stay learning resources were tightened again so senior-role reports now start with workflow context instead of generic intros:
+  - `Finance Manager` now starts with `Finance workflow design paths`
+  - `Senior HR Business Partner` now starts with `Manager enablement workflow paths`
+  - `Marketing Director` now starts with `Campaign workflow and experimentation paths`
+  - `Customer Success Director` now starts with `Customer workflow design paths`
+- Stay learning-path selection was also improved:
+  - for the `stay` track, `workflow_design` now gets explicit priority as the first step when it is close in value to a narrower hard-skill sub-layer
+  - this fixed `Senior Program Manager` so it now starts with `Workflow automation design` instead of jumping straight to `Exception routing logic`
 
 ## In-Progress Work
 
@@ -140,15 +148,15 @@ Worktree state: modified files pending commit (`TASK_STATE.md`, `lib/report-data
 - The main active frontier is recommendation polish, especially:
   - stronger broad- and senior-role wording quality
   - continued improvement of hard-skill relevance without reintroducing hard-coded authored bundles
-  - improving first-step workflow resources that still begin with generic intros in a few families
+  - improving second-step resource precision where some families still fall back to broad vendor/tool courses
 
 ## Next Steps
 
-1. Improve first-step stay resources where the label is good but the opening learning step can still be a little generic:
-   - `Manager enablement workflow design` still starts from `OpenAI Academy`
-   - `Workflow automation design` still often starts from vendor tooling before the operating context is established
+1. Tighten second-step stay resources in the remaining weaker families:
+   - `Marketing Director` still uses `AI for Marketing Course` for `Attribution and lifecycle logic`
+   - `Senior Program Manager` still uses `Learn Zapier in 14 days` for `Exception routing logic`
 2. Keep tightening lower-ranked active pivots for broad and senior roles where the main path is solid but the backup stack still feels thinner.
-3. Reassess the newest senior saved reports in the founder account after any first-step workflow-resource pass.
+3. Reassess the newest senior saved reports in the founder account after the next second-step resource pass.
 4. Continue using saved-report QA as the primary quality gate, not just fixtures and unit tests.
 
 ## Blockers Or Assumptions
@@ -162,6 +170,6 @@ Worktree state: modified files pending commit (`TASK_STATE.md`, `lib/report-data
   - reorder or filter low-signal gaps
   but not replace them with authored bundles.
 - The remaining weakness is not gross recommendation failure; it is refinement:
-  - sharper first-step workflow-resource matching
-  - a few families still beginning with vendor/tool intros instead of role-native workflow design
+  - sharper second-step resource matching
+  - a few families still beginning their build-proof step with broad vendor/tool intros instead of role-native operational depth
   - more differentiated broad- and senior-role outputs
