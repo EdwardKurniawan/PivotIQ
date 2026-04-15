@@ -137,6 +137,150 @@ function evidenceBarRows({ matchScore = 0, profileFit = 0, openings = 0, maxOpen
   ];
 }
 
+function gapShape(priority = 'medium') {
+  if (priority === 'critical') {
+    return { currentSegments: 2, targetSegments: 5, label: 'Critical stretch', helper: 'Build this quickly before the path gets credible.' };
+  }
+  if (priority === 'low') {
+    return { currentSegments: 4, targetSegments: 5, label: 'Fine-tune', helper: 'You already have signal here. Tighten it and move on.' };
+  }
+  return { currentSegments: 3, targetSegments: 5, label: 'Meaningful stretch', helper: 'You have a base. Now make it visible and repeatable.' };
+}
+
+function pathSignalLabel(item, decisionLabel) {
+  if (!item) return 'Not selected';
+  if (item.kind === 'stay') return 'Current-lane leverage';
+  const openings = Number(item.live_market_signal?.matched_openings_count || 0);
+  if (openings) return marketDemandLabel(openings);
+  return decisionLabel || 'Model-led direction';
+}
+
+function comparisonMetricRows(item, decisionLabel) {
+  const skillGapCount = Array.isArray(item?.skill_gaps) ? item.skill_gaps.length : 0;
+  return [
+    {
+      label: 'Confidence',
+      value: decisionLabel || 'Current-lane advantage',
+    },
+    {
+      label: 'Time to proof',
+      value: item?.comparison_window || item?.transition_time || '3-9 months',
+    },
+    {
+      label: 'Skill load',
+      value: `${skillGapCount} focus ${skillGapCount === 1 ? 'area' : 'areas'}`,
+    },
+    {
+      label: 'Signal',
+      value: pathSignalLabel(item, decisionLabel),
+    },
+  ];
+}
+
+function StepMeter({ filled = 0, total = 5, tone = palette.orange, muted = 'rgba(19,27,35,0.08)' }) {
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: `repeat(${total}, minmax(0, 1fr))`, gap: '6px' }}>
+      {Array.from({ length: total }).map((_, index) => (
+        <span
+          key={index}
+          style={{
+            height: '10px',
+            borderRadius: '999px',
+            background: index < filled ? tone : muted,
+            boxShadow: index < filled ? `inset 0 0 0 1px ${tone}` : 'none',
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+function PathDecisionMatrix({ stayPath, stayAndAdvance, bestPivot, backupPivot, messages }) {
+  const decisionCards = [
+    stayPath ? {
+      id: `stay-${stayPath.id || stayPath.title}`,
+      title: stayPath.title,
+      kind: 'stay',
+      accent: palette.teal,
+      highlight: true,
+      subtitle: compactCopy(stayAndAdvance?.recommendation || stayPath.fit_summary, 82),
+      decisionLabel: messages.report.stayAndAdvance,
+      comparison_window: stayAndAdvance?.promotion_path?.timeline || stayPath.transition_time || '3-9 months',
+      skill_gaps: stayPath.skill_gaps || [],
+      live_market_signal: stayPath.live_market_signal || null,
+    } : null,
+    bestPivot ? {
+      ...bestPivot,
+      id: `pivot-${bestPivot.id || bestPivot.title}`,
+      kind: 'pivot',
+      accent: palette.orange,
+      subtitle: compactCopy(bestPivot.why_this_path_wins || bestPivot.fit_summary, 82),
+      decisionLabel: decisionFrameLabel(bestPivot.decision_frame, messages),
+    } : null,
+    backupPivot ? {
+      ...backupPivot,
+      id: `backup-${backupPivot.id || backupPivot.title}`,
+      kind: 'backup',
+      accent: palette.navy,
+      subtitle: compactCopy(backupPivot.who_this_is_for || backupPivot.fit_summary, 82),
+      decisionLabel: decisionFrameLabel(backupPivot.decision_frame, messages),
+    } : null,
+  ]
+    .filter(Boolean)
+    .filter((item, index, list) => index === list.findIndex((candidate) => candidate.title === item.title));
+
+  if (decisionCards.length < 2) return null;
+
+  return (
+    <div className="piq-card" style={{ padding: '22px', marginBottom: '18px', background: 'linear-gradient(135deg, rgba(255,255,255,0.94), rgba(244,239,231,0.92))', border: `1px solid ${palette.border}`, boxShadow: '0 20px 44px rgba(19, 32, 42, 0.08)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', alignItems: 'end', flexWrap: 'wrap', marginBottom: '16px' }}>
+        <div>
+          <div style={{ color: palette.navy, fontSize: '11px', fontWeight: 900, letterSpacing: '1.2px', textTransform: 'uppercase', marginBottom: '8px' }}>Decision matrix</div>
+          <h3 style={{ color: palette.text, fontSize: '22px', fontWeight: 950, letterSpacing: '-0.04em', margin: '0 0 6px' }}>See the safest move, the stretch move, and the backup at a glance.</h3>
+          <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.65, margin: 0, maxWidth: '760px' }}>
+            Compare the current-lane option against the strongest pivot directions without reading through every paragraph first.
+          </p>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${decisionCards.length}, minmax(0, 1fr))`, gap: '12px' }} className="two-col">
+        {decisionCards.map((item) => (
+          <div
+            key={item.id}
+            style={{
+              padding: '18px',
+              borderRadius: '22px',
+              background: item.highlight ? `${item.accent}10` : 'rgba(255,255,255,0.82)',
+              border: `1px solid ${item.highlight ? `${item.accent}28` : palette.border}`,
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '10px', alignItems: 'center', marginBottom: '10px' }}>
+              <span style={{ color: item.accent, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase' }}>
+                {item.kind === 'stay' ? 'Stay path' : item.kind === 'backup' ? 'Backup path' : 'Primary pivot'}
+              </span>
+              <span style={{ padding: '5px 9px', borderRadius: '999px', background: 'rgba(255,255,255,0.84)', border: `1px solid ${palette.border}`, color: palette.textSoft, fontSize: '11px', fontWeight: 800 }}>
+                {item.decisionLabel}
+              </span>
+            </div>
+
+            <div style={{ color: palette.text, fontSize: '16px', fontWeight: 900, lineHeight: 1.3, marginBottom: '6px' }}>{item.title}</div>
+            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.55, marginBottom: '14px' }}>{item.subtitle}</div>
+
+            <div style={{ display: 'grid', gap: '9px' }}>
+              {comparisonMetricRows(item, item.decisionLabel).map((row) => (
+                <div key={row.label} style={{ padding: '10px 11px', borderRadius: '14px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}` }}>
+                  <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '4px' }}>{row.label}</div>
+                  <div style={{ color: palette.text, fontSize: '13px', lineHeight: 1.45, fontWeight: 700 }}>{row.value}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 const affiliateLearningProviders = ['Coursera', 'Udemy', 'edX', 'DataCamp', 'Pluralsight', 'Skillshare'];
 const trustedLearningProviders = [
   'Anthropic',
@@ -1125,12 +1269,30 @@ function ProofAssetBuilderCard({ builder, color }) {
         </div>
       )}
 
+      {builder.execution_guide && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '12px', marginBottom: '14px' }} className="two-col">
+          {[
+            ['Ship this week', builder.execution_guide.one_week_ship],
+            ['Good enough bar', builder.execution_guide.good_enough_bar],
+            ['Manager readout', builder.execution_guide.manager_readout],
+          ].map(([label, value], index) => (
+            <div key={label} style={{ padding: '15px 16px', borderRadius: '18px', background: index === 0 ? `${color}10` : 'rgba(255,255,255,0.76)', border: `1px solid ${index === 0 ? `${color}22` : palette.border}` }}>
+              <div style={{ color: index === 0 ? color : palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>{label}</div>
+              <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{value}</div>
+            </div>
+          ))}
+        </div>
+      )}
+
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.1fr) minmax(280px, 0.9fr)', gap: '14px' }} className="two-col">
         <div style={{ padding: '18px', borderRadius: '20px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
           <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Artifact outline</div>
           <div style={{ display: 'grid', gap: '10px' }}>
-            {(builder.sections || []).map((section) => (
-              <div key={section} style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{section}</div>
+            {(builder.sections || []).map((section, index) => (
+              <div key={section} style={{ display: 'flex', gap: '10px', alignItems: 'start', color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>
+                <span style={{ color, fontWeight: 900, minWidth: '16px' }}>{index + 1}</span>
+                <span>{section}</span>
+              </div>
             ))}
           </div>
         </div>
@@ -1184,8 +1346,7 @@ function ProofAssetBuilderCard({ builder, color }) {
       {builder.execution_guide && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '14px', marginTop: '14px' }} className="two-col">
           <div style={{ padding: '18px', borderRadius: '20px', background: `${color}0F`, border: `1px solid ${color}22` }}>
-            <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Ship it this week</div>
-            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65, marginBottom: '10px' }}>{builder.execution_guide.one_week_ship}</div>
+            <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Ship inputs and format</div>
             <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>Artifact format</div>
             <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65, marginBottom: '10px' }}>{builder.execution_guide.artifact_format}</div>
             <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>Inputs to collect</div>
@@ -1200,10 +1361,6 @@ function ProofAssetBuilderCard({ builder, color }) {
           </div>
           <div style={{ padding: '18px', borderRadius: '20px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
             <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Make it career-useful</div>
-            <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>Good enough bar</div>
-            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65, marginBottom: '10px' }}>{builder.execution_guide.good_enough_bar}</div>
-            <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>Manager readout</div>
-            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65, marginBottom: '10px' }}>{builder.execution_guide.manager_readout}</div>
             <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>Resume / LinkedIn line</div>
             <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{builder.execution_guide.resume_bullet_formula}</div>
           </div>
@@ -1354,50 +1511,45 @@ function UseAiThisWeekCard({ plan, color }) {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.15fr) minmax(280px, 0.85fr)', gap: '14px' }} className="two-col">
-        <div style={{ padding: '18px', borderRadius: '22px', background: 'rgba(255,255,255,0.82)', border: `1px solid ${palette.border}` }}>
-          <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Workflow to redesign</div>
-            <div style={{ color: palette.text, fontSize: '17px', fontWeight: 850, lineHeight: 1.45, marginBottom: '12px' }}>{compactCopy(plan.workflow, 100)}</div>
-            <div style={{ display: 'grid', gap: '10px' }}>
-              <div>
-                <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>How AI helps</div>
-                <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{compactCopy(plan.ai_role, 88)}</div>
-              </div>
-              <div>
-                <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>Human checkpoint</div>
-                <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{compactCopy(plan.human_checkpoint, 88)}</div>
-              </div>
-            </div>
+      <div style={{ padding: '18px', borderRadius: '22px', background: 'rgba(255,255,255,0.82)', border: `1px solid ${palette.border}`, marginBottom: '14px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap' }}>
+          <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase' }}>Workflow map</div>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            {(plan.systems || []).length ? (plan.systems || []).map((system) => (
+              <span key={system} style={{ padding: '6px 10px', borderRadius: '999px', background: `${color}0D`, border: `1px solid ${color}22`, color: palette.textMuted, fontSize: '12px', fontWeight: 700 }}>
+                {system}
+              </span>
+            )) : (
+              <span style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.6 }}>Start where the workflow already lives.</span>
+            )}
+          </div>
         </div>
 
-        <div style={{ display: 'grid', gap: '14px' }}>
-          <div style={{ padding: '18px', borderRadius: '22px', background: 'rgba(255,255,255,0.82)', border: `1px solid ${palette.border}` }}>
-            <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Ship this output</div>
-            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{compactCopy(plan.output, 88)}</div>
-          </div>
-          <div style={{ padding: '18px', borderRadius: '22px', background: 'rgba(255,255,255,0.82)', border: `1px solid ${palette.border}` }}>
-            <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Metric to move</div>
-            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{compactCopy(plan.metric, 88)}</div>
-          </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '12px' }} className="two-col">
+          {[
+            ['Workflow to redesign', compactCopy(plan.workflow, 92)],
+            ['AI does', compactCopy(plan.ai_role, 86)],
+            ['You review', compactCopy(plan.human_checkpoint, 86)],
+            ['Ship this', compactCopy(plan.output, 86)],
+          ].map(([label, value], index) => (
+            <div key={label} style={{ position: 'relative', padding: '14px', borderRadius: '18px', background: index === 1 ? `${color}0F` : 'rgba(255,255,255,0.86)', border: `1px solid ${index === 1 ? `${color}24` : palette.border}` }}>
+              <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '8px' }}>{label}</div>
+              <div style={{ color: palette.text, fontSize: '13px', lineHeight: 1.6, fontWeight: 700 }}>{value}</div>
+            </div>
+          ))}
         </div>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '14px', marginTop: '14px' }} className="two-col">
         <div style={{ padding: '18px', borderRadius: '20px', background: `${color}0D`, border: `1px solid ${color}20` }}>
-          <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Start in these systems</div>
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-            {(plan.systems || []).length ? (plan.systems || []).map((system) => (
-              <span key={system} style={{ padding: '7px 10px', borderRadius: '999px', background: 'rgba(255,255,255,0.82)', border: `1px solid ${palette.border}`, color: palette.textMuted, fontSize: '12px', fontWeight: 700 }}>
-                {system}
-              </span>
-            )) : (
-              <span style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>Start with the system where the workflow already lives today.</span>
-            )}
-          </div>
+          <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Success signal</div>
+          <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>Metric to move</div>
+          <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6, marginBottom: '10px' }}>{compactCopy(plan.metric, 88)}</div>
+          <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>Stop when this is true</div>
+          <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{compactCopy(plan.stop_condition, 90)}</div>
         </div>
         <div style={{ padding: '18px', borderRadius: '20px', background: 'rgba(255,255,255,0.82)', border: `1px solid ${palette.border}` }}>
-          <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Stop when this is true</div>
-          <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6, marginBottom: '10px' }}>{compactCopy(plan.stop_condition, 90)}</div>
+          <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Leadership readout</div>
           <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>Use this with your manager</div>
           <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{compactCopy(plan.share_with_manager, 100)}</div>
         </div>
@@ -1585,6 +1737,7 @@ function PromotionConversationPackCard({ pack, color }) {
 
 function SkillGapCard({ skill, color, messages }) {
   const priorityColor = skillPriorityColor(skill.gap_priority, color);
+  const shape = gapShape(skill.gap_priority);
 
   return (
     <div className="piq-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px', background: palette.panel, border: `1px solid ${palette.border}`, borderRadius: '26px' }}>
@@ -1607,12 +1760,21 @@ function SkillGapCard({ skill, color, messages }) {
         </span>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: '10px', alignItems: 'center' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(210px, 0.85fr) minmax(0, 1fr)', gap: '10px', alignItems: 'stretch' }} className="two-col">
         <div style={{ background: 'rgba(10, 16, 24, 0.9)', border: `1px solid ${palette.border}`, borderRadius: '16px', padding: '13px' }}>
           <div style={{ color: 'rgba(244,239,231,0.72)', fontSize: '11px', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '6px' }}>{messages.report.currentLeverage}</div>
           <div style={{ color: '#F4EFE7', fontSize: '13px', lineHeight: 1.6 }}>{skill.current_strength}</div>
         </div>
-        <MonoIcon name="next-first" tone="orange" size={24} />
+        <div style={{ padding: '13px', borderRadius: '16px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}` }}>
+          <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '8px' }}>Gap shape</div>
+          <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>Current signal</div>
+          <StepMeter filled={shape.currentSegments} tone={palette.navy} />
+          <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, margin: '10px 0 6px' }}>Target scope</div>
+          <StepMeter filled={shape.targetSegments} tone={priorityColor} />
+          <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.55, marginTop: '10px' }}>
+            <strong style={{ color: palette.text }}>{shape.label}:</strong> {shape.helper}
+          </div>
+        </div>
         <div style={{ background: `${color}0F`, border: `1px solid ${color}22`, borderRadius: '16px', padding: '13px' }}>
           <div style={{ color, fontSize: '11px', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '6px' }}>{messages.report.requiredLevel}</div>
           <div style={{ color: palette.text, fontSize: '13px', lineHeight: 1.6 }}>{skill.required_level}</div>
@@ -1694,6 +1856,21 @@ function LearningPathCard({ path, color }) {
         </span>
       </div>
 
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '10px', marginBottom: '14px' }} className="two-col">
+        {steps.map((step, index) => (
+          <div key={`track-${step.label}-${step.skill.skill_name}`} style={{ padding: '12px 14px', borderRadius: '18px', background: index === 0 ? `${color}12` : 'rgba(255,255,255,0.78)', border: `1px solid ${index === 0 ? `${color}26` : palette.border}` }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+              <span style={{ width: '24px', height: '24px', borderRadius: '999px', display: 'grid', placeItems: 'center', background: index === 0 ? color : 'rgba(19,32,42,0.08)', color: index === 0 ? '#fff' : palette.text, fontSize: '12px', fontWeight: 900 }}>
+                {index + 1}
+              </span>
+              <span style={{ color: color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase' }}>{step.label}</span>
+            </div>
+            <div style={{ color: palette.text, fontSize: '13px', fontWeight: 800, lineHeight: 1.4, marginBottom: '6px' }}>{step.skill.skill_name}</div>
+            <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.55 }}>{compactCopy(step.helper, 70)}</div>
+          </div>
+        ))}
+      </div>
+
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '12px' }} className="two-col">
         {steps.map((step, index) => (
           <div key={`${step.label}-${step.skill.skill_name}`} style={{ position: 'relative', padding: '18px', borderRadius: '22px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}`, overflow: 'hidden' }}>
@@ -1705,6 +1882,18 @@ function LearningPathCard({ path, color }) {
               </div>
               <div style={{ color: palette.text, fontSize: '16px', fontWeight: 900, lineHeight: 1.25, marginBottom: '6px' }}>{step.skill.skill_name}</div>
               <p style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.55, margin: '0 0 12px' }}>{compactCopy(step.helper, 88)}</p>
+              <div style={{ padding: '11px 12px', borderRadius: '14px', background: `${color}0D`, border: `1px solid ${color}18`, marginBottom: '12px' }}>
+                <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '4px' }}>
+                  {index === 0 ? 'Use this to start' : index === 1 ? 'Use this to build proof' : 'Use this to go deeper'}
+                </div>
+                <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.55 }}>
+                  {index === 0
+                    ? 'Create the first credible workflow in your current role.'
+                    : index === 1
+                      ? 'Turn the skill into something visible and reviewable.'
+                      : 'Systematize the work so it becomes repeatable scope.'}
+                </div>
+              </div>
               <a href={step.skill.resource_url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', color, fontSize: '13px', fontWeight: 850, textDecoration: 'none', marginBottom: '12px' }}>
                 {step.skill.resource_title} →
               </a>
@@ -3592,6 +3781,14 @@ export default function ReportExperience({ payload, embedded = false }) {
                 ))}
               </div>
             </div>
+
+            <PathDecisionMatrix
+              stayPath={stayPath}
+              stayAndAdvance={stayAndAdvance}
+              bestPivot={bestPivot}
+              backupPivot={recommendationStack.conservative_backup || pivots[1] || null}
+              messages={messages}
+            />
 
             <div style={{ marginBottom: '28px' }}>
               <div style={{ display: 'grid', gap: '14px', marginBottom: '14px' }}>

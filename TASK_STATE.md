@@ -7,6 +7,27 @@ Worktree state: clean before this handoff refresh; `TASK_STATE.md` is now update
 
 ## Completed Work
 
+- Report visualization got a new data-UI pass:
+  - added a `Decision matrix` near the top of the stay tab to compare:
+    - stay path
+    - primary pivot
+    - backup path
+  - redesigned `Use AI this week` into a clearer workflow map:
+    - workflow
+    - AI role
+    - human checkpoint
+    - shipped output
+    - success signal
+    - leadership readout
+  - upgraded skill-gap cards with a visual `Gap shape` meter so current signal vs target scope is easier to scan
+- Learning and proof sections got a second visualization pass:
+  - `Learning path` now has a clearer 3-step track before the detailed cards
+  - each learning step now explains whether it is for:
+    - starting
+    - building proof
+    - going deeper
+  - `Proof asset builder` now starts with a compact ship/check/share strip before the deeper detail
+- The new visualization layer was implemented in `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/components/report-experience.js` and verified with a clean `npm run build`.
 - Result-page structure was upgraded so the top-level tabs are now:
   - `Task Breakdown`
   - `Stay and advance with AI`
@@ -135,22 +156,30 @@ Worktree state: clean before this handoff refresh; `TASK_STATE.md` is now update
 ## In-Progress Work
 
 - No code is currently mid-edit.
-- The active frontier is refinement rather than gross recommendation failure:
-  - sharper tertiary-step resource matching
-  - better backup-path learning quality
-  - stronger differentiation between broad and senior role outputs
+- The active frontier is now result-page usability and visual clarity on top of the stronger recommendation engine:
+  - more visual comparison components
+  - less text density in high-value cards
+  - stronger scan-first behavior on the report page
 
 ## Next Steps
 
-1. Tighten any remaining third-step or backup-path resources that still feel like broad search placeholders rather than premium role-native learning.
-2. Keep tightening lower-ranked active pivots for broad and senior roles where the main path is solid but the backup stack still feels thinner.
-3. Reassess the newest broad and senior saved reports in the founder account after the next resource-precision pass.
-4. Continue using saved-report QA as the primary quality gate, not just fixtures and unit tests.
+1. Continue the results-page visualization sprint:
+   - stay vs pivot comparison refinement if the first matrix feels too dense
+   - compress `Career safety read` and `Promotion case` into even more visual summary blocks
+   - consider a compact metric/ladder treatment for proof readiness
+2. Reduce remaining text heaviness in:
+   - `Career safety read`
+   - `Promotion case`
+   - `AI leverage playbook`
+3. Reassess the newest broad and senior saved reports in the founder account after the next UI pass to judge actual readability, not just structure.
+4. Tighten any remaining third-step or backup-path resources that still feel like broad search placeholders rather than premium role-native learning.
+5. Continue using saved-report QA as the primary quality gate, not just fixtures and unit tests.
 
 ## Blockers Or Assumptions
 
 - OpenRouter remains on `nvidia/nemotron-3-nano-30b-a3b:free`.
 - Live regeneration for report `696c14fc-dd63-4cc1-b343-228dd65893bf` has previously hung upstream instead of finishing, even when the local normalization logic was correct.
+- Local UI QA against persisted report IDs is limited unless the local runtime has matching saved-report data; route `696c14fc-dd63-4cc1-b343-228dd65893bf` returned `404` locally during this pass even though the component compiled and the live app has persisted reports.
 - The current direction is still to avoid hard-coded authored skill-gap answers and let the model plus market grounding drive the gap content.
 - It is still acceptable to keep lightweight guardrails that:
   - remove off-family leakage
