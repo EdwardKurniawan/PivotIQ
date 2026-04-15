@@ -371,6 +371,110 @@ function testFinanceStayPathUsesSharperRoleNativeResources() {
   assert.notEqual(stayGaps[2].resource_title, 'Digital Transformation');
 }
 
+function testAnalyticsStayPathAddsAdjacentHardSkillLayer() {
+  const report = buildDemoReportData(
+    'Data Analyst',
+    'SaaS',
+    ['Dashboard QA and metric review', 'Stakeholder KPI reporting'],
+    {
+      selected_tasks: [{ label: 'Dashboard QA and metric review' }],
+      primary_tasks: ['Dashboard QA and metric review', 'Stakeholder KPI reporting'],
+      clarifiers: {
+        goal_now: 'stay_and_advance',
+        ai_maturity: 'weekly',
+        technical_capability: 'sql_bi',
+        core_systems: 'Tableau, Salesforce',
+        domain_focus: 'business intelligence and KPI reporting',
+      },
+    }
+  );
+
+  report.pivots[0] = {
+    ...report.pivots[0],
+    title: 'Analytics Manager',
+    live_market_signal: {
+      matched_openings_count: 6,
+      profile_fit_score: 17,
+      market_required_skills: ['SQL', 'Data modeling'],
+      market_tools: ['Snowflake'],
+    },
+    skill_gaps: [
+      {
+        skill_name: 'SQL',
+        category: 'technical stack',
+        gap_priority: 'critical',
+        why_it_matters: 'SQL helps tighten the data layer behind analytics reviews.',
+        how_to_close_gap: 'Use SQL on one recurring analytics QA workflow.',
+        resource_title: 'Learn Structured Query Language (SQL)',
+        resource_url: 'https://www.edx.org/learn/sql',
+        resource_provider: 'edX',
+      },
+      {
+        skill_name: 'Data modeling',
+        category: 'technical stack',
+        gap_priority: 'medium',
+        why_it_matters: 'Data modeling sharpens the trust layer behind dashboard decisions.',
+        how_to_close_gap: 'Rework one semantic layer behind a dashboard review.',
+        resource_title: 'Data engineering learning paths',
+        resource_url: 'https://www.pluralsight.com/paths/data-engineering',
+        resource_provider: 'Pluralsight',
+      },
+    ],
+  };
+
+  const normalized = normalizeReportData(report);
+  const stayGaps = normalized.stay_path.skill_gaps || [];
+  assert.match(stayGaps[0].skill_name, /Tableau/i);
+  assert.match(stayGaps[1].skill_name, /SQL|Data modeling/i);
+}
+
+function testFinanceStayPathAddsAdjacentHardSkillLayer() {
+  const report = buildDemoReportData(
+    'Finance Manager',
+    'SaaS',
+    ['Forecast review and planning', 'Variance analysis'],
+    {
+      selected_tasks: [{ label: 'Forecast review and planning' }],
+      primary_tasks: ['Forecast review and planning', 'Variance analysis'],
+      clarifiers: {
+        goal_now: 'stay_and_advance',
+        ai_maturity: 'weekly',
+        technical_capability: 'advanced_spreadsheets',
+        core_systems: 'Excel, NetSuite',
+        domain_focus: 'planning and commercial finance',
+      },
+    }
+  );
+
+  report.pivots[0] = {
+    ...report.pivots[0],
+    title: 'Finance Systems Manager',
+    live_market_signal: {
+      matched_openings_count: 4,
+      profile_fit_score: 18,
+      market_required_skills: ['Financial modeling', 'Scenario planning'],
+      market_tools: ['NetSuite', 'Power BI'],
+    },
+    skill_gaps: [
+      {
+        skill_name: 'Financial modeling',
+        category: 'technical stack',
+        gap_priority: 'critical',
+        why_it_matters: 'Model judgment matters for finance systems work.',
+        how_to_close_gap: 'Refactor one planning model into a cleaner review flow.',
+        resource_title: 'Financial modeling paths',
+        resource_url: 'https://www.datacamp.com/search?q=financial%20modeling',
+        resource_provider: 'DataCamp',
+      },
+    ],
+  };
+
+  const normalized = normalizeReportData(report);
+  const stayGaps = normalized.stay_path.skill_gaps || [];
+  assert.match(stayGaps[0].skill_name, /Excel|NetSuite|planning and review governance/i);
+  assert.match(stayGaps[1].skill_name, /Financial modeling|Scenario planning/i);
+}
+
 function testDuplicateHardSkillGapsCollapseToOneCanonicalGap() {
   const report = buildDemoReportData(
     'Data Analyst',
@@ -1932,6 +2036,8 @@ testStayAdvanceLearningPathDoesNotInheritPivotCourse();
 testBroadRoleStayPathUsesRoleNativeLearningAndWeeklyPlan();
 testAnalyticsStayPathUsesRoleNativeResources();
 testFinanceStayPathUsesSharperRoleNativeResources();
+testAnalyticsStayPathAddsAdjacentHardSkillLayer();
+testFinanceStayPathAddsAdjacentHardSkillLayer();
 testDuplicateHardSkillGapsCollapseToOneCanonicalGap();
 testStayPathPrefersRoleNativeSystemOverSideTool();
 testOperationsStayPathAvoidsGenericAiAcademyDefault();
