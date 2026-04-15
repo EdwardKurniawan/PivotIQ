@@ -75,6 +75,13 @@ Worktree state: modified files pending commit (`TASK_STATE.md`, `lib/report-data
   - example pattern is now closer to:
     - `Tableau` + `SQL/Data modeling`
     - `Excel/NetSuite` + `Financial modeling/Scenario planning`
+- Broad-role fallback behavior was tightened so the second stay-path layer now appears even when there is no explicit system input and the pivot signal is thin.
+- Broad-role saved QA snapshots were regenerated again and now show stronger second-layer stay gaps:
+  - `Data Analyst`: `Dashboard QA workflow design` + `SQL`
+  - `Customer Success Manager`: `Renewal risk review design` + `Customer health scoring`
+  - `Executive Assistant`: `Executive workflow design` + `Meeting system automation`
+  - `Operations Manager`: `Workflow automation design` + `Process instrumentation`
+  - `Marketing Manager`: `Campaign experiment design` + `Marketing automation`
 - English stay-path strategy copy was tightened so it reads more decisive and less templated:
   - stronger `stay` recommendation wording
   - stronger `stay` rationale wording
@@ -89,15 +96,17 @@ Worktree state: modified files pending commit (`TASK_STATE.md`, `lib/report-data
 - The main active frontier is recommendation polish, especially:
   - stronger broad-role wording quality
   - continued improvement of hard-skill relevance without reintroducing hard-coded authored bundles
-  - checking the real output quality of the new adjacent hard-skill layer in saved reports once regeneration is responsive again
+  - reducing a few still-repetitive stay-path pairs where the second layer is valid but semantically close to the first
 
 ## Next Steps
 
-1. Regenerate and inspect the saved broad-role QA reports again once the live regeneration path is responsive, especially the Data Analyst and Finance Manager examples.
-2. Reassess whether the new adjacent hard-skill layer reads as practical and premium in actual saved reports, not just tests.
-3. Tighten any remaining templated-sounding stay-path or pivot-path wording in broad-role saved outputs.
-4. Keep tightening lower-ranked active pivots for broad roles where the main path is solid but the backup stack still feels thinner.
-5. Continue using regenerated saved reports as the main product-quality check, not just fixtures and unit tests.
+1. Tighten a few still-repetitive stay-path pairs in broad roles, especially:
+   - `Marketing automation` vs `Marketing automation governance`
+   - `Process instrumentation` vs `Workflow automation design`
+   - `Meeting system automation` vs `Executive operating rhythm design`
+2. Reassess broad-role wording in actual saved reports and tighten any remaining templated-sounding stay-path or pivot-path explanation blocks.
+3. Keep tightening lower-ranked active pivots for broad roles where the main path is solid but the backup stack still feels thinner.
+4. Continue using regenerated saved reports as the main product-quality check, not just fixtures and unit tests.
 
 ## Blockers Or Assumptions
 

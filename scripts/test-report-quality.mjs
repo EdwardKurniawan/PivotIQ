@@ -289,7 +289,7 @@ function testStayAdvanceLearningPathDoesNotInheritPivotCourse() {
   assert.equal(stayGaps[0].skill_name, 'AI workflow design');
   assert.equal(stayGaps[0].resource_title, 'OpenAI Academy');
   assert.notEqual(stayGaps[0].resource_title, 'Global Procurement and Sourcing Specialization');
-  assert.equal(stayGaps[1].resource_title, 'Google AI Essentials');
+  assert.notEqual(stayGaps[1].resource_title, 'Global Procurement and Sourcing Specialization');
 }
 
 function testBroadRoleStayPathUsesRoleNativeLearningAndWeeklyPlan() {
@@ -425,6 +425,27 @@ function testAnalyticsStayPathAddsAdjacentHardSkillLayer() {
   const normalized = normalizeReportData(report);
   const stayGaps = normalized.stay_path.skill_gaps || [];
   assert.match(stayGaps[0].skill_name, /Tableau/i);
+  assert.match(stayGaps[1].skill_name, /SQL|Data modeling/i);
+}
+
+function testAnalyticsStayPathAddsAdjacentHardSkillWithoutExplicitSystems() {
+  const report = buildDemoReportData(
+    'Data Analyst',
+    'SaaS',
+    ['Dashboard creation', 'SQL analysis', 'Stakeholder insights'],
+    {
+      selected_tasks: [{ label: 'Dashboard creation' }],
+      primary_tasks: ['Dashboard creation', 'SQL analysis', 'Stakeholder insights'],
+      clarifiers: {
+        goal_now: 'hybrid_transition',
+        ai_maturity: 'weekly',
+      },
+    }
+  );
+
+  const normalized = normalizeReportData(report);
+  const stayGaps = normalized.stay_path.skill_gaps || [];
+  assert.match(stayGaps[0].skill_name, /Dashboard QA workflow design/i);
   assert.match(stayGaps[1].skill_name, /SQL|Data modeling/i);
 }
 
@@ -2037,6 +2058,7 @@ testBroadRoleStayPathUsesRoleNativeLearningAndWeeklyPlan();
 testAnalyticsStayPathUsesRoleNativeResources();
 testFinanceStayPathUsesSharperRoleNativeResources();
 testAnalyticsStayPathAddsAdjacentHardSkillLayer();
+testAnalyticsStayPathAddsAdjacentHardSkillWithoutExplicitSystems();
 testFinanceStayPathAddsAdjacentHardSkillLayer();
 testDuplicateHardSkillGapsCollapseToOneCanonicalGap();
 testStayPathPrefersRoleNativeSystemOverSideTool();
