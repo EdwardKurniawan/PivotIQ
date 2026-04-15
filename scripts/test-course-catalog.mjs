@@ -659,7 +659,7 @@ function testGovernanceSkillBeatsGenericAiEssentialsForSeniorMarketingRole() {
       }),
       entry({
         provider: 'Coursera',
-        title: 'Marketing operations and lifecycle paths',
+        title: 'Marketing Lifecycle Operating System',
         summary: 'Strengthen lifecycle logic, growth review systems, and marketing operating design.',
         skills: ['marketing operations', 'lifecycle management', 'growth reviews', 'campaign systems'],
         tags: ['operating systems', 'governance'],
@@ -669,7 +669,7 @@ function testGovernanceSkillBeatsGenericAiEssentialsForSeniorMarketingRole() {
     ]
   );
 
-  assert.equal(match.entry.title, 'Marketing operations and lifecycle paths');
+  assert.equal(match.entry.title, 'Marketing Lifecycle Operating System');
 }
 
 function testFinanceGovernanceSkillBeatsGenericTechnicalCourse() {
@@ -696,7 +696,7 @@ function testFinanceGovernanceSkillBeatsGenericTechnicalCourse() {
       }),
       entry({
         provider: 'Coursera',
-        title: 'Finance planning operations paths',
+        title: 'Finance Planning Operating Cadence',
         summary: 'Strengthen planning cadence, review rhythm, and finance operating control for planning leaders.',
         skills: ['finance planning', 'review cadence', 'operating control', 'decision support'],
         tags: ['governance', 'finance'],
@@ -706,7 +706,7 @@ function testFinanceGovernanceSkillBeatsGenericTechnicalCourse() {
     ]
   );
 
-  assert.equal(match.entry.title, 'Finance planning operations paths');
+  assert.equal(match.entry.title, 'Finance Planning Operating Cadence');
 }
 
 testExactToolPhraseBeatsGenericReporting();

@@ -117,13 +117,13 @@ Worktree state: modified files pending commit (`TASK_STATE.md`, `lib/report-data
   - senior-role governance and operating-system skills now route to stronger role-native resources instead of generic AI literacy
   - learning-path helper text is now skill-type aware instead of repeating one generic helper
 - New role-native operating/governance resources are now live in both the stay-path engine and catalog:
-  - `Finance planning operations paths`
-  - `People operations systems paths`
-  - `Customer operations playbook paths`
-  - `Marketing operations and lifecycle paths`
-  - `Process governance and handoff design paths`
-  - `Executive operations and chief of staff paths`
-  - `Analytics review and data governance paths`
+  - `Finance Planning Operating Cadence`
+  - `People Systems and Manager Operations`
+  - `Customer Renewal Playbook Systems`
+  - `Marketing Lifecycle Operating System`
+  - `Process Handoff Governance Design`
+  - `Executive Operations and Decision Cadence`
+  - `Analytics Review and Metric Governance`
 - The course catalog was reseeded and now has `240` active verified entries with a `100` health score after the operating/governance expansion.
 - The previously weak RevOps learning probe is now aligned again.
 - English stay-path strategy copy was tightened so it reads more decisive and less templated:
@@ -134,19 +134,26 @@ Worktree state: modified files pending commit (`TASK_STATE.md`, `lib/report-data
   - stay-path hard-skill gap: `Tableau`
   - sharper stay recommendation/rationale copy
 - First-step stay learning resources were tightened again so senior-role reports now start with workflow context instead of generic intros:
-  - `Finance Manager` now starts with `Finance workflow design paths`
-  - `Senior HR Business Partner` now starts with `Manager enablement workflow paths`
-  - `Marketing Director` now starts with `Campaign workflow and experimentation paths`
-  - `Customer Success Director` now starts with `Customer workflow design paths`
+  - `Finance Manager` now starts with `Finance Workflow Design`
+  - `Senior HR Business Partner` now starts with `Manager Enablement Workflow Design`
+  - `Marketing Director` now starts with `Campaign Workflow and Experimentation`
+  - `Customer Success Director` now starts with `Customer Workflow Design`
 - Stay learning-path selection was also improved:
   - for the `stay` track, `workflow_design` now gets explicit priority as the first step when it is close in value to a narrower hard-skill sub-layer
   - this fixed `Senior Program Manager` so it now starts with `Workflow automation design` instead of jumping straight to `Exception routing logic`
 - Second-step stay resources were tightened across senior roles too:
-  - `Marketing Director` now uses `Marketing attribution and lifecycle analysis paths` for `Attribution and lifecycle logic`
-  - `Senior Program Manager` now uses `Exception routing and process control paths` for `Exception routing logic`
-  - `Senior HR Business Partner` now uses `People analytics and workforce planning paths` for `People analytics`
-  - `Customer Success Director` now uses `Customer health and renewal analysis paths` for `Customer health scoring`
+  - `Marketing Director` now uses `Marketing Attribution and Lifecycle Analysis` for `Attribution and lifecycle logic`
+  - `Senior Program Manager` now uses `Exception Routing and Process Control` for `Exception routing logic`
+  - `Senior HR Business Partner` now uses `People Analytics and Workforce Planning` for `People analytics`
+  - `Customer Success Director` now uses `Customer Health and Renewal Analysis` for `Customer health scoring`
 - The `hard_skill` branch in stay-resource routing now has role-native family resources, so build-proof steps no longer fall back so quickly to broad vendor/tool intros.
+- Resource titles were polished to feel more premium in the UI and saved reports:
+  - `Finance Workflow Design`
+  - `Finance Planning Operating Cadence`
+  - `People Systems and Manager Operations`
+  - `Marketing Lifecycle Operating System`
+  - `Process Handoff Governance Design`
+  - `Executive Operations and Decision Cadence`
 
 ## In-Progress Work
 
