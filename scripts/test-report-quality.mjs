@@ -312,8 +312,8 @@ function testBroadRoleStayPathUsesRoleNativeLearningAndWeeklyPlan() {
   const normalized = normalizeReportData(report);
   const stayGaps = normalized.stay_path.skill_gaps || [];
 
-  assert.equal(stayGaps[0].skill_name, 'Campaign experiment design');
-  assert.match(stayGaps[0].resource_title, /AI for Marketing Course|Google Skillshop/i);
+  assert.match(stayGaps[0].skill_name, /HubSpot|Marketo|Campaign experiment design/i);
+  assert.match(stayGaps[0].resource_title, /HubSpot|Marketo|AI for Marketing Course|Google Skillshop/i);
   assert.ok(normalized.stay_and_advance.ai_this_week_plan.headline);
   assert.ok(normalized.stay_and_advance.ai_this_week_plan.workflow);
   assert.ok(normalized.stay_and_advance.ai_this_week_plan.output);
@@ -341,8 +341,8 @@ function testAnalyticsStayPathUsesRoleNativeResources() {
   const normalized = normalizeReportData(report);
   const stayGaps = normalized.stay_path.skill_gaps || [];
 
-  assert.equal(stayGaps[0].skill_name, 'Dashboard QA workflow design');
-  assert.match(stayGaps[0].resource_title, /Power BI|Microsoft data analytics/i);
+  assert.match(stayGaps[0].skill_name, /Power BI|SQL/i);
+  assert.match(stayGaps[0].resource_title, /Power BI|SQL|Microsoft data analytics/i);
   assert.notEqual(normalized.stay_and_advance.ai_leverage_playbook.plays[0].title, 'Redesign one recurring workflow');
 }
 
@@ -366,9 +366,97 @@ function testFinanceStayPathUsesSharperRoleNativeResources() {
   const normalized = normalizeReportData(report);
   const stayGaps = normalized.stay_path.skill_gaps || [];
 
-  assert.equal(stayGaps[0].skill_name, 'Financial modeling and scenario review');
-  assert.match(stayGaps[0].resource_title, /FP&A learning paths|Financial modeling paths/i);
+  assert.match(stayGaps[0].skill_name, /Excel|ERP|planning and review governance/i);
+  assert.match(stayGaps[0].resource_title, /FP&A learning paths|Financial modeling paths|NetSuite|SAP/i);
   assert.notEqual(stayGaps[2].resource_title, 'Digital Transformation');
+}
+
+function testDuplicateHardSkillGapsCollapseToOneCanonicalGap() {
+  const report = buildDemoReportData(
+    'Data Analyst',
+    'SaaS',
+    ['Dashboard QA and metric review', 'SQL analysis'],
+    {
+      selected_tasks: [{ label: 'Dashboard QA and metric review' }],
+      primary_tasks: ['Dashboard QA and metric review', 'SQL analysis'],
+      clarifiers: {
+        goal_now: 'hybrid_transition',
+        ai_maturity: 'weekly',
+        technical_capability: 'sql_bi',
+        core_systems: 'Power BI, SQL',
+      },
+    }
+  );
+
+  report.pivots[0] = {
+    ...report.pivots[0],
+    title: 'Business Intelligence Manager',
+    skill_gaps: [
+      {
+        skill_name: 'Python',
+        category: 'technical stack',
+        gap_priority: 'critical',
+        market_backed: true,
+        why_it_matters: 'Python helps automate QA and transformation work.',
+        how_to_close_gap: 'Automate one analytics QA task with Python.',
+        resource_title: 'Python for Data Science and Machine Learning Bootcamp',
+        resource_url: 'https://www.udemy.com/course/python-for-data-science-and-machine-learning-bootcamp/',
+        resource_provider: 'Udemy',
+      },
+      {
+        skill_name: 'Python for analytics',
+        category: 'technical analytics',
+        gap_priority: 'medium',
+        market_backed: true,
+        why_it_matters: 'Python widens the analysis and automation work you can do.',
+        how_to_close_gap: 'Build one recurring analytics workflow in Python.',
+        resource_title: 'Python for Everybody',
+        resource_url: 'https://www.coursera.org/specializations/python',
+        resource_provider: 'Coursera',
+      },
+      {
+        skill_name: 'Snowflake',
+        category: 'platform fluency',
+        gap_priority: 'medium',
+        market_backed: true,
+        why_it_matters: 'Warehouse fluency helps you work in the stack teams already use.',
+        how_to_close_gap: 'Use Snowflake in one real proof asset.',
+        resource_title: 'Snowflake Learning Tracks',
+        resource_url: 'https://learn.snowflake.com/en/',
+        resource_provider: 'Snowflake',
+      },
+    ],
+  };
+
+  const normalized = normalizeReportData(report);
+  const pythonGaps = normalized.pivots[0].skill_gaps.filter((skill) => /python/i.test(skill.skill_name));
+  const learningPathNames = normalized.pivots[0].learning_path.map((step) => step.skill_name).join(' | ');
+
+  assert.equal(pythonGaps.length, 1);
+  assert.equal(pythonGaps[0].skill_name, 'Python');
+  assert.doesNotMatch(learningPathNames, /Python for analytics.*Python|Python.*Python for analytics/i);
+}
+
+function testStayPathPrefersRoleNativeSystemOverSideTool() {
+  const report = buildDemoReportData(
+    'Data Analyst',
+    'SaaS',
+    ['Dashboard QA and metric review', 'Stakeholder KPI reporting'],
+    {
+      selected_tasks: [{ label: 'Dashboard QA and metric review' }],
+      primary_tasks: ['Dashboard QA and metric review', 'Stakeholder KPI reporting'],
+      clarifiers: {
+        goal_now: 'stay_and_advance',
+        ai_maturity: 'weekly',
+        core_systems: 'Salesforce, Tableau',
+        domain_focus: 'business intelligence and KPI reporting',
+      },
+    }
+  );
+
+  const normalized = normalizeReportData(report);
+  assert.match(normalized.stay_path.skill_gaps[0].skill_name, /Tableau/i);
+  assert.doesNotMatch(normalized.stay_path.skill_gaps[0].skill_name, /Salesforce/i);
 }
 
 function testOperationsStayPathAvoidsGenericAiAcademyDefault() {
@@ -1844,6 +1932,8 @@ testStayAdvanceLearningPathDoesNotInheritPivotCourse();
 testBroadRoleStayPathUsesRoleNativeLearningAndWeeklyPlan();
 testAnalyticsStayPathUsesRoleNativeResources();
 testFinanceStayPathUsesSharperRoleNativeResources();
+testDuplicateHardSkillGapsCollapseToOneCanonicalGap();
+testStayPathPrefersRoleNativeSystemOverSideTool();
 testOperationsStayPathAvoidsGenericAiAcademyDefault();
 testStayWeeklyPlanUsesRoleNativeSystemsAndStayFirstActions();
 testExecutiveAssistantGetsRoleNativeStayPath();

@@ -3,7 +3,7 @@
 Last updated: 2026-04-15
 Repo: `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app`
 Branch: `main`
-Worktree state: clean after latest verification
+Worktree state: modified files pending commit (`lib/report-data.js`, `scripts/test-report-quality.mjs`)
 
 ## Completed Work
 
@@ -65,26 +65,38 @@ Worktree state: clean after latest verification
   - `Looker` → `Looker reporting and BI paths`
   - `Power Bi` → `Power BI and DAX courses`
   - `Snowflake` → `Snowflake Learning Tracks`
+- Normalization now dedupes overlapping hard-skill gaps instead of showing near-duplicates like `Python` and `Python for analytics` side by side.
+- Stay-path skill gaps are now stack-aware:
+  - when the user has real systems/tooling input, the stay path can surface a role-native hard-skill/platform gap before the softer workflow layer
+  - the system now prefers the most role-native tool in the current stack instead of blindly taking the first listed system
+- English stay-path strategy copy was tightened so it reads more decisive and less templated:
+  - stronger `stay` recommendation wording
+  - stronger `stay` rationale wording
+- Local normalization check on report `696c14fc-dd63-4cc1-b343-228dd65893bf` now yields:
+  - top pivot hard-skill gaps: `Looker`, `Power BI`, `Snowflake`, `SQL`, `Python`
+  - stay-path hard-skill gap: `Tableau`
+  - sharper stay recommendation/rationale copy
 
 ## In-Progress Work
 
-- No code is currently mid-edit.
+- No code is currently mid-edit, but there are local modifications ready to commit.
 - The main active frontier is recommendation polish, especially:
   - stronger broad-role wording quality
   - continued improvement of hard-skill relevance without reintroducing hard-coded authored bundles
-  - reducing duplicate / overly similar technical gaps when the model emits overlapping variants like `Python` and `Python for Data Science`
+  - extending stay-path hard-skill depth beyond the first stack-aware gap when roles clearly need more than one technical layer
 
 ## Next Steps
 
-1. Reassess the saved broad-role QA reports again and tune wording so the stay-path and pivot-path explanations feel less templated and more inevitable.
-2. Keep tightening lower-ranked active pivots for broad roles where the main path is solid but the backup stack still feels thinner.
-3. Extend the same model-driven hard-skill logic more deeply into the stay-path skill engine where appropriate, so “stay and advance” can also surface concrete stack/platform gaps when the job really depends on them.
-4. Reduce overlapping technical gaps from the model when two gaps are near-duplicates but with different phrasing.
+1. Regenerate and inspect the saved broad-role QA reports again once the live regeneration path is responsive, especially the Data Analyst example.
+2. Extend stay-path stack rigor from “one best system gap” to “one best system gap plus one adjacent hard-skill layer” for roles like analytics and finance where that extra depth is warranted.
+3. Reassess broad-role wording in actual saved reports and tighten any remaining templated-sounding stay-path or pivot-path explanation blocks.
+4. Keep tightening lower-ranked active pivots for broad roles where the main path is solid but the backup stack still feels thinner.
 5. Continue using regenerated saved reports as the main product-quality check, not just fixtures and unit tests.
 
 ## Blockers Or Assumptions
 
 - OpenRouter remains on `nvidia/nemotron-3-nano-30b-a3b:free`.
+- Live regeneration was attempted again for report `696c14fc-dd63-4cc1-b343-228dd65893bf`, but the script appeared to hang upstream instead of finishing. Local normalization verified the new behavior even though the saved DB row did not update in this pass.
 - The current direction is to avoid hard-coded authored skill-gap answers and let the model + market grounding drive the gap content.
 - It is still acceptable to keep lightweight guardrails that:
   - remove off-family leakage
