@@ -27,6 +27,10 @@ Worktree state: clean before this handoff refresh; `TASK_STATE.md` is now update
     - building proof
     - going deeper
   - `Proof asset builder` now starts with a compact ship/check/share strip before the deeper detail
+- `Career safety read` and `Promotion case` were compressed into more visual snapshot cards:
+  - quick headline tiles
+  - shorter top-line summaries
+  - trimmed supporting bullets
 - The new visualization layer was implemented in `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/components/report-experience.js` and verified with a clean `npm run build`.
 - Result-page structure was upgraded so the top-level tabs are now:
   - `Task Breakdown`
@@ -165,12 +169,11 @@ Worktree state: clean before this handoff refresh; `TASK_STATE.md` is now update
 
 1. Continue the results-page visualization sprint:
    - stay vs pivot comparison refinement if the first matrix feels too dense
-   - compress `Career safety read` and `Promotion case` into even more visual summary blocks
    - consider a compact metric/ladder treatment for proof readiness
+   - make `AI leverage playbook` lighter and more visual
 2. Reduce remaining text heaviness in:
-   - `Career safety read`
-   - `Promotion case`
    - `AI leverage playbook`
+   - `Promotion conversation pack`
 3. Reassess the newest broad and senior saved reports in the founder account after the next UI pass to judge actual readability, not just structure.
 4. Tighten any remaining third-step or backup-path resources that still feel like broad search placeholders rather than premium role-native learning.
 5. Continue using saved-report QA as the primary quality gate, not just fixtures and unit tests.
@@ -180,6 +183,7 @@ Worktree state: clean before this handoff refresh; `TASK_STATE.md` is now update
 - OpenRouter remains on `nvidia/nemotron-3-nano-30b-a3b:free`.
 - Live regeneration for report `696c14fc-dd63-4cc1-b343-228dd65893bf` has previously hung upstream instead of finishing, even when the local normalization logic was correct.
 - Local UI QA against persisted report IDs is limited unless the local runtime has matching saved-report data; route `696c14fc-dd63-4cc1-b343-228dd65893bf` returned `404` locally during this pass even though the component compiled and the live app has persisted reports.
+- Production report URLs checked during this pass (`696c14fc-dd63-4cc1-b343-228dd65893bf`, `61d66c8e-a48e-46a9-8372-991824a5a86a`, `e95e7a17-d68f-42a0-8860-e1cfcfc0407d`) also returned `404`, so public-link visual QA is currently blocked until we identify live reachable report pages or preview routes.
 - The current direction is still to avoid hard-coded authored skill-gap answers and let the model plus market grounding drive the gap content.
 - It is still acceptable to keep lightweight guardrails that:
   - remove off-family leakage

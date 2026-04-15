@@ -1571,11 +1571,26 @@ function JobSafetyCaseCard({ safetyCase, color }) {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.05fr) minmax(280px, 0.95fr)', gap: '14px' }} className="two-col">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '12px', marginBottom: '14px' }} className="two-col">
+        <div style={{ padding: '15px 16px', borderRadius: '18px', background: `${color}10`, border: `1px solid ${color}22` }}>
+          <div style={{ color, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Safer because</div>
+          <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{compactCopy((safetyCase.safer_because || [])[0], 88)}</div>
+        </div>
+        <div style={{ padding: '15px 16px', borderRadius: '18px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}` }}>
+          <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>If you act</div>
+          <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{compactCopy((safetyCase.what_changes_if_you_do_this || [])[0], 88)}</div>
+        </div>
+        <div style={{ padding: '15px 16px', borderRadius: '18px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}` }}>
+          <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Metric to watch</div>
+          <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{compactCopy(safetyCase.metric_to_watch, 88)}</div>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(320px, 0.9fr)', gap: '14px' }} className="two-col">
         <div style={{ padding: '18px', borderRadius: '20px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}` }}>
           <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Why this makes you safer</div>
           <div style={{ display: 'grid', gap: '8px' }}>
-            {(safetyCase.safer_because || []).map((item) => (
+            {(safetyCase.safer_because || []).slice(0, 3).map((item) => (
               <div key={item} style={{ display: 'flex', gap: '8px', color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>
                 <span style={{ color, fontWeight: 950 }}>•</span>
                 <span>{item}</span>
@@ -1585,9 +1600,9 @@ function JobSafetyCaseCard({ safetyCase, color }) {
         </div>
         <div style={{ display: 'grid', gap: '14px' }}>
           <div style={{ padding: '18px', borderRadius: '20px', background: `${color}0F`, border: `1px solid ${color}22` }}>
-            <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>What changes if you do this</div>
+            <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>What changes now</div>
             <div style={{ display: 'grid', gap: '8px' }}>
-              {(safetyCase.what_changes_if_you_do_this || []).map((item) => (
+              {(safetyCase.what_changes_if_you_do_this || []).slice(0, 3).map((item) => (
                 <div key={item} style={{ display: 'flex', gap: '8px', color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>
                   <span style={{ color, fontWeight: 950 }}>•</span>
                   <span>{item}</span>
@@ -1595,11 +1610,9 @@ function JobSafetyCaseCard({ safetyCase, color }) {
               ))}
             </div>
           </div>
-          <div style={{ padding: '18px', borderRadius: '20px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}` }}>
+          <div style={{ padding: '18px', borderRadius: '20px', background: 'rgba(19,32,42,0.04)', border: `1px solid ${palette.border}` }}>
             <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>If you ignore this</div>
-            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65, marginBottom: '10px' }}>{safetyCase.if_you_ignore_this}</div>
-            <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>Metric to watch</div>
-            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{safetyCase.metric_to_watch}</div>
+            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{compactCopy(safetyCase.if_you_ignore_this, 120)}</div>
           </div>
         </div>
       </div>
@@ -1625,11 +1638,26 @@ function PromotionCaseCard({ promotionCase, color }) {
         )}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(300px, 0.9fr)', gap: '14px' }} className="two-col">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '12px', marginBottom: '14px' }} className="two-col">
+        <div style={{ padding: '15px 16px', borderRadius: '18px', background: `${color}10`, border: `1px solid ${color}22` }}>
+          <div style={{ color, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Next title</div>
+          <div style={{ color: palette.text, fontSize: '13px', lineHeight: 1.5, fontWeight: 800 }}>{promotionCase.target_title || 'Expanded scope in current lane'}</div>
+        </div>
+        <div style={{ padding: '15px 16px', borderRadius: '18px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}` }}>
+          <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Best proof</div>
+          <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{compactCopy((promotionCase.proof_to_show || [])[0], 88)}</div>
+        </div>
+        <div style={{ padding: '15px 16px', borderRadius: '18px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}` }}>
+          <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>If this lands</div>
+          <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{compactCopy(promotionCase.what_changes_if_yes, 88)}</div>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(320px, 0.9fr)', gap: '14px' }} className="two-col">
         <div style={{ padding: '18px', borderRadius: '20px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}` }}>
           <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Leadership case to make</div>
           <div style={{ display: 'grid', gap: '8px' }}>
-            {(promotionCase.leadership_case || []).map((item) => (
+            {(promotionCase.leadership_case || []).slice(0, 3).map((item) => (
               <div key={item} style={{ display: 'flex', gap: '8px', color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>
                 <span style={{ color, fontWeight: 950 }}>•</span>
                 <span>{item}</span>
@@ -1641,7 +1669,7 @@ function PromotionCaseCard({ promotionCase, color }) {
           <div style={{ padding: '18px', borderRadius: '20px', background: `${color}0F`, border: `1px solid ${color}22` }}>
             <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Proof to show</div>
             <div style={{ display: 'grid', gap: '8px' }}>
-              {(promotionCase.proof_to_show || []).map((item) => (
+              {(promotionCase.proof_to_show || []).slice(0, 3).map((item) => (
                 <div key={item} style={{ display: 'flex', gap: '8px', color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>
                   <span style={{ color, fontWeight: 950 }}>•</span>
                   <span>{item}</span>
@@ -1649,11 +1677,9 @@ function PromotionCaseCard({ promotionCase, color }) {
               ))}
             </div>
           </div>
-          <div style={{ padding: '18px', borderRadius: '20px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}` }}>
+          <div style={{ padding: '18px', borderRadius: '20px', background: 'rgba(19,32,42,0.04)', border: `1px solid ${palette.border}` }}>
             <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>Say this to your manager</div>
-            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65, marginBottom: '10px' }}>{promotionCase.manager_sentence}</div>
-            <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>If this lands well</div>
-            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{promotionCase.what_changes_if_yes}</div>
+            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{compactCopy(promotionCase.manager_sentence, 130)}</div>
           </div>
         </div>
       </div>
