@@ -315,6 +315,7 @@ function testBroadRoleStayPathUsesRoleNativeLearningAndWeeklyPlan() {
   assert.match(stayGaps[0].skill_name, /HubSpot|Marketo|Campaign experiment design/i);
   assert.match(stayGaps[2].skill_name, /Growth review operating system/i);
   assert.match(stayGaps[0].resource_title, /HubSpot|Marketo|AI for Marketing Course|Google Skillshop/i);
+  assert.match(stayGaps[2].resource_title, /Marketing operations and lifecycle paths/i);
   assert.doesNotMatch(normalized.stay_and_advance.job_safety_case.summary, /The goal is not to look “good at AI.”/i);
   assert.ok(normalized.stay_and_advance.ai_this_week_plan.headline);
   assert.ok(normalized.stay_and_advance.ai_this_week_plan.workflow);
@@ -371,6 +372,7 @@ function testFinanceStayPathUsesSharperRoleNativeResources() {
   assert.match(stayGaps[0].skill_name, /Excel|ERP|planning and review governance/i);
   assert.match(stayGaps[2].skill_name, /Planning review cadence/i);
   assert.match(stayGaps[0].resource_title, /FP&A learning paths|Financial modeling paths|NetSuite|SAP/i);
+  assert.match(stayGaps[2].resource_title, /Finance planning operations paths|Finance automation learning paths/i);
   assert.doesNotMatch(normalized.stay_and_advance.rationale, /The safer move is not to outrun/i);
   assert.notEqual(stayGaps[2].resource_title, 'Digital Transformation');
 }
@@ -651,9 +653,11 @@ function testExecutiveAssistantGetsRoleNativeStayPath() {
   );
 
   const normalized = normalizeReportData(report);
+  const stayGaps = normalized.stay_path.skill_gaps || [];
   assert.match(normalized.stay_path.title, /Executive Operations Lead/i);
-  assert.match(normalized.stay_path.learning_path[0].skill_name, /Executive (workflow design|decision cadence|operating rhythm)/i);
-  assert.match(normalized.stay_path.skill_gaps[2].skill_name, /Executive decision cadence/i);
+  assert.match(normalized.stay_path.learning_path[0].skill_name, /Executive workflow design|Meeting system automation|Executive decision cadence/i);
+  assert.match(stayGaps[2].skill_name, /Executive decision cadence/i);
+  assert.match(stayGaps[2].resource_title, /Executive operations and chief of staff paths/i);
   assert.notEqual(normalized.stay_and_advance.ai_leverage_playbook.plays[0].title, 'Redesign one recurring workflow');
   assert.deepEqual(normalized.stay_and_advance.ai_this_week_plan.systems, ['calendar', 'meeting brief', 'follow-up tracker']);
 }

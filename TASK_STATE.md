@@ -107,6 +107,25 @@ Worktree state: modified files pending commit (`TASK_STATE.md`, `lib/report-data
   - `The safer move is not to outrun...`
   - `The goal is not to look "good at AI."`
   template across roles.
+- Resource precision for stronger stay skills was upgraded substantially:
+  - stay skills are now typed more explicitly across:
+    - `system_tool`
+    - `hard_skill`
+    - `workflow_design`
+    - `governance`
+    - `decision_communication`
+  - senior-role governance and operating-system skills now route to stronger role-native resources instead of generic AI literacy
+  - learning-path helper text is now skill-type aware instead of repeating one generic helper
+- New role-native operating/governance resources are now live in both the stay-path engine and catalog:
+  - `Finance planning operations paths`
+  - `People operations systems paths`
+  - `Customer operations playbook paths`
+  - `Marketing operations and lifecycle paths`
+  - `Process governance and handoff design paths`
+  - `Executive operations and chief of staff paths`
+  - `Analytics review and data governance paths`
+- The course catalog was reseeded and now has `240` active verified entries with a `100` health score after the operating/governance expansion.
+- The previously weak RevOps learning probe is now aligned again.
 - English stay-path strategy copy was tightened so it reads more decisive and less templated:
   - stronger `stay` recommendation wording
   - stronger `stay` rationale wording
@@ -121,16 +140,15 @@ Worktree state: modified files pending commit (`TASK_STATE.md`, `lib/report-data
 - The main active frontier is recommendation polish, especially:
   - stronger broad- and senior-role wording quality
   - continued improvement of hard-skill relevance without reintroducing hard-coded authored bundles
-  - improving the remaining generic learning-resource choices on third-layer stay skills
+  - improving first-step workflow resources that still begin with generic intros in a few families
 
 ## Next Steps
 
-1. Improve the resource quality on the third stay layer where the label is now good but the learning source is still generic:
-   - `Growth review operating system` → not `Google AI Essentials`
-   - `Manager support operating standard` → not generic beginner AI content
-   - `Planning review cadence` → stronger finance-operating resource if available
+1. Improve first-step stay resources where the label is good but the opening learning step can still be a little generic:
+   - `Manager enablement workflow design` still starts from `OpenAI Academy`
+   - `Workflow automation design` still often starts from vendor tooling before the operating context is established
 2. Keep tightening lower-ranked active pivots for broad and senior roles where the main path is solid but the backup stack still feels thinner.
-3. Reassess the newest senior saved reports in the founder account after the resource pass.
+3. Reassess the newest senior saved reports in the founder account after any first-step workflow-resource pass.
 4. Continue using saved-report QA as the primary quality gate, not just fixtures and unit tests.
 
 ## Blockers Or Assumptions
@@ -144,6 +162,6 @@ Worktree state: modified files pending commit (`TASK_STATE.md`, `lib/report-data
   - reorder or filter low-signal gaps
   but not replace them with authored bundles.
 - The remaining weakness is not gross recommendation failure; it is refinement:
-  - sharper third-layer resource matching
-  - less generic support material on stronger stay-skill labels
+  - sharper first-step workflow-resource matching
+  - a few families still beginning with vendor/tool intros instead of role-native workflow design
   - more differentiated broad- and senior-role outputs

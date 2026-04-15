@@ -344,6 +344,27 @@ const EDUCATIVE_PACK = makeSearchPack({
   ].map(([slug, title, query, summary, skills, roleFamilies]) => ({ slug, title, query, summary, skills, role_families: roleFamilies })),
 });
 
+const OPERATING_SYSTEMS_PACK = makeSearchPack({
+  provider: 'Coursera',
+  baseUrl: 'https://www.coursera.org/search',
+  param: 'query',
+  isPaid: true,
+  priceLabel: 'Subscription or course pricing',
+  level: 'Intermediate to advanced',
+  durationLabel: 'Courses and pathways',
+  defaultTags: ['trusted vendor resource', 'operating systems', 'governance'],
+  defaultOutcomeTypes: ['strategy', 'general-upskilling'],
+  items: [
+    ['coursera-finance-planning-ops', 'Finance planning operations paths', 'finance planning operations cadence', 'Strengthen planning cadence, review rhythm, and finance operating control for FP&A and planning leaders.', ['finance planning', 'review cadence', 'operating control', 'decision support'], ['finance', 'operations']],
+    ['coursera-people-ops-systems', 'People operations systems paths', 'people operations systems manager enablement', 'Build stronger people-systems design, manager enablement, and workforce operating patterns.', ['people operations', 'manager enablement', 'workforce planning', 'operating systems'], ['hr', 'operations']],
+    ['coursera-customer-playbook-governance', 'Customer operations playbook paths', 'customer success operations playbook', 'Improve renewal playbooks, health-review systems, and customer operating rhythm.', ['customer operations', 'renewal playbooks', 'health reviews', 'operating rhythm'], ['customer', 'operations']],
+    ['coursera-marketing-lifecycle-ops', 'Marketing operations and lifecycle paths', 'marketing operations lifecycle management', 'Strengthen lifecycle logic, growth review systems, and marketing operating design.', ['marketing operations', 'lifecycle management', 'growth reviews', 'campaign systems'], ['marketing', 'operations']],
+    ['coursera-process-governance-handoffs', 'Process governance and handoff design paths', 'process governance handoff design', 'Improve exception handling, handoff design, and repeatable cross-functional operating rules.', ['process governance', 'handoff design', 'exceptions', 'operating rules'], ['operations', 'strategy']],
+    ['coursera-executive-ops-paths', 'Executive operations and chief of staff paths', 'chief of staff executive operations', 'Build executive cadence, decision prep, and leadership operating-system skills.', ['executive operations', 'chief of staff', 'decision prep', 'operating cadence'], ['operations', 'admin']],
+    ['coursera-analytics-review-standards', 'Analytics review and data governance paths', 'analytics review standards data governance', 'Improve analytics review rigor, metric standards, and trusted decision-support systems.', ['analytics review', 'data governance', 'metric standards', 'decision support'], ['analytics', 'operations']],
+  ].map(([slug, title, query, summary, skills, roleFamilies]) => ({ slug, title, query, summary, skills, role_families: roleFamilies })),
+});
+
 export const GENERATED_COURSE_CATALOG = [
   ...MICROSOFT_LEARN_PACK,
   ...GOOGLE_PACK,
@@ -356,4 +377,5 @@ export const GENERATED_COURSE_CATALOG = [
   ...CODECADEMY_PACK,
   ...OREILLY_PACK,
   ...EDUCATIVE_PACK,
+  ...OPERATING_SYSTEMS_PACK,
 ];

@@ -635,6 +635,80 @@ function testFpaProbePrefersForecastResource() {
   assert.equal(match.entry.title, 'Forecasting paths');
 }
 
+function testGovernanceSkillBeatsGenericAiEssentialsForSeniorMarketingRole() {
+  const match = buildCatalogMatch(
+    {
+      skill_name: 'Growth review operating system',
+      skill_type: 'governance',
+      category: 'leadership',
+      gap_priority: 'medium',
+      how_to_close_gap: 'Build a repeatable growth review cadence, lifecycle logic, and marketing operating system.',
+    },
+    {
+      title: 'Marketing Director',
+      decision_frame: 'strongest leverage fit',
+    },
+    [
+      entry({
+        provider: 'Google / Coursera',
+        title: 'Google AI Essentials',
+        summary: 'Introductory workplace AI productivity course.',
+        skills: ['ai productivity', 'prompting', 'workplace ai'],
+        tags: ['beginner'],
+        role_families: ['operations'],
+      }),
+      entry({
+        provider: 'Coursera',
+        title: 'Marketing operations and lifecycle paths',
+        summary: 'Strengthen lifecycle logic, growth review systems, and marketing operating design.',
+        skills: ['marketing operations', 'lifecycle management', 'growth reviews', 'campaign systems'],
+        tags: ['operating systems', 'governance'],
+        role_families: ['marketing', 'operations'],
+        resource_type: 'pathway',
+      }),
+    ]
+  );
+
+  assert.equal(match.entry.title, 'Marketing operations and lifecycle paths');
+}
+
+function testFinanceGovernanceSkillBeatsGenericTechnicalCourse() {
+  const match = buildCatalogMatch(
+    {
+      skill_name: 'Planning review cadence',
+      skill_type: 'governance',
+      category: 'leadership',
+      gap_priority: 'medium',
+      how_to_close_gap: 'Build a repeatable planning cadence, review rhythm, and finance operating control.',
+    },
+    {
+      title: 'Finance Manager',
+      decision_frame: 'strongest leverage fit',
+    },
+    [
+      entry({
+        provider: 'Coursera',
+        title: 'SQL for Data Science',
+        summary: 'Learn SQL for analytics and data work.',
+        skills: ['sql', 'analytics', 'queries'],
+        tags: ['technical'],
+        role_families: ['analytics', 'technical'],
+      }),
+      entry({
+        provider: 'Coursera',
+        title: 'Finance planning operations paths',
+        summary: 'Strengthen planning cadence, review rhythm, and finance operating control for planning leaders.',
+        skills: ['finance planning', 'review cadence', 'operating control', 'decision support'],
+        tags: ['governance', 'finance'],
+        role_families: ['finance', 'operations'],
+        resource_type: 'pathway',
+      }),
+    ]
+  );
+
+  assert.equal(match.entry.title, 'Finance planning operations paths');
+}
+
 testExactToolPhraseBeatsGenericReporting();
 testStrongCatalogMatchBeatsGenericAiFallbackShape();
 testWeakSemanticMatchIsFlagged();
@@ -653,5 +727,7 @@ testProcurementDashboardProbeRejectsGenericFinanceCourse();
 testCustomerEducationProbePrefersLearningResource();
 testRevopsProbePrefersCrmReportingResource();
 testFpaProbePrefersForecastResource();
+testGovernanceSkillBeatsGenericAiEssentialsForSeniorMarketingRole();
+testFinanceGovernanceSkillBeatsGenericTechnicalCourse();
 
 console.log('Course catalog matching tests passed.');
