@@ -707,6 +707,52 @@ function testOperationsStayPathStartsWithWorkflowDesignResource() {
   assert.match(learningPath[0].resource_title, /Workflow design and process mapping paths|Learn Zapier in 14 days|Atlassian University/i);
 }
 
+function testMarketingStayProofStepUsesRoleNativeAttributionResource() {
+  const report = buildDemoReportData(
+    'Marketing Director',
+    'SaaS',
+    ['Campaign planning', 'Lifecycle reporting', 'Growth review'],
+    {
+      selected_tasks: [{ label: 'Campaign planning' }],
+      primary_tasks: ['Campaign planning', 'Lifecycle reporting', 'Growth review'],
+      clarifiers: {
+        goal_now: 'stay_and_advance',
+        years_experience_band: '11_plus',
+        ai_maturity: 'weekly',
+      },
+    }
+  );
+
+  const normalized = normalizeReportData(report);
+  const learningPath = normalized.stay_path.learning_path || [];
+  assert.match(learningPath[1].skill_name, /Attribution and lifecycle logic|Marketing automation/i);
+  assert.match(learningPath[1].resource_title, /Marketing attribution and lifecycle analysis paths|Marketing operations and lifecycle paths|Google Skillshop/i);
+  assert.notEqual(learningPath[1].resource_title, 'AI for Marketing Course');
+}
+
+function testOperationsStayProofStepUsesRoleNativeExceptionResource() {
+  const report = buildDemoReportData(
+    'Senior Program Manager',
+    'SaaS',
+    ['Cross-functional program governance', 'Workflow follow-through', 'Stakeholder review'],
+    {
+      selected_tasks: [{ label: 'Cross-functional program governance' }],
+      primary_tasks: ['Cross-functional program governance', 'Workflow follow-through', 'Stakeholder review'],
+      clarifiers: {
+        goal_now: 'stay_and_advance',
+        years_experience_band: '11_plus',
+        ai_maturity: 'weekly',
+      },
+    }
+  );
+
+  const normalized = normalizeReportData(report);
+  const learningPath = normalized.stay_path.learning_path || [];
+  assert.match(learningPath[1].skill_name, /Exception routing logic|Process instrumentation/i);
+  assert.match(learningPath[1].resource_title, /Exception routing and process control paths|Process governance and handoff design paths|Atlassian University/i);
+  assert.notEqual(learningPath[1].resource_title, 'Learn Zapier in 14 days');
+}
+
 function testFinanceSyntheticTitleFallsBackToCanonicalRole() {
   const report = buildDemoReportData(
     'FP&A Analyst',
@@ -2121,6 +2167,8 @@ testStayWeeklyPlanUsesRoleNativeSystemsAndStayFirstActions();
 testExecutiveAssistantGetsRoleNativeStayPath();
 testHrStayPathStartsWithWorkflowContextBeforeGenericAiLiteracy();
 testOperationsStayPathStartsWithWorkflowDesignResource();
+testMarketingStayProofStepUsesRoleNativeAttributionResource();
+testOperationsStayProofStepUsesRoleNativeExceptionResource();
 testFinanceSyntheticTitleFallsBackToCanonicalRole();
 testProjectManagerOverSeniorTitlesFallBackToCanonicalRole();
 testHrLowerPivotDoesNotKeepLegalSkillLeakage();

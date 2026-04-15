@@ -141,22 +141,27 @@ Worktree state: modified files pending commit (`TASK_STATE.md`, `lib/report-data
 - Stay learning-path selection was also improved:
   - for the `stay` track, `workflow_design` now gets explicit priority as the first step when it is close in value to a narrower hard-skill sub-layer
   - this fixed `Senior Program Manager` so it now starts with `Workflow automation design` instead of jumping straight to `Exception routing logic`
+- Second-step stay resources were tightened across senior roles too:
+  - `Marketing Director` now uses `Marketing attribution and lifecycle analysis paths` for `Attribution and lifecycle logic`
+  - `Senior Program Manager` now uses `Exception routing and process control paths` for `Exception routing logic`
+  - `Senior HR Business Partner` now uses `People analytics and workforce planning paths` for `People analytics`
+  - `Customer Success Director` now uses `Customer health and renewal analysis paths` for `Customer health scoring`
+- The `hard_skill` branch in stay-resource routing now has role-native family resources, so build-proof steps no longer fall back so quickly to broad vendor/tool intros.
 
 ## In-Progress Work
 
 - No code is currently mid-edit, but there are local modifications ready to commit.
+- No code is currently mid-edit, but there are local modifications ready to commit.
 - The main active frontier is recommendation polish, especially:
   - stronger broad- and senior-role wording quality
   - continued improvement of hard-skill relevance without reintroducing hard-coded authored bundles
-  - improving second-step resource precision where some families still fall back to broad vendor/tool courses
+  - improving tertiary and backup-path resource precision where some families still fall back to broad operational searches
 
 ## Next Steps
 
-1. Tighten second-step stay resources in the remaining weaker families:
-   - `Marketing Director` still uses `AI for Marketing Course` for `Attribution and lifecycle logic`
-   - `Senior Program Manager` still uses `Learn Zapier in 14 days` for `Exception routing logic`
+1. Tighten any remaining third-step or backup-path resources that still feel like broad search placeholders rather than premium role-native learning.
 2. Keep tightening lower-ranked active pivots for broad and senior roles where the main path is solid but the backup stack still feels thinner.
-3. Reassess the newest senior saved reports in the founder account after the next second-step resource pass.
+3. Reassess the newest broad and senior saved reports in the founder account after the next resource-precision pass.
 4. Continue using saved-report QA as the primary quality gate, not just fixtures and unit tests.
 
 ## Blockers Or Assumptions
@@ -170,6 +175,6 @@ Worktree state: modified files pending commit (`TASK_STATE.md`, `lib/report-data
   - reorder or filter low-signal gaps
   but not replace them with authored bundles.
 - The remaining weakness is not gross recommendation failure; it is refinement:
-  - sharper second-step resource matching
-  - a few families still beginning their build-proof step with broad vendor/tool intros instead of role-native operational depth
+  - sharper tertiary-step and backup-path resource matching
+  - a few families still relying on broad search-style resource titles instead of more premium named learning assets
   - more differentiated broad- and senior-role outputs
