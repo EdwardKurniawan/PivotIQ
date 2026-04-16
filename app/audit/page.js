@@ -151,6 +151,8 @@ export default function AuditPage() {
   const [taskSearch, setTaskSearch] = useState('');
   const [customTaskInput, setCustomTaskInput] = useState('');
   const [email, setEmail] = useState('');
+  const [subscribeNewsletter, setSubscribeNewsletter] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [scanProgress, setScanProgress] = useState(0);
   const [scanStep, setScanStep] = useState(0);
   const [error, setError] = useState('');
@@ -313,8 +315,16 @@ export default function AuditPage() {
       setError('Choose the role shape that best fits your week so the free pivot plan has the right lens.');
       return;
     }
-    if (email.trim() && !email.includes('@')) {
-      setError('Enter a valid email address, or leave it blank for now.');
+    if (!email.trim()) {
+      setError(messages.audit.emailRequiredError);
+      return;
+    }
+    if (!email.includes('@')) {
+      setError(messages.audit.emailInvalidError);
+      return;
+    }
+    if (!acceptedTerms) {
+      setError(messages.audit.termsRequiredError);
       return;
     }
 
@@ -349,6 +359,8 @@ export default function AuditPage() {
         .map((task) => task.label),
       clarifiers: {
         role_blend: roleBlend || null,
+        newsletter_opt_in: subscribeNewsletter,
+        terms_accepted: acceptedTerms,
       },
     };
 
@@ -490,7 +502,7 @@ export default function AuditPage() {
   }
 
   const step1Ready = jobTitle.trim() && industry;
-  const step2Ready = selectedTasks.length >= 3 && selectedTasks.length <= 10 && Boolean(roleBlend);
+  const step2Ready = selectedTasks.length >= 3 && selectedTasks.length <= 10 && Boolean(roleBlend) && Boolean(email.trim()) && acceptedTerms;
   const stepShell = panelStyle({ accent: 'rgba(19, 27, 35, 0.08)', background: 'rgba(255,255,255,0.76)', padding: '28px' });
   const ctaStyle = {
     width: '100%',
@@ -962,18 +974,103 @@ export default function AuditPage() {
                 </div>
               )}
 
-              <label className="section-label" style={{ color: '#7A5A43' }}>{messages.audit.optionalEmailLabel}</label>
-              <input
-                className="piq-input"
-                type="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                placeholder={messages.audit.optionalEmailPlaceholder}
-                style={{ marginBottom: '6px' }}
-              />
-              <p style={{ color: palette.textSoft, fontSize: '12px', marginBottom: '28px' }}>
-                {messages.audit.optionalEmailBody}
-              </p>
+              <div style={{ ...panelStyle({ accent: 'rgba(19, 27, 35, 0.08)', background: 'rgba(255,255,255,0.68)', padding: '20px' }), boxShadow: 'none', marginBottom: '28px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', alignItems: 'flex-start', flexWrap: 'wrap', marginBottom: '16px' }}>
+                  <div>
+                    <div style={{ color: palette.text, fontSize: '16px', fontWeight: 800, marginBottom: '6px', letterSpacing: '-0.02em' }}>
+                      {messages.audit.consentTitle}
+                    </div>
+                    <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7 }}>
+                      {messages.audit.consentBody}
+                    </div>
+                  </div>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', padding: '7px 11px', borderRadius: '999px', background: 'rgba(242, 138, 67, 0.10)', border: '1px solid rgba(242, 138, 67, 0.16)', color: '#8B4A1B', fontSize: '11px', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                    {messages.audit.consentRequiredBadge}
+                  </span>
+                </div>
+
+                <label className="section-label" style={{ color: '#7A5A43' }}>{messages.audit.requiredEmailLabel}</label>
+                <input
+                  className="piq-input"
+                  type="email"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  placeholder={messages.audit.requiredEmailPlaceholder}
+                  style={{ marginBottom: '6px' }}
+                />
+                <p style={{ color: palette.textSoft, fontSize: '12px', marginBottom: '18px' }}>
+                  {messages.audit.requiredEmailBody}
+                </p>
+
+                <div style={{ display: 'grid', gap: '12px' }}>
+                  <label
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'auto 1fr auto',
+                      gap: '12px',
+                      alignItems: 'start',
+                      padding: '15px 16px',
+                      borderRadius: '20px',
+                      border: subscribeNewsletter ? '1px solid rgba(27, 111, 99, 0.18)' : '1px solid rgba(19, 27, 35, 0.08)',
+                      background: subscribeNewsletter ? 'rgba(27,111,99,0.08)' : 'rgba(255,255,255,0.58)',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={subscribeNewsletter}
+                      onChange={(event) => setSubscribeNewsletter(event.target.checked)}
+                      style={{ marginTop: '3px' }}
+                    />
+                    <div>
+                      <div style={{ color: palette.text, fontSize: '14px', fontWeight: 700, marginBottom: '4px' }}>
+                        {messages.audit.newsletterCheckboxLabel}
+                      </div>
+                      <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>
+                        {messages.audit.newsletterCheckboxBody}
+                      </div>
+                    </div>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', padding: '6px 10px', borderRadius: '999px', background: 'rgba(255,255,255,0.72)', border: `1px solid ${palette.border}`, color: palette.textSoft, fontSize: '10px', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                      {messages.audit.optionalBadge}
+                    </span>
+                  </label>
+
+                  <label
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'auto 1fr auto',
+                      gap: '12px',
+                      alignItems: 'start',
+                      padding: '15px 16px',
+                      borderRadius: '20px',
+                      border: acceptedTerms ? '1px solid rgba(27, 111, 99, 0.18)' : '1px solid rgba(19, 27, 35, 0.08)',
+                      background: acceptedTerms ? 'rgba(27,111,99,0.08)' : 'rgba(255,255,255,0.58)',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={acceptedTerms}
+                      onChange={(event) => setAcceptedTerms(event.target.checked)}
+                      style={{ marginTop: '3px' }}
+                    />
+                    <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7 }}>
+                      <span>{messages.audit.termsCheckboxPrefix} </span>
+                      <Link href="/terms" target="_blank" style={{ color: palette.teal, fontWeight: 700 }}>
+                        {messages.common.terms}
+                      </Link>
+                      <span> {messages.audit.termsCheckboxMiddle} </span>
+                      <Link href="/privacy" target="_blank" style={{ color: palette.teal, fontWeight: 700 }}>
+                        {messages.common.privacy}
+                      </Link>
+                      <span>.</span>
+                    </div>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', padding: '6px 10px', borderRadius: '999px', background: acceptedTerms ? 'rgba(27,111,99,0.12)' : 'rgba(242, 138, 67, 0.10)', border: acceptedTerms ? '1px solid rgba(27, 111, 99, 0.18)' : '1px solid rgba(242, 138, 67, 0.16)', color: acceptedTerms ? palette.teal : '#8B4A1B', fontSize: '10px', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                      {messages.audit.requiredBadge}
+                    </span>
+                  </label>
+                </div>
+              </div>
 
               {error && (
                 <div style={{ marginBottom: '18px', padding: '14px 16px', borderRadius: '18px', border: '1px solid rgba(242, 138, 67, 0.22)', background: 'rgba(242, 138, 67, 0.10)', color: '#8B4A1B', fontSize: '14px' }}>
