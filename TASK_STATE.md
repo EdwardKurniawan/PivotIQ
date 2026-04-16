@@ -7,95 +7,60 @@ Latest commit: local changes not yet committed in this handoff refresh
 
 ## Completed Work
 
-- Completed the stay-tab visualization sprint in `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/components/report-experience.js`:
-  - added `Decision matrix`
-  - redesigned `Use AI this week` as a workflow map
-  - compressed `Career safety read`
-  - compressed `Promotion case`
-  - lightened `AI leverage playbook`
-  - compressed `Promotion conversation pack`
-  - turned `Role operating system` into a more visual operating matrix
-  - added clearer stay-section dividers:
-    - `Work this role differently`
-    - `Build visible leverage`
-- Report tabs now support query-param deep links:
-  - `/report/[id]?tab=stay`
-  - `/report/[id]?tab=paths`
-  - `/report/[id]?tab=plan`
-- Dashboard continuity improved in `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/dashboard/page.js`:
-  - report links now open the most relevant tab for the current attention state
-  - feedback-due reports favor `plan`
-  - proof/conversation/refresh-driven reports favor `stay`
-- Persisted and local report pages now respect initial tab state:
-  - `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/report/[id]/page.js`
-  - `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/report/page.js`
-- Added a real internal full-report QA preview flow:
-  - preview page: `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/internal/qa-fixtures/[catalog]/[slug]/page.js`
-  - fixture links updated in `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/internal/qa-fixtures/page.js`
-  - fixture preview helpers added in `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/lib/broad-role-fixtures.js`
-- Verified local QA preview route:
-  - `GET /internal/qa-fixtures/broad/data-analyst?tab=stay` returned `200`
-  - rendered output included:
-    - `Stay and advance with AI`
-    - `Decision matrix`
-    - `How to work now`
-    - `AI leverage playbook`
-    - `Promotion conversation pack`
-    - `Learning path`
-- Tightened recommendation-quality polish in `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/lib/report-data.js`:
-  - pivot lists now dedupe repeated titles before hitting the UI
-  - kept this narrow so stay-path titles do not incorrectly remove valid pivots
-- Protected report-link auth continuity is already fixed from the previous sprint:
-  - anonymous `/report/[id]` redirects to `/login?next=/report/[id]`
-  - login respects `next`
-- Completed another stay-tab finish-quality pass:
-  - `Decision matrix` is lighter and more visual
-  - `Career safety read` is more compact and easier to scan
-  - the stay tab now feels more internally consistent with the lighter `Role operating system` card
-- Added explicit secondary dashboard actions in `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/dashboard/page.js`:
-  - `Resume` / `Open report`
-  - `Open stay tab`
-  - `Open plan`
-- Recommendation-quality polish continued in `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/lib/report-data.js`:
-  - conservative backup selection now prefers stronger-confidence alternatives
-  - backup selection now slightly prefers a distinct lane over a near-duplicate when the evidence is otherwise close
-- Fixture preview QA was completed locally for:
-  - `Data Analyst`
-  - `Marketing Director`
-  - `Customer Success Director`
-  - `Executive Assistant`
-- Local fixture preview checks returned `200` for all four stay-tab preview URLs.
-- Local rendered checks confirmed stay-tab markers on preview routes, including:
-  - `Decision matrix`
-  - `Career safety read`
-  - `AI leverage playbook`
-  - `Promotion conversation pack`
-- Verification passed:
-  - `npm run test:report-quality`
-  - `npm run build`
-  - `git diff --check`
+- Split the audit flow so the free scan now stays lightweight in `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/audit/page.js`.
+  - Step 2 now focuses on:
+    - selected tasks
+    - primary tasks
+    - `Which best describes your role`
+  - Removed the richer clarifier block from the free pre-paywall step.
+  - Free preview generation now only saves the minimal role-shape clarifier instead of all paid-report inputs.
+- Added a second intake after the paywall for the richer paid-report inputs.
+  - New shared intake UI: `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/components/full-report-intake.js`
+  - Persisted report intake page: `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/report/[id]/intake/page.js`
+  - Local session intake page: `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/report/intake/page.js`
+- Added a dedicated persisted full-intake API route:
+  - `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/api/reports/[id]/intake/route.js`
+  - This merges the paid clarifiers into the saved report profile and generates the full report from that deeper input.
+- Rewired post-checkout flow in `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/success/page.js`.
+  - Full-tier users now land on the new second intake instead of jumping straight into full report generation.
+  - Free/peek behavior still routes directly to the report.
+- Rewired report-loading behavior so full report generation no longer auto-runs from stripped-down free inputs.
+  - Persisted route redirect:
+    - `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/report/[id]/page.js`
+  - Local route redirect:
+    - `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/report/page.js`
+  - Report view fallback CTA:
+    - `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/components/report-experience.js`
+- Updated localized copy in `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/lib/i18n.js` for:
+  - lighter free scan copy
+  - post-paywall second-intake copy
+  - success-page “one more step” messaging
 
 ## In-Progress Work
 
 - No code is currently mid-edit.
-- Current frontier is finish-quality polish on the report UI, especially the stay tab and real-report readability.
+- The new split flow is implemented and verified, but the next quality pass should test the full user journey in a live authenticated browser session.
 
 ## Next Steps
 
-1. Reassess the report UI in authenticated saved reports, not just fixture previews:
-   - confirm the new dashboard actions feel right with real user data
-   - confirm spacing and hierarchy on persisted reports
-2. Decide whether `Decision matrix` should stay as a three-card comparison or become an even tighter strip/table on mobile.
-3. Keep tightening remaining backup-path quality and any broad third-step resources that still feel generic.
-4. Consider one more dashboard polish pass if secondary actions should become chips or compact footer controls instead of full buttons.
-5. Continue using saved-report QA plus fixture previews as the primary quality gate.
+1. Run end-to-end QA on the new split audit journey:
+   - free audit
+   - preview report
+   - checkout
+   - second intake
+   - full report
+2. Decide whether the paid second intake should keep all current richer questions or trim one more layer for conversion.
+3. Review the paid second-intake UX for spacing and clarity on mobile.
+4. Check whether dashboard/report entry points should surface an explicit `Complete full report setup` action for paid-but-not-generated reports.
+5. Revisit report-quality polish once the new intake split is stable:
+   - backup pivot quality
+   - tertiary learning-resource sharpness
+   - saved-report qualitative QA
 
 ## Blockers Or Assumptions
 
+- The app now assumes the free preview should be generated from minimal signal, and the full report should be generated only after the second paid intake.
+- Existing full reports are unaffected because they already have `generation_stage: full_complete`.
+- Existing paid-but-not-fully-generated reports will now be routed into the new intake flow instead of auto-generating.
+- `agent-browser` CLI was not available in the shell during recent UI work, so this split-flow change is build-verified and route-verified, not browser-automated.
 - OpenRouter remains on `nvidia/nemotron-3-nano-30b-a3b:free`.
-- `agent-browser` CLI was not available in the shell during the last QA pass, so visual verification used live local route checks instead of browser automation.
-- Local QA against persisted authenticated report IDs is still limited unless the local runtime has matching saved-report data.
-- The new internal fixture preview route is now the best non-auth path for local report UI QA.
-- Local dashboard QA still reflects the anonymous state unless authenticated local data is available, so the new secondary dashboard actions were verified in code/build rather than through a populated local dashboard session.
-- Live regeneration for report `696c14fc-dd63-4cc1-b343-228dd65893bf` has previously hung upstream even when local normalization was correct.
-- Recommendation logic should continue avoiding hard-coded authored skill-gap bundles; model output plus grounding should remain the source of truth, with only lightweight filtering/deduping guardrails.

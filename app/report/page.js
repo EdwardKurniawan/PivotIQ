@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
 import ReportExperience from '../../components/report-experience';
 import { normalizeReportData } from '../../lib/report-data';
@@ -9,6 +10,7 @@ import { BrandMarkBadge } from '../../components/brand-logo';
 import { getBrowserLocale, getMessages } from '../../lib/i18n';
 
 export default function ReportPage() {
+  const router = useRouter();
   const [payload, setPayload] = useState(null);
   const [locale, setLocale] = useState('en');
   const searchParams = useSearchParams();
@@ -35,18 +37,24 @@ export default function ReportPage() {
 
       if (!reportData) return;
 
+      const storedTier = localStorage.getItem('pivotiq_tier') || 'free';
+      if (storedTier === 'full' && reportData.generation_stage !== 'full_complete') {
+        router.replace('/report/intake');
+        return;
+      }
+
       setPayload({
         ...stored,
         initialTab: searchParams.get('tab') || 'breakdown',
         locale: stored.reportData?.locale || stored.locale || 'en',
         uiLocale: getBrowserLocale(),
         reportData,
-        tier: localStorage.getItem('pivotiq_tier') || 'free',
+        tier: storedTier,
       });
     } catch (error) {
       console.error('Failed to load stored report', error);
     }
-  }, [searchParams]);
+  }, [router, searchParams]);
 
   if (!payload?.reportData) {
     const messages = getMessages(locale);

@@ -10,7 +10,6 @@ import {
   createCustomTask,
   getRecommendedTasks,
   getTaskSelectionSummary,
-  hasLeadershipSignals,
   getTitleRecommendationContext,
   searchTasks,
 } from '../../lib/intake-data';
@@ -22,26 +21,6 @@ const INDUSTRIES = [
 ];
 
 const ROLE_BLEND_OPTIONS = ['execution', 'mixed', 'strategy'];
-
-const MANAGEMENT_SCOPE_OPTIONS = ['none', 'small-team', 'larger-team'];
-
-const DECISION_SCOPE_OPTIONS = ['internal-ops', 'customer-revenue', 'regulated-high-stakes'];
-
-const GOAL_NOW_OPTIONS = ['stay_and_advance', 'hybrid_transition', 'active_pivot', 'not_sure'];
-
-const TIMELINE_URGENCY_OPTIONS = ['within_3_months', 'within_6_months', 'within_12_months', 'exploring_only'];
-
-const YEARS_EXPERIENCE_OPTIONS = ['0_2', '3_5', '6_10', '11_plus'];
-
-const LOCATION_PREFERENCE_OPTIONS = ['netherlands', 'europe', 'united_states', 'global_remote', 'other'];
-
-const AI_MATURITY_OPTIONS = ['never_use_it', 'occasionally', 'weekly', 'repeatable_workflows', 'team_level_adoption'];
-
-const TECHNICAL_CAPABILITY_OPTIONS = ['no_code_only', 'advanced_spreadsheets', 'sql_bi', 'scripting_python', 'software_engineering'];
-
-const SALARY_TOLERANCE_OPTIONS = ['cannot_take_cut', 'up_to_10_percent', 'up_to_20_percent', 'flexible_for_right_move'];
-
-const PROOF_STATE_OPTIONS = ['none', 'internal_project', 'dashboard_or_analysis', 'workflow_or_playbook', 'portfolio_or_case_study'];
 
 const palette = {
   bg: '#F4EFE7',
@@ -156,14 +135,6 @@ function getSelectedTaskCountLabel(count, messages) {
   return `${count} ${count === 1 ? messages.audit.selectedSummarySingle : messages.audit.selectedSummaryPlural}`;
 }
 
-function parseSignalList(value) {
-  return String(value || '')
-    .split(/[\n,]/)
-    .map((item) => item.trim())
-    .filter(Boolean)
-    .slice(0, 6);
-}
-
 export default function AuditPage() {
   const router = useRouter();
   const [locale, setLocale] = useState(getBrowserLocale());
@@ -175,20 +146,7 @@ export default function AuditPage() {
   const [industry, setIndustry] = useState(null);
   const [selectedTasks, setSelectedTasks] = useState([]);
   const [primaryTasks, setPrimaryTasks] = useState([]);
-  const [goalNow, setGoalNow] = useState('');
-  const [timelineUrgency, setTimelineUrgency] = useState('');
-  const [yearsExperienceBand, setYearsExperienceBand] = useState('');
-  const [locationPreference, setLocationPreference] = useState('');
-  const [aiMaturity, setAiMaturity] = useState('');
-  const [showPrecisionInputs, setShowPrecisionInputs] = useState(false);
-  const [technicalCapability, setTechnicalCapability] = useState('');
-  const [salaryTolerance, setSalaryTolerance] = useState('');
-  const [proofState, setProofState] = useState('');
   const [roleBlend, setRoleBlend] = useState('');
-  const [managementScope, setManagementScope] = useState('');
-  const [decisionScope, setDecisionScope] = useState('');
-  const [domainFocus, setDomainFocus] = useState('');
-  const [coreSystemsInput, setCoreSystemsInput] = useState('');
   const [linkedinProfileUrl, setLinkedinProfileUrl] = useState('');
   const [taskSearch, setTaskSearch] = useState('');
   const [customTaskInput, setCustomTaskInput] = useState('');
@@ -272,7 +230,6 @@ export default function AuditPage() {
     () => searchTasks(taskSearch, selectedTaskIds),
     [taskSearch, selectedTaskIds]
   );
-  const leadershipSignals = useMemo(() => hasLeadershipSignals(selectedTasks), [selectedTasks]);
   const customTaskCount = useMemo(
     () => selectedTasks.filter((task) => task.source === 'custom').length,
     [selectedTasks]
@@ -352,8 +309,8 @@ export default function AuditPage() {
       setError('Keep it to 10 tasks or fewer. Choose the work that truly fills your week.');
       return;
     }
-    if (!goalNow || !timelineUrgency || !yearsExperienceBand || !locationPreference || !aiMaturity) {
-      setError('Answer the quick clarifiers so the recommendation can reflect your real timeline, level, market, and AI starting point.');
+    if (!roleBlend) {
+      setError('Choose the role shape that best fits your week so the free pivot plan has the right lens.');
       return;
     }
     if (email.trim() && !email.includes('@')) {
@@ -391,19 +348,7 @@ export default function AuditPage() {
         .filter((task) => primaryTasks.includes(task.task_id))
         .map((task) => task.label),
       clarifiers: {
-        goal_now: goalNow || null,
-        timeline_urgency: timelineUrgency || null,
-        years_experience_band: yearsExperienceBand || null,
-        location_preference: locationPreference || null,
-        ai_maturity: aiMaturity || null,
-        technical_capability: technicalCapability || null,
-        salary_tolerance: salaryTolerance || null,
-        proof_state: proofState || null,
         role_blend: roleBlend || null,
-        management_scope: leadershipSignals ? managementScope || null : null,
-        decision_scope: decisionScope || null,
-        domain_focus: domainFocus.trim() || null,
-        core_systems: parseSignalList(coreSystemsInput),
       },
     };
 
@@ -545,7 +490,7 @@ export default function AuditPage() {
   }
 
   const step1Ready = jobTitle.trim() && industry;
-  const step2Ready = selectedTasks.length >= 3 && selectedTasks.length <= 10;
+  const step2Ready = selectedTasks.length >= 3 && selectedTasks.length <= 10 && Boolean(roleBlend);
   const stepShell = panelStyle({ accent: 'rgba(19, 27, 35, 0.08)', background: 'rgba(255,255,255,0.76)', padding: '28px' });
   const ctaStyle = {
     width: '100%',
@@ -939,9 +884,9 @@ export default function AuditPage() {
 
               {selectedTasks.length > 0 && (
                 <div style={{ ...panelStyle({ accent: 'rgba(27, 111, 99, 0.16)', background: 'rgba(255,255,255,0.68)', padding: '20px' }), boxShadow: 'none', marginBottom: '24px' }}>
-                  <p style={{ color: palette.text, fontSize: '16px', fontWeight: 800, margin: '0 0 6px', letterSpacing: '-0.02em' }}>{messages.audit.quickClarifiersTitle}</p>
+                  <p style={{ color: palette.text, fontSize: '16px', fontWeight: 800, margin: '0 0 6px', letterSpacing: '-0.02em' }}>{messages.audit.freeSignalTitle}</p>
                   <p style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7, margin: '0 0 18px' }}>
-                    {messages.audit.quickClarifiersBody}
+                    {messages.audit.freeSignalBody}
                   </p>
 
                   <div style={{ marginBottom: '20px' }}>
@@ -963,43 +908,7 @@ export default function AuditPage() {
                     </div>
                   </div>
 
-                  <div style={{ marginBottom: '20px' }}>
-                    <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>
-                      {messages.audit.goalPrompt}
-                    </label>
-                    <ChoiceChipGroup
-                      options={GOAL_NOW_OPTIONS}
-                      value={goalNow}
-                      onSelect={setGoalNow}
-                      labels={messages.audit.goalOptions}
-                    />
-                  </div>
-
-                  <div style={{ marginBottom: '20px' }}>
-                    <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>
-                      {messages.audit.timelinePrompt}
-                    </label>
-                    <ChoiceChipGroup
-                      options={TIMELINE_URGENCY_OPTIONS}
-                      value={timelineUrgency}
-                      onSelect={setTimelineUrgency}
-                      labels={messages.audit.timelineOptions}
-                    />
-                  </div>
-
-                  <div style={{ marginBottom: '20px' }}>
-                    <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>
-                      {messages.audit.experiencePrompt}
-                    </label>
-                    <ChoiceChipGroup
-                      options={YEARS_EXPERIENCE_OPTIONS}
-                      value={yearsExperienceBand}
-                      onSelect={setYearsExperienceBand}
-                      labels={messages.audit.experienceOptions}
-                    />
-                  </div>
-
-                  <div style={{ marginBottom: leadershipSignals ? '20px' : 0 }}>
+                  <div style={{ marginBottom: '18px' }}>
                     <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>
                       {messages.audit.rolePrompt}
                     </label>
@@ -1011,153 +920,13 @@ export default function AuditPage() {
                     />
                   </div>
 
-                  {leadershipSignals && (
-                    <div>
-                      <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>
-                        {messages.audit.managementPrompt}
-                      </label>
-                      <ChoiceChipGroup
-                        options={MANAGEMENT_SCOPE_OPTIONS}
-                        value={managementScope}
-                        onSelect={setManagementScope}
-                        labels={messages.audit.managementScopeOptions}
-                      />
+                  <div style={{ borderRadius: '18px', border: '1px solid rgba(19, 27, 35, 0.08)', background: 'rgba(255,255,255,0.56)', padding: '16px' }}>
+                    <div style={{ color: palette.text, fontSize: '14px', fontWeight: 800, marginBottom: '6px', letterSpacing: '-0.02em' }}>
+                      {messages.audit.fullAuditNextTitle}
                     </div>
-                  )}
-
-                  <div style={{ marginTop: leadershipSignals ? '20px' : '20px', marginBottom: '20px' }}>
-                    <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>
-                      {messages.audit.decisionScopePrompt}
-                    </label>
-                    <ChoiceChipGroup
-                      options={DECISION_SCOPE_OPTIONS}
-                      value={decisionScope}
-                      onSelect={setDecisionScope}
-                      labels={messages.audit.decisionScopeOptions}
-                    />
-                  </div>
-
-                  <div style={{ marginBottom: '20px' }}>
-                    <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>
-                      {messages.audit.locationPrompt}
-                    </label>
-                    <ChoiceChipGroup
-                      options={LOCATION_PREFERENCE_OPTIONS}
-                      value={locationPreference}
-                      onSelect={setLocationPreference}
-                      labels={messages.audit.locationOptions}
-                    />
-                  </div>
-
-                  <div style={{ marginBottom: '20px' }}>
-                    <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>
-                      {messages.audit.aiMaturityPrompt}
-                    </label>
-                    <ChoiceChipGroup
-                      options={AI_MATURITY_OPTIONS}
-                      value={aiMaturity}
-                      onSelect={setAiMaturity}
-                      labels={messages.audit.aiMaturityOptions}
-                    />
-                  </div>
-
-                  <div
-                    style={{
-                      borderRadius: '20px',
-                      border: '1px solid rgba(19, 27, 35, 0.08)',
-                      background: 'rgba(255,255,255,0.56)',
-                      padding: '18px',
-                      marginBottom: '20px',
-                    }}
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: '14px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
-                      <div style={{ maxWidth: '560px' }}>
-                        <p style={{ color: palette.text, fontSize: '15px', fontWeight: 800, margin: '0 0 6px', letterSpacing: '-0.02em' }}>
-                          {messages.audit.precisionTitle}
-                        </p>
-                        <p style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7, margin: 0 }}>
-                          {messages.audit.precisionBody}
-                        </p>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setShowPrecisionInputs((value) => !value)}
-                        style={{ ...secondaryButtonStyle, width: 'auto', whiteSpace: 'nowrap' }}
-                      >
-                        {showPrecisionInputs ? messages.audit.precisionHide : messages.audit.precisionShow}
-                      </button>
+                    <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7 }}>
+                      {messages.audit.fullAuditNextBody}
                     </div>
-
-                    {showPrecisionInputs && (
-                      <div style={{ marginTop: '18px' }}>
-                        <div style={{ marginBottom: '20px' }}>
-                          <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>
-                            {messages.audit.technicalCapabilityPrompt}
-                          </label>
-                          <ChoiceChipGroup
-                            options={TECHNICAL_CAPABILITY_OPTIONS}
-                            value={technicalCapability}
-                            onSelect={setTechnicalCapability}
-                            labels={messages.audit.technicalCapabilityOptions}
-                          />
-                        </div>
-
-                        <div style={{ marginBottom: '20px' }}>
-                          <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>
-                            {messages.audit.salaryTolerancePrompt}
-                          </label>
-                          <ChoiceChipGroup
-                            options={SALARY_TOLERANCE_OPTIONS}
-                            value={salaryTolerance}
-                            onSelect={setSalaryTolerance}
-                            labels={messages.audit.salaryToleranceOptions}
-                          />
-                        </div>
-
-                        <div>
-                          <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>
-                            {messages.audit.proofStatePrompt}
-                          </label>
-                          <ChoiceChipGroup
-                            options={PROOF_STATE_OPTIONS}
-                            value={proofState}
-                            onSelect={setProofState}
-                            labels={messages.audit.proofStateOptions}
-                          />
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>
-                      {messages.audit.domainFocusPrompt}
-                    </label>
-                    <input
-                      className="piq-input"
-                      value={domainFocus}
-                      onChange={(event) => setDomainFocus(event.target.value)}
-                      placeholder={messages.audit.domainFocusPlaceholder}
-                      style={{ marginBottom: '8px' }}
-                    />
-                    <p style={{ color: palette.textSoft, fontSize: '12px', marginBottom: '20px' }}>
-                      {messages.audit.domainFocusBody}
-                    </p>
-
-                    <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>
-                      {messages.audit.coreSystemsPrompt}
-                    </label>
-                    <textarea
-                      className="piq-input"
-                      value={coreSystemsInput}
-                      onChange={(event) => setCoreSystemsInput(event.target.value)}
-                      placeholder={messages.audit.coreSystemsPlaceholder}
-                      rows={3}
-                      style={{ marginBottom: '8px', minHeight: '96px', resize: 'vertical' }}
-                    />
-                    <p style={{ color: palette.textSoft, fontSize: '12px', marginBottom: 0 }}>
-                      {messages.audit.coreSystemsBody}
-                    </p>
                   </div>
                 </div>
               )}

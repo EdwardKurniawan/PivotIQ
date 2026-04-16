@@ -46,7 +46,13 @@ function SuccessContent() {
       } catch {}
     }
 
-    const nextDestination = persistedReportId ? `/report/${persistedReportId}` : '/report';
+    const nextDestination = urlTier === 'full'
+      ? persistedReportId
+        ? `/report/${persistedReportId}/intake`
+        : '/report/intake'
+      : persistedReportId
+        ? `/report/${persistedReportId}`
+        : '/report';
     setDestination(nextDestination);
 
     const finalizeUnlock = async () => {

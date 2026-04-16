@@ -92,6 +92,9 @@ export default async function PersistedReportPage({ params, searchParams }) {
     redirect(`/login?next=${encodeURIComponent(`/report/${params.id}`)}`);
   }
   if (!payload?.reportData) notFound();
+  if (payload.tier === 'full' && payload.reportData?.generation_stage !== 'full_complete') {
+    redirect(`/report/${params.id}/intake`);
+  }
 
   return <ReportExperience payload={{ ...payload, initialTab: searchParams?.tab || 'breakdown', uiLocale: getServerLocale() }} embedded={false} />;
 }

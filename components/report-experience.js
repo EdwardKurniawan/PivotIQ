@@ -2913,9 +2913,6 @@ export default function ReportExperience({ payload, embedded = false }) {
   const [reportData, setReportData] = useState(payload.reportData);
   const [actionEmailStatus, setActionEmailStatus] = useState('idle');
   const [refreshStatus, setRefreshStatus] = useState('idle');
-  const [generationStatus, setGenerationStatus] = useState(
-    payload.tier === 'full' && payload.reportData?.generation_stage !== 'full_complete' ? 'loading' : 'idle'
-  );
   const profile = reportData.profile || {};
   const summary = reportData.summary || {};
   const pivots = reportData.pivots || [];
@@ -2974,11 +2971,6 @@ export default function ReportExperience({ payload, embedded = false }) {
     setWeekProgressState(hydrateLegacyWeekProgress(payload.completedWeeks || [], payload.weekNotes || {}, payload.weekProgress || {}));
     setOutcomeState(normalizeOutcomeEntry(payload.outcome));
     setStartDate(payload.startDate || '');
-    if (payload.tier === 'full' && payload.reportData?.generation_stage !== 'full_complete') {
-      setGenerationStatus('loading');
-    } else {
-      setGenerationStatus('idle');
-    }
     setRefreshStatus('idle');
     setActiveTab(normalizeReportTab(payload.initialTab || 'breakdown'));
   }, [payload.reportData, payload.tier]);
@@ -3032,88 +3024,6 @@ export default function ReportExperience({ payload, embedded = false }) {
       weekProgress: weekProgressState,
     }));
   }, [storageScope, startDate, completedWeeks, weekNotes, weekProgressState]);
-
-  useEffect(() => {
-    if (embedded || tier !== 'full' || reportData?.generation_stage === 'full_complete') return;
-
-    let cancelled = false;
-
-    async function upgradeToFullReport() {
-      setGenerationStatus('loading');
-
-      try {
-        let response;
-
-        if (payload.reportId) {
-          response = await fetch(`/api/reports/${payload.reportId}/generate-full`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-          });
-        } else {
-          response = await fetch('/api/generate-report', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              stage: 'full',
-              locale: payload.locale || reportData.locale || 'en',
-              jobTitle: payload.jobTitle || profile.job_title,
-              industry: payload.industry || profile.industry,
-              tasks: payload.tasks || profile.tasks || [],
-              email: payload.email || '',
-              intakeProfile: payload.intakeProfile || reportData.profile || {},
-            }),
-          });
-        }
-
-        const json = await response.json();
-        if (!response.ok || !json.reportData) {
-          throw new Error(json.error || 'Failed to generate the full report.');
-        }
-
-        if (cancelled) return;
-
-        setReportData(json.reportData);
-        setGenerationStatus('done');
-
-        const raw = sessionStorage.getItem('pivotiq_report') || localStorage.getItem('pivotiq_report');
-        if (raw) {
-          try {
-            const stored = JSON.parse(raw);
-            const next = JSON.stringify({
-              ...stored,
-              reportData: json.reportData,
-              reportId: json.reportId || stored.reportId || payload.reportId || null,
-            });
-            sessionStorage.setItem('pivotiq_report', next);
-            localStorage.setItem('pivotiq_report', next);
-          } catch {}
-        }
-      } catch (error) {
-        console.error('Full report upgrade failed:', error);
-        if (!cancelled) setGenerationStatus('failed');
-      }
-    }
-
-    upgradeToFullReport();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [
-    embedded,
-    payload.email,
-    payload.industry,
-    payload.intakeProfile,
-    payload.jobTitle,
-    payload.locale,
-    payload.reportId,
-    payload.tasks,
-    profile.industry,
-    profile.job_title,
-    profile.tasks,
-    reportData?.generation_stage,
-    tier,
-  ]);
 
   useEffect(() => {
     if (embedded || tier !== 'full' || reportData?.generation_stage !== 'full_complete' || !payload.email) return;
@@ -3194,6 +3104,7 @@ export default function ReportExperience({ payload, embedded = false }) {
   }, [activePath]);
 
   if (tier === 'full' && reportData?.generation_stage !== 'full_complete') {
+    const intakeHref = payload.reportId ? `/report/${payload.reportId}/intake` : '/report/intake';
     return (
       <div style={{ minHeight: '100vh', background: palette.bg, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 24px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
         <div
@@ -3210,13 +3121,28 @@ export default function ReportExperience({ payload, embedded = false }) {
             <BrandMarkBadge size={96} />
           </div>
           <h2 style={{ color: palette.text, fontSize: 'clamp(28px, 5vw, 40px)', fontWeight: 900, letterSpacing: '-0.05em', lineHeight: 0.98, margin: '0 0 10px', fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif' }}>
-            {generationStatus === 'failed' ? 'Your full report hit a snag.' : 'Building your full pivot map'}
+            {messages.audit.fullIntakeTitle}
           </h2>
           <p style={{ color: palette.textMuted, fontSize: '15px', lineHeight: 1.72, margin: 0 }}>
-            {generationStatus === 'failed'
-              ? 'We unlocked your report, but the deeper generation did not finish cleanly. Refresh this page to retry.'
-              : 'You already paid. We are now generating the full 5-path report, detailed skill gaps, ROI logic, and milestone plan.'}
+            {messages.audit.fullIntakeBody}
           </p>
+          <Link
+            href={intakeHref}
+            style={{
+              display: 'inline-flex',
+              marginTop: '18px',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: '18px',
+              padding: '14px 20px',
+              background: 'linear-gradient(135deg, #FF8F4D, #FFC66C)',
+              color: '#14181F',
+              fontWeight: 900,
+              boxShadow: '0 18px 40px rgba(255, 143, 77, 0.2)',
+            }}
+          >
+            {messages.audit.buildPaidPlanButton}
+          </Link>
         </div>
       </div>
     );
