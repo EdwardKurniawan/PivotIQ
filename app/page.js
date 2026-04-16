@@ -282,8 +282,8 @@ export default function Home() {
             {messages.home.heroBody}
           </p>
 
-          <div className="home-reveal-4 home-hero-actions" style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', marginBottom: '14px' }}>
-            <Link className="home-primary-cta" href="/audit" style={primaryLinkStyle()}>
+          <div className="home-reveal-4 home-hero-actions" style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', marginBottom: '14px', maxWidth: '660px' }}>
+            <Link className="home-primary-cta" href="/audit" style={{ ...primaryLinkStyle(), width: '100%', maxWidth: '660px' }}>
               {messages.common.runFreeScan}
             </Link>
           </div>
