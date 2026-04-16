@@ -226,6 +226,32 @@ function buildReportHref(reportId, attention, snapshot, preferredTab = '') {
   return resolvedTab ? `/report/${reportId}?tab=${resolvedTab}` : `/report/${reportId}`;
 }
 
+function dashboardActionLinkStyle(kind = 'secondary') {
+  if (kind === 'primary') {
+    return {
+      borderRadius: '999px',
+      padding: '9px 13px',
+      background: palette.navy,
+      border: `1px solid ${palette.navy}`,
+      color: '#FFF7F1',
+      fontSize: '12px',
+      fontWeight: 800,
+      textDecoration: 'none',
+    };
+  }
+
+  return {
+    borderRadius: '999px',
+    padding: '9px 13px',
+    background: 'rgba(255,255,255,0.74)',
+    border: `1px solid ${palette.border}`,
+    color: palette.text,
+    fontSize: '12px',
+    fontWeight: 800,
+    textDecoration: 'none',
+  };
+}
+
 export default async function DashboardPage() {
   const locale = getServerLocale();
   const messages = getMessages(locale);
@@ -356,15 +382,13 @@ export default async function DashboardPage() {
         {data.mode === 'ready' && (
           <div style={{ display: 'grid', gap: '16px' }}>
             {latestCard && latestSnapshot && (
-              <Link
-                href={buildReportHref(latestCard.report.id, latestCard.attention, latestSnapshot)}
+              <div
                 style={{
-                  display: 'block',
                   borderRadius: '28px',
                   padding: '24px',
-                    background: 'linear-gradient(150deg, rgba(242,138,67,0.14), rgba(255,255,255,0.92) 58%)',
-                    border: `1px solid ${palette.border}`,
-                    boxShadow: '0 24px 70px rgba(19, 33, 45, 0.12)',
+                  background: 'linear-gradient(150deg, rgba(242,138,67,0.14), rgba(255,255,255,0.92) 58%)',
+                  border: `1px solid ${palette.border}`,
+                  boxShadow: '0 24px 70px rgba(19, 33, 45, 0.12)',
                 }}
               >
                 <div className="dashboard-card-head" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', gap: '16px', alignItems: 'center' }}>
@@ -428,12 +452,25 @@ export default async function DashboardPage() {
                         <span style={{ background: 'rgba(242,138,67,0.14)', border: '1px solid rgba(242,138,67,0.24)', color: '#8B4A1B', borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 800 }}>
                           Feedback due
                         </span>
-                      )}
+                        )}
                     </div>
                   </div>
-                  <div style={{ color: palette.navy, fontWeight: 800 }}>{messages.dashboard.resume}</div>
+                  <div style={{ display: 'grid', gap: '8px', justifyItems: 'end' }}>
+                    <div style={{ color: palette.navy, fontWeight: 800 }}>{messages.dashboard.resume}</div>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                      <Link href={buildReportHref(latestCard.report.id, latestCard.attention, latestSnapshot)} style={dashboardActionLinkStyle('primary')}>
+                        Resume
+                      </Link>
+                      <Link href={buildReportHref(latestCard.report.id, latestCard.attention, latestSnapshot, 'stay')} style={dashboardActionLinkStyle()}>
+                        Open stay tab
+                      </Link>
+                      <Link href={buildReportHref(latestCard.report.id, latestCard.attention, latestSnapshot, 'plan')} style={dashboardActionLinkStyle()}>
+                        Open plan
+                      </Link>
+                    </div>
+                  </div>
                 </div>
-              </Link>
+              </div>
             )}
 
             {reportCards.length <= 1 ? (
@@ -446,11 +483,9 @@ export default async function DashboardPage() {
               sortedReportCards.map(({ report, snapshot, attention }, index) => {
                 const tone = riskTone(report.risk_level);
                 return (
-                  <Link
+                  <div
                     key={report.id}
-                    href={buildReportHref(report.id, attention, snapshot)}
                     style={{
-                      display: 'block',
                       borderRadius: '26px',
                       padding: '24px',
                       background: index === 0 ? 'linear-gradient(180deg, rgba(255,255,255,0.92), rgba(249,243,235,0.96))' : palette.panel,
@@ -522,9 +557,22 @@ export default async function DashboardPage() {
                           </span>
                         </div>
                       </div>
-                      <div style={{ color: palette.navy, fontWeight: 800 }}>{messages.dashboard.open}</div>
+                      <div style={{ display: 'grid', gap: '8px', justifyItems: 'end' }}>
+                        <div style={{ color: palette.navy, fontWeight: 800 }}>{messages.dashboard.open}</div>
+                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                          <Link href={buildReportHref(report.id, attention, snapshot)} style={dashboardActionLinkStyle('primary')}>
+                            Open report
+                          </Link>
+                          <Link href={buildReportHref(report.id, attention, snapshot, 'stay')} style={dashboardActionLinkStyle()}>
+                            Open stay tab
+                          </Link>
+                          <Link href={buildReportHref(report.id, attention, snapshot, 'plan')} style={dashboardActionLinkStyle()}>
+                            Open plan
+                          </Link>
+                        </div>
+                      </div>
                     </div>
-                  </Link>
+                  </div>
                 );
               })
             )}

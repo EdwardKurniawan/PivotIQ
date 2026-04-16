@@ -259,6 +259,18 @@ function PathDecisionMatrix({ stayPath, stayAndAdvance, bestPivot, backupPivot, 
         </div>
       </div>
 
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${decisionCards.length}, minmax(0, 1fr))`, gap: '10px', marginBottom: '12px' }} className="two-col">
+        {decisionCards.map((item) => (
+          <div key={`${item.id}-headline`} style={{ padding: '12px 14px', borderRadius: '16px', background: item.highlight ? `${item.accent}10` : 'rgba(255,255,255,0.8)', border: `1px solid ${item.highlight ? `${item.accent}24` : palette.border}` }}>
+            <div style={{ color: item.accent, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>
+              {item.kind === 'stay' ? 'Best for safety' : item.kind === 'backup' ? 'Lower-risk alternate' : 'Stretch move'}
+            </div>
+            <div style={{ color: palette.text, fontSize: '14px', fontWeight: 900, lineHeight: 1.35, marginBottom: '4px' }}>{item.title}</div>
+            <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.5 }}>{item.subtitle}</div>
+          </div>
+        ))}
+      </div>
+
       <div style={{ display: 'grid', gridTemplateColumns: `repeat(${decisionCards.length}, minmax(0, 1fr))`, gap: '12px' }} className="two-col">
         {decisionCards.map((item) => (
           <div
@@ -279,16 +291,24 @@ function PathDecisionMatrix({ stayPath, stayAndAdvance, bestPivot, backupPivot, 
               </span>
             </div>
 
-            <div style={{ color: palette.text, fontSize: '16px', fontWeight: 900, lineHeight: 1.3, marginBottom: '6px' }}>{item.title}</div>
-            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.55, marginBottom: '14px' }}>{item.subtitle}</div>
-
-            <div style={{ display: 'grid', gap: '9px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '9px', marginBottom: '10px' }}>
               {comparisonMetricRows(item, item.decisionLabel).map((row) => (
                 <div key={row.label} style={{ padding: '10px 11px', borderRadius: '14px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}` }}>
                   <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '4px' }}>{row.label}</div>
                   <div style={{ color: palette.text, fontSize: '13px', lineHeight: 1.45, fontWeight: 700 }}>{row.value}</div>
                 </div>
               ))}
+            </div>
+
+            <div style={{ padding: '10px 11px', borderRadius: '14px', background: item.highlight ? `${item.accent}0D` : 'rgba(19,32,42,0.04)', border: `1px solid ${item.highlight ? `${item.accent}22` : palette.border}` }}>
+              <div style={{ color: item.highlight ? item.accent : palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '4px' }}>
+                {item.kind === 'stay' ? 'Why this leads' : item.kind === 'backup' ? 'When to use this' : 'What you are betting on'}
+              </div>
+              <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.55 }}>
+                {item.kind === 'stay'
+                  ? compactCopy(item.why || item.market_evidence || item.subtitle, 108)
+                  : compactCopy(item.what_you_are_betting_on || item.why || item.subtitle, 108)}
+              </div>
             </div>
           </div>
         ))}
@@ -1623,7 +1643,7 @@ function JobSafetyCaseCard({ safetyCase, color }) {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '12px', marginBottom: '14px' }} className="two-col">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '12px', marginBottom: '14px' }} className="two-col">
         <div style={{ padding: '15px 16px', borderRadius: '18px', background: `${color}10`, border: `1px solid ${color}22` }}>
           <div style={{ color, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Safer because</div>
           <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{compactCopy((safetyCase.safer_because || [])[0], 88)}</div>
@@ -1635,6 +1655,10 @@ function JobSafetyCaseCard({ safetyCase, color }) {
         <div style={{ padding: '15px 16px', borderRadius: '18px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}` }}>
           <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Metric to watch</div>
           <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{compactCopy(safetyCase.metric_to_watch, 88)}</div>
+        </div>
+        <div style={{ padding: '15px 16px', borderRadius: '18px', background: 'rgba(19,32,42,0.04)', border: `1px solid ${palette.border}` }}>
+          <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>If you ignore this</div>
+          <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{compactCopy(safetyCase.if_you_ignore_this, 88)}</div>
         </div>
       </div>
 
@@ -1662,9 +1686,11 @@ function JobSafetyCaseCard({ safetyCase, color }) {
               ))}
             </div>
           </div>
-          <div style={{ padding: '18px', borderRadius: '20px', background: 'rgba(19,32,42,0.04)', border: `1px solid ${palette.border}` }}>
-            <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>If you ignore this</div>
-            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{compactCopy(safetyCase.if_you_ignore_this, 120)}</div>
+          <div style={{ padding: '18px', borderRadius: '20px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}` }}>
+            <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>Protection shift</div>
+            <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>
+              {compactCopy((safetyCase.safer_because || [])[1] || safetyCase.metric_to_watch || safetyCase.summary, 120)}
+            </div>
           </div>
         </div>
       </div>
