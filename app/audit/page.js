@@ -595,6 +595,19 @@ export default function AuditPage() {
                 </p>
               </div>
 
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '12px', marginBottom: '28px' }} className="three-col">
+                {[
+                  ['Hook', 'We use your real work, not just a title guess.'],
+                  ['Retain', 'You will see where the role is weakening and where your leverage still compounds.'],
+                  ['Reward', 'The free result ends with one strongest next move worth acting on.'],
+                ].map(([label, body]) => (
+                  <div key={label} style={{ ...panelStyle({ accent: 'rgba(19, 27, 35, 0.08)', background: 'rgba(255,255,255,0.62)', padding: '16px' }), boxShadow: 'none' }}>
+                    <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '8px' }}>{label}</div>
+                    <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.65 }}>{body}</div>
+                  </div>
+                ))}
+              </div>
+
               <div
                 style={{
                   marginBottom: '28px',
@@ -727,6 +740,24 @@ export default function AuditPage() {
                 <p style={{ color: palette.textSoft, fontSize: '13px' }}>
                   {messages.audit.tasksTarget}
                 </p>
+              </div>
+
+              <div style={{ ...panelStyle({ accent: 'rgba(242, 138, 67, 0.16)', background: 'rgba(255,255,255,0.72)', padding: '18px' }), boxShadow: 'none', marginBottom: '24px' }}>
+                <div style={{ color: '#8B4A1B', fontSize: '11px', fontWeight: 900, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '10px' }}>
+                  Finish this step and we will show you
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '10px' }} className="three-col">
+                  {[
+                    ['Where the pressure really sits', 'The fragile part of the role, not just the scary headline.'],
+                    ['Which adjacent move leads', 'One high-level pivot direction before the paywall.'],
+                    ['Why it is worth caring', 'A concrete read on what gets safer, stronger, or weaker next.'],
+                  ].map(([title, body]) => (
+                    <div key={title} style={{ padding: '14px', borderRadius: '18px', background: 'rgba(255,255,255,0.66)', border: `1px solid ${palette.border}` }}>
+                      <div style={{ color: palette.text, fontSize: '14px', fontWeight: 800, lineHeight: 1.4, marginBottom: '6px' }}>{title}</div>
+                      <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{body}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <div

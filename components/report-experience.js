@@ -2711,13 +2711,21 @@ function TeaserView({ payload, onCheckout, loading }) {
   const { summary, task_breakdown: taskBreakdown, pivots, roadmap } = reportData;
   const color = riskColor(summary.overall_score);
   const bestPivot = pivots[0];
+  const backupPivot = pivots[1] || null;
   const interpretation = reportData.interpretation || {};
   const messages = getMessages(payload.uiLocale || payload.locale || getBrowserLocale() || reportData.locale);
+  const topPressureTask = [...taskBreakdown].sort((left, right) => Number(right?.risk_score || 0) - Number(left?.risk_score || 0))[0] || null;
+  const immediateAction = reportData.next_move?.explanation || bestPivot?.why_this_path_wins || summary.what_this_means;
+  const teaserLoopItems = [
+    backupPivot?.title ? `Why ${bestPivot?.title} beats ${backupPivot.title} right now` : `Why ${bestPivot?.title || 'this pivot'} leads over the close alternatives`,
+    `Which ${Math.max((bestPivot?.skill_gaps || []).length, 3)} skill gaps actually matter first`,
+    'What proof makes this move credible before you commit',
+  ];
   const fullUnlocks = [
-    'Market-grounded pivot ranking',
-    'Proof asset builder',
-    'Learning path + emailed action plan',
-    '12-week roadmap',
+    'Exact hard-skill gaps to close first',
+    'Proof asset that makes the pivot believable',
+    'Role-aware learning path and action plan',
+    '12-week roadmap with checkpoints',
   ];
 
   return (
@@ -2746,6 +2754,17 @@ function TeaserView({ payload, onCheckout, loading }) {
               <SignalStatCard label={messages.report.riskScore} value={summary.overall_score} tone={color} />
               <SignalStatCard label={messages.report.tabs[0]} value={taskBreakdown.length} tone={palette.navy} />
               <SignalStatCard label={messages.report.tabs[1]} value={pivots.length} tone={palette.teal} />
+            </div>
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '16px' }}>
+              {[
+                topPressureTask ? `Most exposed task: ${topPressureTask.task_name}` : null,
+                bestPivot?.title ? `Leading direction: ${bestPivot.title}` : null,
+                'Full report adds the proof and hard-skill logic',
+              ].filter(Boolean).map((item) => (
+                <span key={item} style={{ padding: '8px 12px', borderRadius: '999px', background: 'rgba(255,255,255,0.6)', border: `1px solid ${palette.border}`, color: palette.textSoft, fontSize: '12px', fontWeight: 800 }}>
+                  {item}
+                </span>
+              ))}
             </div>
           </div>
         </div>
@@ -2830,6 +2849,56 @@ function TeaserView({ payload, onCheckout, loading }) {
             </div>
           </div>
         )}
+
+        <div className="hook-stats" style={{ marginBottom: '18px' }}>
+          <span className="section-label">What you can act on now</span>
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(280px, 0.9fr)', gap: '12px' }} className="two-col">
+            <div className="hook-item" style={{ alignItems: 'flex-start' }}>
+              <MonoIcon name="next-first" tone="orange" />
+              <div>
+                <div style={{ color: palette.text, fontSize: '14px', fontWeight: 800, marginBottom: '6px' }}>
+                  Start with one visible move, not a full reinvention.
+                </div>
+                <div style={{ color: 'var(--text-muted)', fontSize: '13px', lineHeight: 1.65 }}>
+                  {immediateAction}
+                </div>
+              </div>
+            </div>
+
+            <div className="hook-item" style={{ alignItems: 'flex-start', borderColor: 'rgba(65, 194, 174, 0.18)' }}>
+              <MonoIcon name="proof" tone="teal" />
+              <div>
+                <div style={{ color: palette.text, fontSize: '14px', fontWeight: 800, marginBottom: '6px' }}>
+                  This free scan gives you the direction.
+                </div>
+                <div style={{ color: 'var(--text-muted)', fontSize: '13px', lineHeight: 1.65 }}>
+                  The paid report turns that direction into the exact skill, proof, and milestone logic you would need to follow through.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="hook-stats" style={{ marginBottom: '18px' }}>
+          <span className="section-label">What the full report settles next</span>
+          <div className="hook-grid">
+            {teaserLoopItems.map((item, index) => (
+              <div key={item} className="hook-item" style={{ alignItems: 'flex-start' }}>
+                <MonoIcon name={index === 0 ? 'decision' : index === 1 ? 'skill-gaps' : 'roadmap'} tone={index === 0 ? 'orange' : index === 1 ? 'teal' : 'default'} />
+                <div>
+                  <div style={{ color: palette.text, fontSize: '14px', fontWeight: 800, marginBottom: '4px' }}>{item}</div>
+                  <div style={{ color: 'var(--text-muted)', fontSize: '12px', lineHeight: 1.55 }}>
+                    {index === 0
+                      ? 'The preview gives the leading path. The full report explains the ranking and tradeoff.'
+                      : index === 1
+                        ? 'Not every missing skill matters equally. The paid layer ranks the ones worth closing first.'
+                        : 'The full report tells you what to build, show, and test before you overcommit.'}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
 
         <div className="hook-stats">
           <span className="section-label">{messages.report.unlocksNext}</span>

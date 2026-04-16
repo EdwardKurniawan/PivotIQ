@@ -35,32 +35,51 @@ Latest commit: local changes not yet committed in this handoff refresh
   - lighter free scan copy
   - post-paywall second-intake copy
   - success-page “one more step” messaging
+- Applied a hook / retain / reward pass inspired by the referenced article across the top of funnel:
+  - homepage in `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/page.js`
+    - stronger hero retention strip
+    - clearer “what you get in 2 minutes” cards
+  - audit in `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/audit/page.js`
+    - stronger promise framing on step 1
+    - clearer “finish this and we’ll show you” momentum framing on step 2
+  - pre-paywall result in `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/components/report-experience.js`
+    - controlled reward via one concrete action-now block
+    - stronger open loops around ranking, hard skills, proof, and roadmap
+    - sharper lock-gate tension
+- Verification passed:
+  - `npm run build`
+  - `npm run test:report-quality`
 
 ## In-Progress Work
 
 - No code is currently mid-edit.
-- The new split flow is implemented and verified, but the next quality pass should test the full user journey in a live authenticated browser session.
+- The next major question is conversion quality: whether the new hook/retain/reward layer improves the free-to-paid flow in real use, not just in static review.
 
 ## Next Steps
 
-1. Run end-to-end QA on the new split audit journey:
+1. Run end-to-end QA on the updated funnel:
+   - homepage
    - free audit
-   - preview report
+   - free result
    - checkout
    - second intake
    - full report
-2. Decide whether the paid second intake should keep all current richer questions or trim one more layer for conversion.
-3. Review the paid second-intake UX for spacing and clarity on mobile.
-4. Check whether dashboard/report entry points should surface an explicit `Complete full report setup` action for paid-but-not-generated reports.
-5. Revisit report-quality polish once the new intake split is stable:
+2. Review the free result page on mobile.
+   - especially the new action-now and open-loop sections
+3. Decide whether the free result should reveal slightly more or slightly less.
+   - it is stronger now, but the reward/paywall balance should be tested in real usage
+4. Review the paid second-intake UX for conversion friction.
+   - confirm whether all current richer questions still earn their place
+5. Resume report-quality polish after funnel QA:
    - backup pivot quality
    - tertiary learning-resource sharpness
    - saved-report qualitative QA
 
 ## Blockers Or Assumptions
 
+- The article-driven hook/retain/reward implementation is based on product interpretation, not a verbatim lift from the source.
 - The app now assumes the free preview should be generated from minimal signal, and the full report should be generated only after the second paid intake.
 - Existing full reports are unaffected because they already have `generation_stage: full_complete`.
 - Existing paid-but-not-fully-generated reports will now be routed into the new intake flow instead of auto-generating.
-- `agent-browser` CLI was not available in the shell during recent UI work, so this split-flow change is build-verified and route-verified, not browser-automated.
+- `agent-browser` CLI was not available in the shell during recent UI work, so these funnel changes are build-verified and code-reviewed, but not browser-automated.
 - OpenRouter remains on `nvidia/nemotron-3-nano-30b-a3b:free`.

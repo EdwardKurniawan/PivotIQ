@@ -123,6 +123,25 @@ export default function Home() {
     { label: 'Leverage', value: '61', tone: '#13202A' },
     { label: 'Pivot fit', value: '74', tone: '#1B6F63' },
   ];
+  const heroHookCards = [
+    {
+      eyebrow: 'What gets cheaper first',
+      body: 'See which parts of your week are losing leverage before your title changes.',
+    },
+    {
+      eyebrow: 'What still compounds',
+      body: 'Spot the work that gets stronger when judgment, trust, and ownership matter more.',
+    },
+    {
+      eyebrow: 'What to do next',
+      body: 'Leave with a strongest next move, not just a vague warning about AI.',
+    },
+  ];
+  const heroRetainStrip = [
+    'Task-by-task pressure read',
+    'Strongest adjacent move',
+    'One concrete next step',
+  ];
   const softwareSchema = {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
@@ -316,6 +335,66 @@ export default function Home() {
           >
             {messages.home.heroNote}
           </p>
+
+          <div
+            className="home-reveal-5"
+            style={{
+              marginTop: '18px',
+              display: 'flex',
+              gap: '10px',
+              flexWrap: 'wrap',
+              color: '#5A6974',
+              fontSize: '12px',
+              fontWeight: 800,
+              letterSpacing: '0.04em',
+              textTransform: 'uppercase',
+            }}
+          >
+            {heroRetainStrip.map((item) => (
+              <span
+                key={item}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  padding: '8px 12px',
+                  borderRadius: '999px',
+                  background: 'rgba(255,255,255,0.55)',
+                  border: `1px solid ${palette.border}`,
+                }}
+              >
+                {item}
+              </span>
+            ))}
+          </div>
+
+          <div
+            className="home-reveal-6 three-col"
+            style={{
+              marginTop: '22px',
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+              gap: '12px',
+            }}
+          >
+            {heroHookCards.map((card) => (
+              <div
+                key={card.eyebrow}
+                style={{
+                  borderRadius: '22px',
+                  padding: '16px 16px 18px',
+                  background: 'rgba(255,255,255,0.58)',
+                  border: `1px solid ${palette.border}`,
+                }}
+              >
+                <div style={{ color: '#6A7882', fontSize: '10px', fontWeight: 900, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '8px' }}>
+                  {card.eyebrow}
+                </div>
+                <div style={{ color: '#43535E', fontSize: '14px', lineHeight: 1.6 }}>
+                  {card.body}
+                </div>
+              </div>
+            ))}
+          </div>
 
         </div>
 
