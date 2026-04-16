@@ -109,6 +109,13 @@ export default function FullReportIntake({
   const [coreSystemsInput, setCoreSystemsInput] = useState(Array.isArray(clarifiers.core_systems) ? clarifiers.core_systems.join(', ') : '');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPrecision, setShowPrecision] = useState(Boolean(
+    clarifiers.technical_capability ||
+    clarifiers.salary_tolerance ||
+    clarifiers.proof_state ||
+    clarifiers.domain_focus ||
+    (Array.isArray(clarifiers.core_systems) && clarifiers.core_systems.length)
+  ));
 
   const mergedClarifiers = useMemo(() => ({
     ...clarifiers,
@@ -146,6 +153,14 @@ export default function FullReportIntake({
     { label: messages.audit.titleLabel, value: payload?.jobTitle || profile.job_title || 'Current role' },
     { label: messages.audit.tasksLabel, value: `${selectedTasks.length} ${selectedTasks.length === 1 ? messages.audit.selectedSummarySingle : messages.audit.selectedSummaryPlural}` },
     { label: messages.audit.rolePrompt, value: messages.audit.roleBlendOptions?.[clarifiers.role_blend || 'mixed'] || 'Execution + strategy' },
+  ];
+
+  const requiredSignalItems = [
+    { label: messages.audit.goalPrompt, done: Boolean(goalNow) },
+    { label: messages.audit.timelinePrompt, done: Boolean(timelineUrgency) },
+    { label: messages.audit.experiencePrompt, done: Boolean(yearsExperienceBand) },
+    { label: messages.audit.locationPrompt, done: Boolean(locationPreference) },
+    { label: messages.audit.aiMaturityPrompt, done: Boolean(aiMaturity) },
   ];
 
   async function handleSubmit() {
@@ -242,6 +257,32 @@ export default function FullReportIntake({
 
         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.5fr) minmax(320px, 0.9fr)', gap: '20px' }} className="two-col">
           <div style={{ ...panelStyle(), padding: '26px' }}>
+            <div style={{ borderRadius: '22px', border: `1px solid ${palette.border}`, background: palette.panelSoft, padding: '18px', marginBottom: '22px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', alignItems: 'center', flexWrap: 'wrap', marginBottom: '12px' }}>
+                <div>
+                  <div style={{ color: palette.text, fontSize: '15px', fontWeight: 900, marginBottom: '4px', letterSpacing: '-0.02em' }}>
+                    {messages.audit.fullIntakeCoreTitle}
+                  </div>
+                  <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7 }}>
+                    {messages.audit.fullIntakeCoreBody}
+                  </div>
+                </div>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', borderRadius: '999px', background: 'rgba(27,111,99,0.1)', border: '1px solid rgba(27,111,99,0.16)', color: palette.teal, padding: '8px 12px', fontSize: '12px', fontWeight: 800 }}>
+                  {requiredSignalItems.filter((item) => item.done).length}/{requiredSignalItems.length} {messages.audit.fullIntakeRequiredBadge}
+                </div>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px' }}>
+                {requiredSignalItems.map((item) => (
+                  <div key={item.label} style={{ borderRadius: '18px', border: `1px solid ${palette.border}`, background: 'rgba(255,255,255,0.7)', padding: '12px 13px' }}>
+                    <div style={{ color: item.done ? palette.teal : palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '6px' }}>
+                      {item.done ? messages.audit.fullIntakeDone : messages.audit.fullIntakeNeeded}
+                    </div>
+                    <div style={{ color: palette.text, fontSize: '13px', lineHeight: 1.45, fontWeight: 700 }}>{item.label}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             <div style={{ marginBottom: '22px' }}>
               <div style={{ color: palette.text, fontSize: '16px', fontWeight: 900, letterSpacing: '-0.02em', marginBottom: '6px' }}>
                 {messages.audit.fullIntakeSectionTitle}
@@ -289,52 +330,77 @@ export default function FullReportIntake({
             </div>
 
             <div style={{ borderRadius: '22px', border: `1px solid ${palette.border}`, background: palette.panelSoft, padding: '18px', marginBottom: '20px' }}>
-              <div style={{ color: palette.text, fontSize: '14px', fontWeight: 900, marginBottom: '6px', letterSpacing: '-0.02em' }}>
-                {messages.audit.precisionTitle}
-              </div>
-              <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7, marginBottom: '18px' }}>
-                {messages.audit.precisionBody}
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', alignItems: 'center', flexWrap: 'wrap', marginBottom: showPrecision ? '14px' : 0 }}>
+                <div>
+                  <div style={{ color: palette.text, fontSize: '14px', fontWeight: 900, marginBottom: '6px', letterSpacing: '-0.02em' }}>
+                    {messages.audit.precisionTitle}
+                  </div>
+                  <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7 }}>
+                    {messages.audit.precisionBody}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowPrecision((value) => !value)}
+                  style={{
+                    borderRadius: '999px',
+                    border: `1px solid ${palette.border}`,
+                    background: 'rgba(255,255,255,0.7)',
+                    color: palette.text,
+                    padding: '10px 14px',
+                    fontSize: '12px',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {showPrecision ? messages.audit.precisionHide : messages.audit.precisionShow}
+                </button>
               </div>
 
-              <div style={{ marginBottom: '18px' }}>
-                <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>{messages.audit.technicalCapabilityPrompt}</label>
-                <ChoiceChipGroup options={TECHNICAL_CAPABILITY_OPTIONS} value={technicalCapability} onSelect={setTechnicalCapability} labels={messages.audit.technicalCapabilityOptions} />
-              </div>
+              {showPrecision && (
+                <>
+                  <div style={{ marginBottom: '18px' }}>
+                    <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>{messages.audit.technicalCapabilityPrompt}</label>
+                    <ChoiceChipGroup options={TECHNICAL_CAPABILITY_OPTIONS} value={technicalCapability} onSelect={setTechnicalCapability} labels={messages.audit.technicalCapabilityOptions} />
+                  </div>
 
-              <div style={{ marginBottom: '18px' }}>
-                <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>{messages.audit.salaryTolerancePrompt}</label>
-                <ChoiceChipGroup options={SALARY_TOLERANCE_OPTIONS} value={salaryTolerance} onSelect={setSalaryTolerance} labels={messages.audit.salaryToleranceOptions} />
-              </div>
+                  <div style={{ marginBottom: '18px' }}>
+                    <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>{messages.audit.salaryTolerancePrompt}</label>
+                    <ChoiceChipGroup options={SALARY_TOLERANCE_OPTIONS} value={salaryTolerance} onSelect={setSalaryTolerance} labels={messages.audit.salaryToleranceOptions} />
+                  </div>
 
-              <div>
-                <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>{messages.audit.proofStatePrompt}</label>
-                <ChoiceChipGroup options={PROOF_STATE_OPTIONS} value={proofState} onSelect={setProofState} labels={messages.audit.proofStateOptions} />
-              </div>
-            </div>
+                  <div style={{ marginBottom: '18px' }}>
+                    <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>{messages.audit.proofStatePrompt}</label>
+                    <ChoiceChipGroup options={PROOF_STATE_OPTIONS} value={proofState} onSelect={setProofState} labels={messages.audit.proofStateOptions} />
+                  </div>
 
-            <div style={{ marginBottom: '18px' }}>
-              <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>{messages.audit.domainFocusPrompt}</label>
-              <input
-                className="piq-input"
-                value={domainFocus}
-                onChange={(event) => setDomainFocus(event.target.value)}
-                placeholder={messages.audit.domainFocusPlaceholder}
-                style={{ marginBottom: '8px' }}
-              />
-              <p style={{ color: palette.textSoft, fontSize: '12px', marginBottom: 0 }}>{messages.audit.domainFocusBody}</p>
-            </div>
+                  <div style={{ marginBottom: '18px' }}>
+                    <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>{messages.audit.domainFocusPrompt}</label>
+                    <input
+                      className="piq-input"
+                      value={domainFocus}
+                      onChange={(event) => setDomainFocus(event.target.value)}
+                      placeholder={messages.audit.domainFocusPlaceholder}
+                      style={{ marginBottom: '8px' }}
+                    />
+                    <p style={{ color: palette.textSoft, fontSize: '12px', marginBottom: 0 }}>{messages.audit.domainFocusBody}</p>
+                  </div>
 
-            <div>
-              <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>{messages.audit.coreSystemsPrompt}</label>
-              <textarea
-                className="piq-input"
-                value={coreSystemsInput}
-                onChange={(event) => setCoreSystemsInput(event.target.value)}
-                placeholder={messages.audit.coreSystemsPlaceholder}
-                rows={3}
-                style={{ minHeight: '96px', resize: 'vertical', marginBottom: '8px' }}
-              />
-              <p style={{ color: palette.textSoft, fontSize: '12px', marginBottom: 0 }}>{messages.audit.coreSystemsBody}</p>
+                  <div>
+                    <label className="section-label" style={{ color: '#7A5A43', marginBottom: '10px' }}>{messages.audit.coreSystemsPrompt}</label>
+                    <textarea
+                      className="piq-input"
+                      value={coreSystemsInput}
+                      onChange={(event) => setCoreSystemsInput(event.target.value)}
+                      placeholder={messages.audit.coreSystemsPlaceholder}
+                      rows={3}
+                      style={{ minHeight: '96px', resize: 'vertical', marginBottom: '8px' }}
+                    />
+                    <p style={{ color: palette.textSoft, fontSize: '12px', marginBottom: 0 }}>{messages.audit.coreSystemsBody}</p>
+                  </div>
+                </>
+              )}
             </div>
 
             {error && (
@@ -404,6 +470,15 @@ export default function FullReportIntake({
               </div>
               <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.75 }}>
                 {messages.audit.fullIntakeWhyBody}
+              </div>
+            </div>
+
+            <div style={{ ...panelStyle(palette.panelSoft), padding: '22px' }}>
+              <div style={{ color: palette.orange, fontSize: '11px', fontWeight: 900, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '10px' }}>
+                {messages.audit.fullIntakeNextTitle}
+              </div>
+              <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.75 }}>
+                {messages.audit.fullIntakeNextBody}
               </div>
             </div>
           </div>

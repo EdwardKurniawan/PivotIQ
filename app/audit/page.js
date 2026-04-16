@@ -609,9 +609,9 @@ export default function AuditPage() {
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '12px', marginBottom: '28px' }} className="three-col">
                 {[
-                  ['Hook', 'We use your real work, not just a title guess.'],
-                  ['Retain', 'You will see where the role is weakening and where your leverage still compounds.'],
-                  ['Reward', 'The free result ends with one strongest next move worth acting on.'],
+                  [messages.audit.scanUseTitle, messages.audit.scanUseBody],
+                  [messages.audit.scanSeeTitle, messages.audit.scanSeeBody],
+                  [messages.audit.scanLeaveTitle, messages.audit.scanLeaveBody],
                 ].map(([label, body]) => (
                   <div key={label} style={{ ...panelStyle({ accent: 'rgba(19, 27, 35, 0.08)', background: 'rgba(255,255,255,0.62)', padding: '16px' }), boxShadow: 'none' }}>
                     <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '8px' }}>{label}</div>
