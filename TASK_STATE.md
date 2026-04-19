@@ -7,110 +7,87 @@ Latest commit before this handoff refresh: `e5a51e1` `Polish audit and paid inta
 
 ## Completed Work
 
-- Split the audit flow so the free scan stays lightweight in `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/audit/page.js`.
-  - Step 2 now focuses on:
-    - selected tasks
-    - primary tasks
-    - `Which best describes your role`
-  - Removed the richer clarifier block from the free pre-paywall step.
-  - Free preview generation now saves only the minimal role-shape clarifier instead of all paid-report inputs.
-- Added a second intake after the paywall for richer paid-report inputs.
-  - Shared intake UI: `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/components/full-report-intake.js`
-  - Persisted intake page: `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/report/[id]/intake/page.js`
-  - Local intake page: `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/report/intake/page.js`
-  - Persisted intake API: `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/api/reports/[id]/intake/route.js`
-- Rewired post-checkout flow in `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/success/page.js`.
-  - Full-tier users now go to the second intake before full-report generation.
-- Rewired report-loading behavior so full report generation no longer auto-runs from stripped-down free inputs.
-  - `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/report/[id]/page.js`
-  - `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/report/page.js`
-  - `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/components/report-experience.js`
-- Applied a hook / retain / reward pass across the pre-paywall funnel:
-  - homepage in `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/page.js`
-  - audit in `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/audit/page.js`
-  - pre-paywall result in `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/components/report-experience.js`
-- Tightened homepage conversion UX in `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/page.js`.
-  - Removed the extra explanatory hero container under the main CTA.
-  - Removed the `Methodology` hero button and moved that support path into FAQ.
-  - Widened `Run my free scan` to match the hero text width.
-- Strengthened audit step 2 conversion capture in `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/audit/page.js`.
-  - Email is now required.
-  - Added newsletter opt-in checkbox.
-  - Added required terms/privacy acceptance checkbox.
-  - Polished the bottom of step 2 into a `Delivery and consent` card.
-- Completed a funnel QA polish pass focused on copy friction and paid-intake scannability.
-  - Replaced internal-sounding `Hook / Retain / Reward` labels with customer-facing promise cards:
-    - `What we use`
-    - `What you will see`
-    - `What you leave with`
-  - Reworked `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/components/full-report-intake.js`:
-    - visible `required first` progress block for the 5 core signals
-    - optional precision inputs behind a show/hide toggle
-    - moved domain focus and systems into the optional precision section
-    - added a `What happens right after this` panel
-- Updated `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/lib/i18n.js` for:
-  - lighter free scan copy
-  - post-paywall second-intake copy
-  - required email and consent states
-  - new audit promise labels
-  - new paid-intake expectation copy
-- Installed 40 additional community skills into `~/.codex/skills`.
-  - Verified `40/40 installed`
-  - Important: these new skills are on disk but are not active inside the already-running Codex session/thread until Codex is restarted and a new thread starts.
-- Completed a full manual audit of the paid result page.
-  - Focused on:
-    - hero / executive-summary quality
-    - stay-tab structure
-    - card overlap
-    - visualization gaps
-    - premium feel of the report
-  - Key conclusion: PivotIQ is now a strong report product, but it still needs tighter narrative structure and stronger visual decision objects to feel like a truly premium briefing.
+- Completed the funnel split between lightweight free scan input and richer paid-report intake.
+  - Free scan stays minimal in `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/audit/page.js`.
+  - Shared full intake UI lives in `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/components/full-report-intake.js`.
+  - Paid intake routes and persistence were added in:
+    - `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/report/[id]/intake/page.js`
+    - `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/report/intake/page.js`
+    - `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/api/reports/[id]/intake/route.js`
+  - Post-checkout flow was rewired in `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/success/page.js`.
+  - Report loading was updated so full generation no longer auto-runs from stripped-down free inputs.
+
+- Completed the funnel copy and conversion polish pass.
+  - Homepage, audit, and pre-paywall result were tightened for clearer promise and less friction.
+  - Email and consent were made explicit in the audit flow.
+  - Paid intake was made more scannable with required-first structure and optional precision fields.
+  - Supporting copy updates were made in `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/lib/i18n.js`.
+
+- Completed the result-page upgrade in `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/components/report-experience.js`.
+  - Strengthened the paid report top section into a clearer executive-summary / recommendation-stack object.
+  - Preserved existing recommendation logic while improving presentation and scannability.
+  - Added backward compatibility so legacy `?tab=paths` resolves to `pivots`.
+
+- Completed Phase 2 of the stay-and-advance upgrade.
+  - Rebuilt the stay tab into one tighter operating narrative.
+  - Reduced overlap across:
+    - career safety read
+    - promotion case
+    - AI leverage playbook
+    - role operating system
+  - Introduced the consolidated stay narrative while keeping the page premium, decisive, and visual.
+
+- Completed the next result-page visualization pass.
+  - Added stronger tradeoff objects in the decision area.
+  - Added capability-delta overview ahead of deeper skill cards.
+  - Added proof-readiness framing.
+  - Added clearer learning-path progression from current leverage to target role.
+
+- Completed a thorough QA and verification pass for the upgraded result page.
+  - Fixed stale internal fixture links:
+    - `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/internal/qa-fixtures/page.js`
+    - `/Users/edwardkurniawan/Documents/Ai Fear Solution/pivotiq-app/app/internal/qa-fixtures/[catalog]/[slug]/page.js`
+  - Updated retired `?tab=paths` links to current `?tab=pivots`.
+  - Ran production screenshot QA across broad and senior fixtures, including desktop and mobile views.
+  - Found and fixed a real desktop layout issue in the executive-summary block by tightening the top composition into a balanced two-column briefing layout.
+
+- Verification completed successfully.
+  - `npm run build`
+  - `npm run test:report-quality`
+  - `npm run test:recommendation-quality`
+  - `npm run test:broad-roles`
 
 ## In-Progress Work
 
 - No code is currently mid-edit.
-- Two parallel product questions are now open:
-  - funnel performance quality
-  - result-page professionalization
+- The current workspace state is stable, modified on disk, and build-verified.
+- Remaining work is now primarily content-quality and broader regression follow-up rather than structural UI rebuild.
 
 ## Next Steps
 
-1. Build a stronger top-of-report executive summary for the paid result page.
-   - one dominant answer
-   - why it wins
-   - what changes if the user follows it
-   - what to do in the next 7 days
-2. Rebuild the stay tab into one tighter operating narrative.
-   - reduce overlap between:
-     - `Career safety read`
-     - `Promotion case`
-     - `AI leverage playbook`
-     - `Role operating system`
-3. Add stronger report visualization.
-   - skill-gap delta bars
-   - path tradeoff matrix improvements
-   - proof-readiness visualization
-   - clearer capability progression track
-4. Run a richer real-browser QA pass on the funnel and result page after restart.
-   - homepage
+1. Resume recommendation-quality polish for backup pivots and tertiary learning resources.
+   - Focus on recommendation sharpness, backup-path credibility, and saved-report qualitative quality.
+
+2. Run a wider real-browser regression pass across the whole funnel, not just fixture reports.
+   - Homepage
    - free audit
    - free result
    - checkout
    - second intake
    - full report
-5. Resume recommendation-quality polish after the report UX pass.
-   - backup pivot quality
-   - tertiary learning-resource sharpness
-   - saved-report qualitative QA
+
+3. Do a focused content pass on the full-report narratives.
+   - Look for repetition, weak phrasing, and places where recommendation confidence or proof asks can be made more concrete without changing logic.
+
+4. Clean up the Node ES module warnings showing up in script runs.
+   - Current tests pass, but package/module configuration still emits `MODULE_TYPELESS_PACKAGE_JSON` warnings.
 
 ## Blockers Or Assumptions
 
-- The 40 newly installed community skills are not available in this exact live session yet.
-  - They require a Codex restart and a new thread/session to be picked up.
-- Browser automation CLI was not available in the shell during the last funnel pass, so the latest funnel fixes are build-verified and route-verified rather than browser-automated.
-- The current funnel assumes:
-  - free preview should be generated from minimal signal
-  - full report should be generated only after the second paid intake
-- Existing full reports are unaffected because they already have `generation_stage: full_complete`.
-- Existing paid-but-not-fully-generated reports now route into the new intake flow instead of auto-generating.
+- No active blockers at handoff.
+- Assumption: the current result-page direction is approved and the next pass should preserve existing recommendation logic while improving recommendation quality and QA coverage.
+- Assumption: `components/report-experience.js` remains the primary surface for result-page presentation work.
+- Important environment note:
+  - Mixing a running `next dev` server with `next build` polluted `.next` during QA and caused incorrect server runtime artifacts.
+  - A clean rebuild fixed it: stop running servers, remove `.next`, then run `npm run build`.
 - OpenRouter remains on `nvidia/nemotron-3-nano-30b-a3b:free`.

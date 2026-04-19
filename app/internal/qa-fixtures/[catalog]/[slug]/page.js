@@ -57,7 +57,7 @@ export default async function QaFixturePreviewPage({ params, searchParams }) {
             <Link href={`/internal/qa-fixtures/${snapshot.catalog}/${snapshot.slug}?tab=stay`} style={{ borderRadius: '999px', padding: '9px 13px', background: 'rgba(27,111,99,0.10)', border: '1px solid rgba(27,111,99,0.18)', color: '#1B6F63', fontSize: '12px', fontWeight: 800, textDecoration: 'none' }}>
               Open stay tab
             </Link>
-            <Link href={`/internal/qa-fixtures/${snapshot.catalog}/${snapshot.slug}?tab=paths`} style={{ borderRadius: '999px', padding: '9px 13px', background: 'rgba(242,138,67,0.12)', border: '1px solid rgba(242,138,67,0.20)', color: '#8B4A1B', fontSize: '12px', fontWeight: 800, textDecoration: 'none' }}>
+            <Link href={`/internal/qa-fixtures/${snapshot.catalog}/${snapshot.slug}?tab=pivots`} style={{ borderRadius: '999px', padding: '9px 13px', background: 'rgba(242,138,67,0.12)', border: '1px solid rgba(242,138,67,0.20)', color: '#8B4A1B', fontSize: '12px', fontWeight: 800, textDecoration: 'none' }}>
               Open pivots
             </Link>
           </div>
