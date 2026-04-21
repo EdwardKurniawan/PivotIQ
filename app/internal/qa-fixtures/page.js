@@ -118,7 +118,7 @@ function FixtureCard({ snapshot }) {
         {[
           ['Preview report', `/internal/qa-fixtures/${snapshot.catalog}/${snapshot.slug}`],
           ['Open stay tab', `/internal/qa-fixtures/${snapshot.catalog}/${snapshot.slug}?tab=stay`],
-          ['Open pivots tab', `/internal/qa-fixtures/${snapshot.catalog}/${snapshot.slug}?tab=pivots`],
+          ['Open pivot paths', `/internal/qa-fixtures/${snapshot.catalog}/${snapshot.slug}?tab=paths`],
         ].map(([label, href]) => (
           <Link
             key={label}

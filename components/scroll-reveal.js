@@ -10,14 +10,9 @@ export default function ScrollReveal({ children, delay = 0, as: Tag = 'div', cla
     const node = ref.current;
     if (!node || visible) return undefined;
 
-    const fallbackId = window.setTimeout(() => {
-      setVisible(true);
-    }, Math.max(520, 640 + delay));
-
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          window.clearTimeout(fallbackId);
           setVisible(true);
           observer.disconnect();
         }
@@ -29,11 +24,8 @@ export default function ScrollReveal({ children, delay = 0, as: Tag = 'div', cla
     );
 
     observer.observe(node);
-    return () => {
-      window.clearTimeout(fallbackId);
-      observer.disconnect();
-    };
-  }, [delay, threshold, visible]);
+    return () => observer.disconnect();
+  }, [threshold, visible]);
 
   return (
     <Tag
