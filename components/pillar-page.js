@@ -346,6 +346,76 @@ export function PillarPage({ locale, page, relatedPages, rolePages = [], path })
         ))}
       </section>
 
+      {page.outputExample?.items?.length > 0 && (
+        <section
+          className="pillar-sections"
+          style={{
+            maxWidth: '1220px',
+            margin: '0 auto',
+            padding: '0 28px 52px',
+            display: 'grid',
+            gridTemplateColumns: 'minmax(280px, 0.76fr) minmax(0, 1.24fr)',
+            gap: '22px',
+            alignItems: 'stretch',
+          }}
+        >
+          <div style={{ ...shellCardStyle(), borderRadius: '34px', padding: '30px' }}>
+            <div style={{ fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6A7882', marginBottom: '12px', fontWeight: 800 }}>
+              {page.outputExample.eyebrow}
+            </div>
+            <div
+              style={{
+                fontSize: 'clamp(34px, 5vw, 56px)',
+                lineHeight: 0.98,
+                letterSpacing: '-0.055em',
+                fontWeight: 700,
+                fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif',
+                marginBottom: '14px',
+              }}
+            >
+              {page.outputExample.title}
+            </div>
+            <p style={{ fontSize: '17px', lineHeight: 1.76, color: '#495863', margin: 0 }}>
+              {page.outputExample.body}
+            </p>
+          </div>
+
+          <div
+            className="two-col"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+              gap: '14px',
+            }}
+          >
+            {page.outputExample.items.map(([label, body], index) => {
+              const tone = index === 0 ? '#F28A43' : index === 1 ? '#13202A' : index === 2 ? '#1B6F63' : '#50606B';
+              return (
+                <article
+                  key={label}
+                  style={{
+                    ...shellCardStyle(),
+                    borderRadius: '26px',
+                    padding: '22px 24px',
+                    border: `1px solid ${tone}22`,
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                    <div style={{ fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: tone, fontWeight: 800 }}>
+                      {label}
+                    </div>
+                    <div style={{ width: '34px', height: '10px', borderRadius: '999px', background: tone }} />
+                  </div>
+                  <p style={{ margin: 0, fontSize: '15px', lineHeight: 1.72, color: '#50606B' }}>
+                    {body}
+                  </p>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
       <section
         className="pillar-sections"
         style={{

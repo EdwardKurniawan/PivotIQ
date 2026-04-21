@@ -47,17 +47,17 @@ function decisionFrameLabel(frame, messages) {
 const pivotColors = ['#FF8F4D', '#41C2AE', '#F4E4C7', '#7DD3FC', '#F9A8D4'];
 const pivotIcons = ['01', '02', '03', '04', '05'];
 const palette = {
-  bg: '#F4EFE7',
-  panel: 'rgba(255, 255, 255, 0.8)',
-  panelStrong: '#13202A',
-  border: 'rgba(19, 27, 35, 0.08)',
-  text: '#131B23',
-  textMuted: '#50606B',
-  textSoft: '#6D7A84',
-  cream: '#FFF9F2',
-  orange: '#F28A43',
-  teal: '#1B6F63',
-  navy: '#13202A',
+  bg: '#F2EEE7',
+  panel: 'rgba(255, 255, 255, 0.9)',
+  panelStrong: '#18232B',
+  border: 'rgba(24, 35, 43, 0.09)',
+  text: '#18232B',
+  textMuted: '#495965',
+  textSoft: '#6A7882',
+  cream: '#FBF7F1',
+  orange: '#A9673C',
+  teal: '#245E56',
+  navy: '#18232B',
 };
 
 function getStorageScope(reportData, reportId) {
@@ -77,6 +77,10 @@ function formatDate(dateString, locale = 'en') {
     day: 'numeric',
     year: 'numeric',
   });
+}
+
+function normalizeArray(value) {
+  return Array.isArray(value) ? value.filter(Boolean) : [];
 }
 
 function compactCopy(text, maxLength = 140) {
@@ -149,7 +153,8 @@ function gapShape(priority = 'medium') {
 
 function normalizeReportTab(tab = '') {
   const value = String(tab || '').toLowerCase().trim();
-  if (['breakdown', 'stay', 'paths', 'plan'].includes(value)) return value;
+  if (value === 'paths') return 'pivots';
+  if (['breakdown', 'stay', 'pivots', 'plan'].includes(value)) return value;
   return 'breakdown';
 }
 
@@ -183,6 +188,48 @@ function comparisonMetricRows(item, decisionLabel) {
   ];
 }
 
+function recommendationReasonTag(item, index = 0) {
+  if (!item) return null;
+  if (item.type === 'stay' || /stay/i.test(String(item.slot_label || ''))) {
+    return {
+      label: 'Best current-lane leverage',
+      body: 'Choose this when the safest path is to make the current role more defensible before changing titles.',
+      tone: palette.teal,
+    };
+  }
+  if (index === 0 || item.primary) {
+    return {
+      label: item.confidence_state === 'high' ? 'Best risk-adjusted move' : 'Fastest proof path',
+      body: 'This leads because the transfer story, proof path, and near-term action sequence line up best right now.',
+      tone: palette.orange,
+    };
+  }
+  if (/backup|conservative|safer|hedge/i.test(`${item.slot_label || ''} ${item.confidence_label || ''}`)) {
+    return {
+      label: 'Conservative hedge',
+      body: backupChoiceCopy(item),
+      tone: palette.navy,
+    };
+  }
+  return {
+    label: 'Higher-upside alternate',
+    body: 'Keep this in view if the primary path starts showing stronger market or manager signal.',
+    tone: palette.textSoft,
+  };
+}
+
+function backupChoiceCopy(item = {}) {
+  if (item.who_this_is_for) return item.who_this_is_for;
+  if (item.next_step) return `Choose this if you need a lower-friction move first: ${item.next_step}`;
+  if (item.skill_gaps?.some((skill) => skill.gap_priority === 'critical')) {
+    return 'Choose this if the primary path feels too technical or the first proof asset needs a gentler ramp.';
+  }
+  if (/low|easy|moderate/i.test(String(item.difficulty || ''))) {
+    return 'Choose this if you need near-term mobility with lower execution risk.';
+  }
+  return 'Choose this if you want to preserve optionality while you validate the primary recommendation.';
+}
+
 function StepMeter({ filled = 0, total = 5, tone = palette.orange, muted = 'rgba(19,27,35,0.08)' }) {
   return (
     <div style={{ display: 'grid', gridTemplateColumns: `repeat(${total}, minmax(0, 1fr))`, gap: '6px' }}>
@@ -209,6 +256,47 @@ function StaySectionHeader({ color, eyebrow, title, body }) {
       <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.65, maxWidth: '760px' }}>{body}</div>
     </div>
   );
+}
+
+function sectionShell({ tone = null, padding = '24px', strong = false, marginBottom = '18px' } = {}) {
+  const borderColor = tone ? `${tone}${strong ? '26' : '18'}` : palette.border;
+  return {
+    padding,
+    marginBottom,
+    background: tone && strong ? `linear-gradient(180deg, ${tone}0F 0%, rgba(255,255,255,0.96) 68%)` : 'rgba(255,255,255,0.9)',
+    border: `1px solid ${borderColor}`,
+    boxShadow: strong ? '0 18px 40px rgba(24, 35, 43, 0.07)' : '0 12px 28px rgba(24, 35, 43, 0.04)',
+  };
+}
+
+function mutedPanelStyle() {
+  return {
+    background: 'rgba(248, 244, 238, 0.82)',
+    border: `1px solid ${palette.border}`,
+    borderRadius: '18px',
+  };
+}
+
+function accentPanelStyle(tone) {
+  return {
+    background: `${tone}0B`,
+    border: `1px solid ${tone}1C`,
+    borderRadius: '18px',
+  };
+}
+
+function toneBadgeStyle(tone, quiet = false) {
+  return {
+    padding: quiet ? '5px 9px' : '7px 11px',
+    borderRadius: '999px',
+    background: quiet ? 'rgba(255,255,255,0.7)' : `${tone}0D`,
+    border: `1px solid ${quiet ? palette.border : `${tone}20`}`,
+    color: quiet ? palette.textSoft : tone,
+    fontSize: '11px',
+    fontWeight: 850,
+    letterSpacing: '0.08em',
+    textTransform: 'uppercase',
+  };
 }
 
 function PathDecisionMatrix({ stayPath, stayAndAdvance, bestPivot, backupPivot, messages }) {
@@ -248,7 +336,7 @@ function PathDecisionMatrix({ stayPath, stayAndAdvance, bestPivot, backupPivot, 
   if (decisionCards.length < 2) return null;
 
   return (
-    <div className="piq-card" style={{ padding: '22px', marginBottom: '18px', background: 'linear-gradient(135deg, rgba(255,255,255,0.94), rgba(244,239,231,0.92))', border: `1px solid ${palette.border}`, boxShadow: '0 20px 44px rgba(19, 32, 42, 0.08)' }}>
+    <div className="piq-card" style={sectionShell()}>
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', alignItems: 'end', flexWrap: 'wrap', marginBottom: '16px' }}>
         <div>
           <div style={{ color: palette.navy, fontSize: '11px', fontWeight: 900, letterSpacing: '1.2px', textTransform: 'uppercase', marginBottom: '8px' }}>Decision matrix</div>
@@ -261,7 +349,7 @@ function PathDecisionMatrix({ stayPath, stayAndAdvance, bestPivot, backupPivot, 
 
       <div style={{ display: 'grid', gridTemplateColumns: `repeat(${decisionCards.length}, minmax(0, 1fr))`, gap: '10px', marginBottom: '12px' }} className="two-col">
         {decisionCards.map((item) => (
-          <div key={`${item.id}-headline`} style={{ padding: '12px 14px', borderRadius: '16px', background: item.highlight ? `${item.accent}10` : 'rgba(255,255,255,0.8)', border: `1px solid ${item.highlight ? `${item.accent}24` : palette.border}` }}>
+          <div key={`${item.id}-headline`} style={{ ...(item.highlight ? accentPanelStyle(item.accent) : mutedPanelStyle()), padding: '12px 14px' }}>
             <div style={{ color: item.accent, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>
               {item.kind === 'stay' ? 'Best for safety' : item.kind === 'backup' ? 'Lower-risk alternate' : 'Stretch move'}
             </div>
@@ -278,7 +366,7 @@ function PathDecisionMatrix({ stayPath, stayAndAdvance, bestPivot, backupPivot, 
             style={{
               padding: '18px',
               borderRadius: '22px',
-              background: item.highlight ? `${item.accent}10` : 'rgba(255,255,255,0.82)',
+              background: item.highlight ? `${item.accent}0A` : 'rgba(255,255,255,0.84)',
               border: `1px solid ${item.highlight ? `${item.accent}28` : palette.border}`,
             }}
           >
@@ -286,28 +374,30 @@ function PathDecisionMatrix({ stayPath, stayAndAdvance, bestPivot, backupPivot, 
               <span style={{ color: item.accent, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase' }}>
                 {item.kind === 'stay' ? 'Stay path' : item.kind === 'backup' ? 'Backup path' : 'Primary pivot'}
               </span>
-              <span style={{ padding: '5px 9px', borderRadius: '999px', background: 'rgba(255,255,255,0.84)', border: `1px solid ${palette.border}`, color: palette.textSoft, fontSize: '11px', fontWeight: 800 }}>
+              <span style={{ ...toneBadgeStyle(item.accent, true) }}>
                 {item.decisionLabel}
               </span>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '9px', marginBottom: '10px' }}>
               {comparisonMetricRows(item, item.decisionLabel).map((row) => (
-                <div key={row.label} style={{ padding: '10px 11px', borderRadius: '14px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}` }}>
+                <div key={row.label} style={{ ...mutedPanelStyle(), padding: '10px 11px' }}>
                   <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '4px' }}>{row.label}</div>
                   <div style={{ color: palette.text, fontSize: '13px', lineHeight: 1.45, fontWeight: 700 }}>{row.value}</div>
                 </div>
               ))}
             </div>
 
-            <div style={{ padding: '10px 11px', borderRadius: '14px', background: item.highlight ? `${item.accent}0D` : 'rgba(19,32,42,0.04)', border: `1px solid ${item.highlight ? `${item.accent}22` : palette.border}` }}>
+            <div style={{ ...(item.highlight ? accentPanelStyle(item.accent) : mutedPanelStyle()), padding: '10px 11px' }}>
               <div style={{ color: item.highlight ? item.accent : palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '4px' }}>
                 {item.kind === 'stay' ? 'Why this leads' : item.kind === 'backup' ? 'When to use this' : 'What you are betting on'}
               </div>
               <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.55 }}>
                 {item.kind === 'stay'
                   ? compactCopy(item.why || item.market_evidence || item.subtitle, 108)
-                  : compactCopy(item.what_you_are_betting_on || item.why || item.subtitle, 108)}
+                  : item.kind === 'backup'
+                    ? compactCopy(backupChoiceCopy(item), 108)
+                    : compactCopy(item.what_you_are_betting_on || item.why || item.subtitle, 108)}
               </div>
             </div>
           </div>
@@ -666,12 +756,12 @@ function RiskRing({ score, size = 165, label = 'RISK SCORE' }) {
           strokeDasharray={circ}
           strokeDashoffset={circ * (1 - score / 100)}
           strokeLinecap="round"
-          style={{ filter: `drop-shadow(0 0 10px ${color}88)` }}
+          style={{ opacity: 0.92 }}
         />
       </svg>
       <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ color, fontSize: size * 0.23, fontWeight: 900, lineHeight: 1 }}>{score}</div>
-        <div style={{ color: palette.navy, fontSize: '10px', fontWeight: 800, letterSpacing: '1.5px', marginTop: '4px' }}>{label}</div>
+        <div style={{ color, fontSize: size * 0.23, fontWeight: 900, lineHeight: 1 }}>{score}</div>
+        <div style={{ color: palette.navy, fontSize: '10px', fontWeight: 800, letterSpacing: '0.12em', marginTop: '4px' }}>{label}</div>
       </div>
     </div>
   );
@@ -682,14 +772,14 @@ function SignalStatCard({ label, value, tone = palette.orange }) {
     <div
       style={{
         padding: '14px 16px',
-        borderRadius: '18px',
-        background: 'rgba(255,255,255,0.62)',
+        borderRadius: '16px',
+        background: 'rgba(255,255,255,0.76)',
         border: `1px solid ${palette.border}`,
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: '10px', alignItems: 'baseline', marginBottom: '8px' }}>
         <div style={{ color: palette.textSoft, fontSize: '11px', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase' }}>{label}</div>
-        <div style={{ color: tone, fontSize: '21px', fontWeight: 900, letterSpacing: '-0.04em' }}>{value}</div>
+        <div style={{ color: palette.text, fontSize: '21px', fontWeight: 900, letterSpacing: '-0.04em' }}>{value}</div>
       </div>
       <div style={{ height: '7px', borderRadius: '999px', background: 'rgba(19, 27, 35, 0.08)', overflow: 'hidden' }}>
         <div
@@ -698,6 +788,7 @@ function SignalStatCard({ label, value, tone = palette.orange }) {
             height: '100%',
             borderRadius: '999px',
             background: tone,
+            opacity: 0.75,
           }}
         />
       </div>
@@ -1061,7 +1152,7 @@ function RecommendationStackCard({ stack, pivotColor, stayColor = palette.teal }
   if (!cards.length) return null;
 
   return (
-    <div className="piq-card" style={{ marginTop: '-22px', marginBottom: '18px', padding: '24px', background: 'linear-gradient(180deg, rgba(255,255,255,0.96), rgba(249,243,235,0.98))', boxShadow: '0 24px 54px rgba(19, 32, 42, 0.08)' }}>
+    <div className="piq-card" style={sectionShell()}>
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', alignItems: 'end', flexWrap: 'wrap', marginBottom: '18px' }}>
         <div style={{ maxWidth: '760px' }}>
           <div style={{ color: pivotColor, fontSize: '11px', fontWeight: 950, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: '8px' }}>Decision brief</div>
@@ -1073,7 +1164,7 @@ function RecommendationStackCard({ stack, pivotColor, stayColor = palette.teal }
           </p>
         </div>
         {stack?.decision_brief?.primary_rule && (
-          <div style={{ maxWidth: '280px', padding: '12px 14px', borderRadius: '18px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}` }}>
+          <div style={{ ...mutedPanelStyle(), maxWidth: '300px', padding: '13px 14px' }}>
             <div style={{ color: palette.textSoft, fontSize: '11px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>How to use this report</div>
             <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{stack.decision_brief.primary_rule}</div>
           </div>
@@ -1083,13 +1174,13 @@ function RecommendationStackCard({ stack, pivotColor, stayColor = palette.teal }
       {(stack?.decision_brief?.why_this_won || stack?.decision_brief?.not_yet_reason || stack?.decision_brief?.unlock_condition) && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '12px', marginBottom: '16px' }} className="two-col">
           {stack?.decision_brief?.why_this_won && (
-            <div style={{ padding: '14px 15px', borderRadius: '18px', background: 'rgba(255,255,255,0.82)', border: `1px solid ${palette.border}` }}>
+            <div style={{ ...accentPanelStyle(pivotColor), padding: '14px 15px' }}>
               <div style={{ color: pivotColor, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Why this won now</div>
               <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.6 }}>{stack.decision_brief.why_this_won}</div>
             </div>
           )}
           {stack?.decision_brief?.not_yet_reason && (
-            <div style={{ padding: '14px 15px', borderRadius: '18px', background: 'rgba(255,255,255,0.82)', border: `1px solid ${palette.border}` }}>
+            <div style={{ ...mutedPanelStyle(), padding: '14px 15px' }}>
               <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>
                 {stack?.decision_brief?.not_yet_title ? `Why not ${stack.decision_brief.not_yet_title} yet` : 'Why not the riskier move yet'}
               </div>
@@ -1097,7 +1188,7 @@ function RecommendationStackCard({ stack, pivotColor, stayColor = palette.teal }
             </div>
           )}
           {stack?.decision_brief?.unlock_condition && (
-            <div style={{ padding: '14px 15px', borderRadius: '18px', background: 'rgba(255,255,255,0.82)', border: `1px solid ${palette.border}` }}>
+            <div style={{ ...mutedPanelStyle(), padding: '14px 15px' }}>
               <div style={{ color: palette.teal, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>What would change this</div>
               <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.6 }}>{stack.decision_brief.unlock_condition}</div>
             </div>
@@ -1106,25 +1197,31 @@ function RecommendationStackCard({ stack, pivotColor, stayColor = palette.teal }
       )}
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '12px' }} className="two-col">
-        {cards.map((item) => {
+        {cards.map((item, index) => {
           const confidenceStyle = recommendationConfidenceStyle(item.confidence_state);
+          const reasonTag = recommendationReasonTag(item, index);
           return (
             <div
               key={`${item.slot_label}-${item.id}`}
               style={{
                 padding: '18px',
                 borderRadius: '22px',
-                background: item.primary ? `${item.tone}10` : 'rgba(255,255,255,0.78)',
+                background: item.primary ? `${item.tone}0D` : 'rgba(255,255,255,0.84)',
                 border: `1px solid ${item.primary ? `${item.tone}2A` : palette.border}`,
-                boxShadow: item.primary ? `0 18px 42px ${item.tone}18` : 'none',
+                boxShadow: item.primary ? `0 14px 30px ${item.tone}12` : 'none',
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', gap: '10px', alignItems: 'start', marginBottom: '10px', flexWrap: 'wrap' }}>
                 <div>
                   <div style={{ color: item.tone, fontSize: '11px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>{item.slot_label}</div>
                   <div style={{ color: palette.text, fontSize: '19px', fontWeight: 900, lineHeight: 1.15, letterSpacing: '-0.03em' }}>{item.title}</div>
+                  {reasonTag && (
+                    <div style={{ marginTop: '8px', display: 'inline-flex', alignItems: 'center', gap: '6px', ...toneBadgeStyle(reasonTag.tone, true) }}>
+                      {reasonTag.label}
+                    </div>
+                  )}
                 </div>
-                <span style={{ padding: '6px 10px', borderRadius: '999px', background: confidenceStyle.bg, border: `1px solid ${confidenceStyle.border}`, color: confidenceStyle.color, fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <span style={{ padding: '6px 10px', borderRadius: '999px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${confidenceStyle.border}`, color: confidenceStyle.color, fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   {item.confidence_label}
                 </span>
               </div>
@@ -1133,21 +1230,27 @@ function RecommendationStackCard({ stack, pivotColor, stayColor = palette.teal }
                 {compactCopy(item.why, 120)}
               </div>
 
+              {reasonTag?.body && (
+                <div style={{ ...accentPanelStyle(reasonTag.tone), padding: '11px 12px', color: palette.textMuted, fontSize: '12px', lineHeight: 1.55, marginBottom: '10px' }}>
+                  {compactCopy(reasonTag.body, 118)}
+                </div>
+              )}
+
               <div style={{ display: 'grid', gap: '10px' }}>
-                <div style={{ padding: '12px 13px', borderRadius: '16px', background: 'rgba(255,255,255,0.72)', border: `1px solid ${palette.border}` }}>
+                <div style={{ ...mutedPanelStyle(), padding: '12px 13px' }}>
                   <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '4px' }}>Why PivotIQ trusts this level</div>
                   <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.55 }}>{compactCopy(item.confidence_reason, 110)}</div>
                 </div>
-                <div style={{ padding: '12px 13px', borderRadius: '16px', background: 'rgba(255,255,255,0.72)', border: `1px solid ${palette.border}` }}>
+                <div style={{ ...mutedPanelStyle(), padding: '12px 13px' }}>
                   <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '4px' }}>What is backing this</div>
                   <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.55 }}>{compactCopy(item.market_evidence, 110)}</div>
                 </div>
                 <div style={{ display: 'grid', gap: '8px', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' }}>
-                  <div style={{ padding: '12px 13px', borderRadius: '16px', background: 'rgba(255,255,255,0.72)', border: `1px solid ${palette.border}` }}>
+                  <div style={{ ...mutedPanelStyle(), padding: '12px 13px' }}>
                     <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '4px' }}>Next step</div>
                     <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.55 }}>{item.next_step}</div>
                   </div>
-                  <div style={{ padding: '12px 13px', borderRadius: '16px', background: 'rgba(255,255,255,0.72)', border: `1px solid ${palette.border}` }}>
+                  <div style={{ ...mutedPanelStyle(), padding: '12px 13px' }}>
                     <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '4px' }}>Proof to build</div>
                     <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.55 }}>{item.proof_asset}</div>
                   </div>
@@ -1211,6 +1314,241 @@ function PaidValueSummaryCard({ summary, pivot, color, emailStatus }) {
           {emailStatus === 'failed' && 'Action-plan email could not be sent automatically. Your report is still saved here.'}
         </div>
       )}
+    </div>
+  );
+}
+
+function ExecutiveSummaryBrief({ reportData, stack, pivot, decision, first30Days, proofAssetBuilder, color }) {
+  const primary = stack?.primary || null;
+  const proofAsset = first30Days?.proof_asset || {};
+  const nextSeven = normalizeArray(first30Days?.next_7_days);
+  const nextThirty = normalizeArray(first30Days?.next_30_days);
+  const title = primary?.title || pivot?.title || decision?.headline || 'Build the safest next proof point';
+  const recommendationLabel = primary?.type === 'stay'
+    ? 'Stay and advance first'
+    : primary?.primary
+      ? 'Primary recommendation'
+      : 'Best risk-adjusted move';
+  const why = stack?.decision_brief?.why_this_won
+    || primary?.why
+    || pivot?.why_this_path_wins
+    || decision?.rationale
+    || 'This path currently has the strongest mix of role fit, proof potential, and realistic next steps.';
+  const visibleOutcome = nextThirty[0]
+    || proofAsset?.why_it_matters
+    || proofAssetBuilder?.objective
+    || 'Create one visible artifact that proves the recommendation before making a bigger move.';
+  const firstMove = nextSeven[0]
+    || reportData?.next_move?.explanation
+    || proofAssetBuilder?.first_action
+    || 'Block one focused session to choose the proof asset and outline what it must show.';
+  const proofTitle = proofAsset?.title || proofAssetBuilder?.title || primary?.proof_asset || 'One proof asset';
+
+  const rows = [
+    ['Why it wins', why, color],
+    ['First 7 days', firstMove, palette.orange],
+    ['30-day evidence', visibleOutcome, palette.teal],
+    ['Proof to ship', proofTitle, palette.navy],
+  ];
+
+  return (
+    <div className="piq-card" style={{ ...sectionShell({ tone: color, strong: true }), marginTop: '-18px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 0.95fr) minmax(0, 1.05fr)', gap: '18px', alignItems: 'stretch' }} className="two-col">
+        <div style={{ ...mutedPanelStyle(), padding: '22px' }}>
+          <div style={{ color, fontSize: '11px', fontWeight: 950, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: '8px' }}>Executive summary</div>
+          <h2 style={{ color: palette.text, fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 950, letterSpacing: '-0.06em', lineHeight: 0.98, margin: '0 0 12px', fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif' }}>
+            {title}
+          </h2>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', ...toneBadgeStyle(color), marginBottom: '12px' }}>
+            {recommendationLabel}
+          </div>
+          <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.75, margin: 0 }}>
+            Use this as decision support, not a guarantee. The report is trying to make the next test clear enough that you can act without pretending the future is certain.
+          </p>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '12px' }} className="two-col">
+          {rows.map(([label, value, tone], index) => (
+            <div key={label} style={{ ...(index === 0 ? accentPanelStyle(tone) : mutedPanelStyle()), padding: '16px' }}>
+              <div style={{ color: tone, fontSize: '10px', fontWeight: 950, letterSpacing: '0.11em', textTransform: 'uppercase', marginBottom: '7px' }}>{label}</div>
+              <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{compactCopy(value, 132)}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ProofReadinessCard({ builder, first30Days, color }) {
+  const proofAsset = first30Days?.proof_asset || {};
+  const executionGuide = builder?.execution_guide || {};
+  const steps = [
+    ['Problem framed', builder?.business_question || proofAsset?.description],
+    ['Inputs identified', normalizeArray(executionGuide.inputs_to_collect)[0] || builder?.first_action],
+    ['Artifact format', executionGuide.artifact_format || builder?.title || proofAsset?.title],
+    ['Manager readout', executionGuide.manager_readout || proofAsset?.why_it_matters],
+    ['Career signal', executionGuide.resume_bullet_formula || builder?.share_prompt],
+  ];
+  const readyCount = steps.filter(([, value]) => Boolean(value)).length;
+  if (!readyCount) return null;
+
+  return (
+    <div className="piq-card" style={sectionShell({ tone: color })}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '14px', alignItems: 'end', flexWrap: 'wrap', marginBottom: '14px' }}>
+        <div>
+          <div style={{ color, fontSize: '11px', fontWeight: 950, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '8px' }}>Proof readiness</div>
+          <div style={{ color: palette.text, fontSize: '24px', fontWeight: 950, letterSpacing: '-0.04em', marginBottom: '6px' }}>What must be true before this feels credible.</div>
+          <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.65, maxWidth: '760px' }}>
+            The strongest report output is not the recommendation name. It is the evidence that would make someone else believe you can execute it.
+          </div>
+        </div>
+        <div style={{ minWidth: '180px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', color: palette.textSoft, fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '7px' }}>
+            <span>Ready signals</span>
+            <span style={{ color }}>{readyCount}/{steps.length}</span>
+          </div>
+          <div style={{ height: '8px', borderRadius: '999px', background: 'rgba(19,27,35,0.08)', overflow: 'hidden' }}>
+            <div style={{ width: `${(readyCount / steps.length) * 100}%`, height: '100%', borderRadius: '999px', background: color }} />
+          </div>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, minmax(0, 1fr))', gap: '10px' }} className="two-col">
+        {steps.map(([label, value], index) => (
+          <div key={label} style={{ ...(value ? mutedPanelStyle() : accentPanelStyle(palette.navy)), padding: '14px' }}>
+            <div style={{ color: value ? color : palette.textSoft, fontSize: '10px', fontWeight: 950, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '7px' }}>0{index + 1} · {label}</div>
+            <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.55 }}>{compactCopy(value || 'Needs a clearer answer before this proof is strong.', 82)}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SkillGapDeltaSummaryCard({ skillGaps = [], color }) {
+  const skills = normalizeArray(skillGaps).slice(0, 4);
+  if (!skills.length) return null;
+
+  return (
+    <div className="piq-card" style={sectionShell()}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '14px', alignItems: 'end', flexWrap: 'wrap', marginBottom: '14px' }}>
+        <div>
+          <div style={{ color, fontSize: '11px', fontWeight: 950, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '8px' }}>Skill-gap progression</div>
+          <div style={{ color: palette.text, fontSize: '22px', fontWeight: 950, letterSpacing: '-0.04em' }}>Close the gaps that create proof first.</div>
+        </div>
+        <div style={{ color: palette.textSoft, fontSize: '12px', lineHeight: 1.55, maxWidth: '360px' }}>
+          Current bars show where you likely are today. Target bars show the minimum credible scope for this path.
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '12px' }} className="two-col">
+        {skills.map((skill) => {
+          const shape = gapShape(skill.gap_priority);
+          const tone = skillPriorityColor(skill.gap_priority, color);
+          return (
+            <div key={skill.skill_name} style={{ ...accentPanelStyle(tone), padding: '15px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: '10px', marginBottom: '10px', alignItems: 'start' }}>
+                <div style={{ color: palette.text, fontSize: '14px', fontWeight: 900, lineHeight: 1.35 }}>{skill.skill_name}</div>
+                <span style={{ color: tone, fontSize: '10px', fontWeight: 950, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{shape.label}</span>
+              </div>
+              <div style={{ display: 'grid', gap: '8px' }}>
+                <div>
+                  <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '5px' }}>Now</div>
+                  <StepMeter filled={shape.currentSegments} tone={tone} />
+                </div>
+                <div>
+                  <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '5px' }}>Credible target</div>
+                  <StepMeter filled={shape.targetSegments} tone={tone} />
+                </div>
+              </div>
+              <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.55, marginTop: '9px' }}>{compactCopy(skill.how_to_close_gap || skill.why_it_matters, 95)}</div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function StayOperatingNarrativeCard({ stayAndAdvance, stayPath, safetyCase, promotionCase, playbook, system, proofBuilder, conversationPack, color }) {
+  if (!stayPath && !stayAndAdvance) return null;
+
+  const plan = stayAndAdvance?.ai_this_week_plan || {};
+  const workflowSystems = normalizeArray(plan.systems).slice(0, 3).join(' · ');
+  const proofAndMetric = [plan.metric, proofBuilder?.first_action].filter(Boolean).join(' · ');
+  const managerMove = conversationPack?.ask || plan.manager_ask || promotionCase?.what_changes_if_yes || system?.visible_scope_move;
+  const rows = [
+    {
+      label: 'Pressure rising',
+      title: 'What is getting weaker first.',
+      body: plan.weakening_now || safetyCase?.if_you_ignore_this || stayPath?.fit_summary,
+      proof: safetyCase?.metric_to_watch || plan.metric,
+      tone: palette.orange,
+    },
+    {
+      label: 'Human edge',
+      title: 'What still compounds.',
+      body: plan.compounding_now || safetyCase?.summary || stayAndAdvance?.recommendation,
+      proof: `Human-owned: ${plan.human_owned || plan.human_checkpoint || normalizeArray(system?.protect)[0] || 'Final judgment and review quality.'}`,
+      tone: color,
+    },
+    {
+      label: 'Workflow to own',
+      title: plan.workflow || system?.visible_scope_move || 'Own one AI-assisted workflow.',
+      body: plan.business_result || normalizeArray(playbook?.plays)[0]?.business_impact || system?.summary,
+      proof: workflowSystems ? `Start in: ${workflowSystems}` : plan.output,
+      tone: palette.navy,
+    },
+    {
+      label: 'AI boundary',
+      title: 'AI handles the first pass. You own the call.',
+      body: plan.ai_role || normalizeArray(playbook?.plays)[0]?.ai_role || 'Use AI for first-pass structure, synthesis, and repetitive prep.',
+      proof: plan.human_checkpoint || normalizeArray(playbook?.plays)[0]?.human_checkpoint || 'Keep review logic, context, and final decisions human-owned.',
+      tone: palette.teal,
+    },
+    {
+      label: 'Proof and metric',
+      title: plan.output || proofBuilder?.title || stayAndAdvance?.thirty_day_plan?.proof_asset?.title || 'Ship one reviewable artifact.',
+      body: plan.business_result || proofBuilder?.objective || stayAndAdvance?.thirty_day_plan?.proof_asset?.description,
+      proof: proofAndMetric || stayAndAdvance?.thirty_day_plan?.proof_asset?.why_it_matters,
+      tone: color,
+    },
+    {
+      label: 'Manager move',
+      title: managerMove || promotionCase?.target_title || stayAndAdvance?.promotion_path?.next_title || 'Ask for broader scope.',
+      body: conversationPack?.manager_script || plan.share_with_manager || promotionCase?.manager_sentence || system?.manager_read,
+      proof: normalizeArray(conversationPack?.evidence_to_bring)[0] || normalizeArray(promotionCase?.proof_to_show)[0] || proofBuilder?.title,
+      tone: palette.navy,
+    },
+  ].filter((item) => item.body || item.proof || item.title);
+
+  return (
+    <div className="piq-card" style={sectionShell({ tone: color, strong: true })}>
+      <div style={{ maxWidth: '820px', marginBottom: '18px' }}>
+        <div style={{ color, fontSize: '11px', fontWeight: 950, letterSpacing: '0.13em', textTransform: 'uppercase', marginBottom: '8px' }}>Stay-and-advance operating narrative</div>
+        <h3 style={{ color: palette.text, fontSize: 'clamp(26px, 4vw, 38px)', fontWeight: 950, letterSpacing: '-0.055em', lineHeight: 1.02, margin: '0 0 10px', fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif' }}>
+          Read the pressure, redesign the workflow, prove the value, ask for the scope.
+        </h3>
+        <p style={{ color: palette.textMuted, fontSize: '15px', lineHeight: 1.75, margin: 0 }}>
+          This is the stay-safe sequence in one place: see what is getting weaker, protect what still compounds, redesign one live workflow, make the AI boundary explicit, ship proof, then use it to earn broader ownership.
+        </p>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '10px' }} className="two-col">
+        {rows.map((item, index) => (
+          <div key={item.label} style={{ ...(index === 0 ? accentPanelStyle(item.tone) : mutedPanelStyle()), padding: '15px' }}>
+            <div style={{ color: item.tone, fontSize: '10px', fontWeight: 950, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '8px' }}>0{index + 1} · {item.label}</div>
+            <div style={{ color: palette.text, fontSize: '15px', fontWeight: 900, lineHeight: 1.25, marginBottom: '7px' }}>{compactCopy(item.title, 68)}</div>
+            <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.6, marginBottom: item.proof ? '9px' : 0 }}>{compactCopy(item.body, 90)}</div>
+            {item.proof && (
+              <div style={{ ...accentPanelStyle(item.tone), padding: '10px 11px', color: palette.textMuted, fontSize: '12px', lineHeight: 1.5 }}>
+                <strong style={{ color: palette.text }}>Signal:</strong> {compactCopy(item.proof, 82)}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -1304,14 +1642,14 @@ function ProofAssetBuilderCard({ builder, color }) {
   if (!builder?.title) return null;
 
   return (
-    <div className="piq-card" style={{ padding: '24px', marginBottom: '18px', background: `linear-gradient(135deg, rgba(255,255,255,0.94), ${color}12)`, border: `1px solid ${color}26`, boxShadow: '0 22px 46px rgba(19, 32, 42, 0.08)' }}>
+    <div className="piq-card" style={sectionShell({ tone: color })}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', gap: '16px', flexWrap: 'wrap', marginBottom: '18px' }}>
         <div>
           <div style={{ color, fontSize: '11px', fontWeight: 950, letterSpacing: '1.4px', textTransform: 'uppercase', marginBottom: '8px' }}>Proof Asset Builder</div>
           <h3 style={{ color: palette.text, fontSize: '24px', fontWeight: 950, letterSpacing: '-0.045em', margin: '0 0 6px' }}>{builder.title}</h3>
           <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.65, margin: 0, maxWidth: '760px' }}>{compactCopy(builder.objective, 150)}</p>
         </div>
-        <span style={{ borderRadius: '999px', padding: '7px 12px', background: `${color}12`, border: `1px solid ${color}28`, color, fontSize: '12px', fontWeight: 900 }}>
+        <span style={toneBadgeStyle(color)}>
           {builder.target_role || 'Target role'}
         </span>
       </div>
@@ -1319,13 +1657,13 @@ function ProofAssetBuilderCard({ builder, color }) {
       {(builder.audience || builder.business_question) && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '12px', marginBottom: '14px' }} className="two-col">
           {builder.audience && (
-            <div style={{ padding: '15px 16px', borderRadius: '18px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
+            <div style={{ ...mutedPanelStyle(), padding: '15px 16px' }}>
               <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '8px' }}>Who this convinces</div>
               <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{builder.audience}</div>
             </div>
           )}
           {builder.business_question && (
-            <div style={{ padding: '15px 16px', borderRadius: '18px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
+            <div style={{ ...mutedPanelStyle(), padding: '15px 16px' }}>
               <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '8px' }}>Business question to answer</div>
               <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{builder.business_question}</div>
             </div>
@@ -1340,7 +1678,7 @@ function ProofAssetBuilderCard({ builder, color }) {
             ['Good enough bar', builder.execution_guide.good_enough_bar],
             ['Manager readout', builder.execution_guide.manager_readout],
           ].map(([label, value], index) => (
-            <div key={label} style={{ padding: '15px 16px', borderRadius: '18px', background: index === 0 ? `${color}10` : 'rgba(255,255,255,0.76)', border: `1px solid ${index === 0 ? `${color}22` : palette.border}` }}>
+            <div key={label} style={{ ...(index === 0 ? accentPanelStyle(color) : mutedPanelStyle()), padding: '15px 16px' }}>
               <div style={{ color: index === 0 ? color : palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>{label}</div>
               <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{value}</div>
             </div>
@@ -1349,7 +1687,7 @@ function ProofAssetBuilderCard({ builder, color }) {
       )}
 
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.1fr) minmax(280px, 0.9fr)', gap: '14px' }} className="two-col">
-        <div style={{ padding: '18px', borderRadius: '20px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
+        <div style={{ ...mutedPanelStyle(), padding: '18px' }}>
           <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Artifact outline</div>
           <div style={{ display: 'grid', gap: '10px' }}>
             {(builder.sections || []).map((section, index) => (
@@ -1360,7 +1698,7 @@ function ProofAssetBuilderCard({ builder, color }) {
             ))}
           </div>
         </div>
-        <div style={{ padding: '18px', borderRadius: '20px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
+        <div style={{ ...mutedPanelStyle(), padding: '18px' }}>
           <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Quality checklist</div>
           <div style={{ display: 'grid', gap: '9px', marginBottom: '14px' }}>
             {(builder.checklist || []).map((item) => (
@@ -1480,7 +1818,7 @@ function ProofAssetBuilderCard({ builder, color }) {
 
       {builder.share_prompt && (
         <div style={{ marginTop: '14px', padding: '14px 16px', borderRadius: '18px', background: 'rgba(19,32,42,0.06)', border: `1px solid ${palette.border}`, color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>
-          <strong style={{ color: palette.text }}>Use this in outreach:</strong> {builder.share_prompt}
+          <strong style={{ color: palette.text }}>{builder.share_prompt_label || 'Use this in outreach'}:</strong> {builder.share_prompt}
         </div>
       )}
     </div>
@@ -1846,6 +2184,9 @@ function PromotionConversationPackCard({ pack, color }) {
 function SkillGapCard({ skill, color, messages }) {
   const priorityColor = skillPriorityColor(skill.gap_priority, color);
   const shape = gapShape(skill.gap_priority);
+  const resourceUse = skill.how_to_close_gap
+    || skill.required_level
+    || 'Turn this skill into one visible artifact before adding more learning.';
 
   return (
     <div className="piq-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px', background: palette.panel, border: `1px solid ${palette.border}`, borderRadius: '26px' }}>
@@ -1913,26 +2254,32 @@ function SkillGapCard({ skill, color, messages }) {
         <strong style={{ color: palette.text }}>{messages.report.evidenceAlready}:</strong> {compactCopy(skill.evidence_you_already_have, 120)}
       </div>
 
-      <a
-        href={skill.resource_url}
-        target="_blank"
-        rel="noopener noreferrer"
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: 'fit-content',
-          padding: '10px 14px',
-          borderRadius: '12px',
-          background: `${color}16`,
-          color,
-          border: `1px solid ${color}33`,
-          fontSize: '13px',
-          fontWeight: 700,
-        }}
-      >
-        {messages.report.learnWith} {skill.resource_title} →
-      </a>
+      <div style={{ padding: '12px 13px', borderRadius: '16px', background: 'rgba(255,255,255,0.74)', border: `1px solid ${palette.border}`, color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>
+        <strong style={{ color: palette.text }}>Use the resource to:</strong> {compactCopy(resourceUse, 128)}
+      </div>
+
+      {skill.resource_url && skill.resource_title && (
+        <a
+          href={skill.resource_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 'fit-content',
+            padding: '10px 14px',
+            borderRadius: '12px',
+            background: `${color}16`,
+            color,
+            border: `1px solid ${color}33`,
+            fontSize: '13px',
+            fontWeight: 700,
+          }}
+        >
+          {messages.report.learnWith} {skill.resource_title} →
+        </a>
+      )}
 
       <LearningResourceBadges skill={skill} />
       {skill.resource_provider && (
@@ -1950,23 +2297,23 @@ function LearningPathCard({ path, color }) {
   if (!steps.length) return null;
 
   return (
-    <div className="piq-card" style={{ padding: '24px', marginBottom: '18px', background: `linear-gradient(135deg, ${color}12 0%, rgba(255,255,255,0.92) 58%, rgba(255,249,242,0.9) 100%)`, border: `1px solid ${color}28`, boxShadow: '0 22px 46px rgba(19, 32, 42, 0.08)' }}>
+    <div className="piq-card" style={sectionShell({ tone: color })}>
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', alignItems: 'end', flexWrap: 'wrap', marginBottom: '18px' }}>
         <div>
           <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '1.4px', textTransform: 'uppercase', marginBottom: '8px' }}>Learning path</div>
-          <h3 style={{ color: palette.text, fontSize: '22px', fontWeight: 950, letterSpacing: '-0.04em', margin: '0 0 6px' }}>The fastest credible learning sequence</h3>
+          <h3 style={{ color: palette.text, fontSize: '22px', fontWeight: 950, letterSpacing: '-0.04em', margin: '0 0 6px' }}>Learn only what makes the first workflow stronger</h3>
           <p style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.7, margin: 0, maxWidth: '720px' }}>
-            Learn just enough to ship proof, then go deeper.
+            Start in the system or process you already own. Each step should improve the live workflow, strengthen the proof asset, or make the pattern reusable.
           </p>
         </div>
-        <span style={{ borderRadius: '999px', padding: '7px 12px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}`, color: palette.textMuted, fontSize: '12px', fontWeight: 850 }}>
+        <span style={toneBadgeStyle(color, true)}>
           {steps.length} recommended steps
         </span>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '10px', marginBottom: '14px' }} className="two-col">
         {steps.map((step, index) => (
-          <div key={`track-${step.label}-${step.skill.skill_name}`} style={{ padding: '12px 14px', borderRadius: '18px', background: index === 0 ? `${color}12` : 'rgba(255,255,255,0.78)', border: `1px solid ${index === 0 ? `${color}26` : palette.border}` }}>
+          <div key={`track-${step.label}-${step.skill.skill_name}`} style={{ ...(index === 0 ? accentPanelStyle(color) : mutedPanelStyle()), padding: '12px 14px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
               <span style={{ width: '24px', height: '24px', borderRadius: '999px', display: 'grid', placeItems: 'center', background: index === 0 ? color : 'rgba(19,32,42,0.08)', color: index === 0 ? '#fff' : palette.text, fontSize: '12px', fontWeight: 900 }}>
                 {index + 1}
@@ -1981,7 +2328,7 @@ function LearningPathCard({ path, color }) {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '12px' }} className="two-col">
         {steps.map((step, index) => (
-          <div key={`${step.label}-${step.skill.skill_name}`} style={{ position: 'relative', padding: '18px', borderRadius: '22px', background: 'rgba(255,255,255,0.78)', border: `1px solid ${palette.border}`, overflow: 'hidden' }}>
+          <div key={`${step.label}-${step.skill.skill_name}`} style={{ position: 'relative', padding: '18px', borderRadius: '22px', background: 'rgba(255,255,255,0.82)', border: `1px solid ${palette.border}`, overflow: 'hidden' }}>
             <div style={{ position: 'absolute', right: '-18px', top: '-24px', color: `${color}14`, fontSize: '96px', fontWeight: 950, lineHeight: 1 }}>{index + 1}</div>
             <div style={{ position: 'relative', zIndex: 1 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
@@ -1996,10 +2343,10 @@ function LearningPathCard({ path, color }) {
                 </div>
                 <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.55 }}>
                   {index === 0
-                    ? 'Create the first credible workflow in your current role.'
+                    ? 'Redesign the first live workflow in your current role.'
                     : index === 1
-                      ? 'Turn the skill into something visible and reviewable.'
-                      : 'Systematize the work so it becomes repeatable scope.'}
+                      ? 'Turn the workflow into manager-readable proof.'
+                      : 'Only deepen after the pattern is already working in context.'}
                 </div>
               </div>
               <a href={step.skill.resource_url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', color, fontSize: '13px', fontWeight: 850, textDecoration: 'none', marginBottom: '12px' }}>
@@ -2327,6 +2674,93 @@ function ExecutionLoopCard({ summary, planColor, progressPercent }) {
           <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>Manager conversations</div>
           <div style={{ color: palette.text, fontSize: '20px', fontWeight: 900 }}>{summary.managerDoneCount}</div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function ProofConfidenceLadderCard({ refreshContext, outcomeSummary, color }) {
+  const proofReadyCount = Number(refreshContext?.proof_ready_count || 0);
+  const managerDoneCount = Number(refreshContext?.manager_done_count || 0);
+  const completedWeeksCount = Number(refreshContext?.completed_weeks_count || 0);
+  const traction = outcomeSummary?.traction_status || 'no_signal';
+  const activeIndex = ['offer', 'interview'].includes(traction)
+    ? 4
+    : outcomeSummary?.manager_conversation_done || managerDoneCount > 0
+      ? 3
+      : proofReadyCount > 1 || traction === 'team_adoption'
+        ? 2
+        : proofReadyCount > 0 || outcomeSummary?.built_proof_asset || completedWeeksCount > 0
+          ? 1
+          : 0;
+  const steps = [
+    {
+      title: 'No proof yet',
+      body: 'The recommendation is still mostly diagnosis. Start with one small artifact.',
+    },
+    {
+      title: 'Internal proof',
+      body: 'You have early evidence inside the role, but it still needs clearer packaging.',
+    },
+    {
+      title: 'Repeatable workflow',
+      body: 'The proof is becoming a system someone else can understand and reuse.',
+    },
+    {
+      title: 'Manager-visible asset',
+      body: 'A decision-maker has seen the work, so the recommendation has stronger real-world signal.',
+    },
+    {
+      title: 'Market-visible asset',
+      body: 'The proof is strong enough to support external interviews, title moves, or offer signal.',
+    },
+  ];
+
+  return (
+    <div className="piq-card" style={{ padding: '22px', marginBottom: '18px', background: `linear-gradient(145deg, ${color}10 0%, rgba(255,255,255,0.94) 64%)`, border: `1px solid ${color}24`, boxShadow: '0 22px 46px rgba(19, 32, 42, 0.08)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', alignItems: 'end', flexWrap: 'wrap', marginBottom: '16px' }}>
+        <div>
+          <div style={{ color, fontSize: '11px', fontWeight: 900, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '8px' }}>Proof-confidence ladder</div>
+          <div style={{ color: palette.text, fontSize: '24px', fontWeight: 900, letterSpacing: '-0.04em', marginBottom: '6px' }}>
+            Refresh the recommendation when the proof changes.
+          </div>
+          <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.7, maxWidth: '760px' }}>
+            PivotIQ gets more useful when your report moves from intent to visible evidence. Use this ladder to know what kind of signal you are creating.
+          </div>
+        </div>
+        <span style={{ padding: '7px 12px', borderRadius: '999px', background: `${color}12`, border: `1px solid ${color}24`, color, fontSize: '11px', fontWeight: 900, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+          Stage {activeIndex + 1} of {steps.length}
+        </span>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, minmax(0, 1fr))', gap: '10px' }} className="two-col">
+        {steps.map((step, index) => {
+          const isActive = index === activeIndex;
+          const isComplete = index < activeIndex;
+          const tone = isActive || isComplete ? color : palette.textSoft;
+          return (
+            <div
+              key={step.title}
+              style={{
+                padding: '14px',
+                borderRadius: '18px',
+                background: isActive ? `${color}12` : isComplete ? 'rgba(27,111,99,0.08)' : 'rgba(255,255,255,0.72)',
+                border: `1px solid ${isActive ? `${color}28` : isComplete ? 'rgba(27,111,99,0.18)' : palette.border}`,
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: '8px', alignItems: 'center', marginBottom: '8px' }}>
+                <span style={{ width: '24px', height: '24px', borderRadius: '999px', display: 'grid', placeItems: 'center', background: isActive ? color : isComplete ? palette.teal : 'rgba(19,32,42,0.08)', color: isActive || isComplete ? '#fff' : palette.textMuted, fontSize: '11px', fontWeight: 900 }}>
+                  {index + 1}
+                </span>
+                <span style={{ color: tone, fontSize: '10px', fontWeight: 900, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                  {isActive ? 'Current' : isComplete ? 'Reached' : 'Next'}
+                </span>
+              </div>
+              <div style={{ color: palette.text, fontSize: '14px', fontWeight: 900, lineHeight: 1.3, marginBottom: '6px' }}>{step.title}</div>
+              <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.55 }}>{step.body}</div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -2706,27 +3140,109 @@ async function syncOutcome(reportId, payload) {
   }
 }
 
+function PreCheckoutTrustPanel() {
+  const items = [
+    ['After payment', 'You answer a few final questions so the full report can name the right workflow, systems, proof state, urgency, and market context for your situation.'],
+    ['What unlocks', 'A ranked stay-vs-pivot decision, the first workflow or target role to build toward, what AI should touch, what stays human-owned, a proof asset, and a 30-day execution plan.'],
+    ['Support', 'Use the same email for saved access. If payment or access looks wrong, contact us and we will help.'],
+  ];
+
+  return (
+    <div style={{ marginTop: '16px', padding: '16px', borderRadius: '22px', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)' }}>
+      <div style={{ color: '#F4EFE7', fontSize: '13px', fontWeight: 900, marginBottom: '10px', letterSpacing: '-0.02em' }}>
+        The full report turns your free scan into a workflow-level decision you can act on.
+      </div>
+      <div style={{ display: 'grid', gap: '9px', marginBottom: '12px' }}>
+        {items.map(([label, body]) => (
+          <div key={label} style={{ display: 'grid', gridTemplateColumns: '116px minmax(0, 1fr)', gap: '10px', alignItems: 'start' }}>
+            <div style={{ color: '#FFB686', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em' }}>{label}</div>
+            <div style={{ color: '#C4D0D6', fontSize: '12px', lineHeight: 1.55 }}>{body}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+        <Link href="/methodology" style={{ color: '#F3D4B5', fontSize: '12px', fontWeight: 850, textDecoration: 'none' }}>Read methodology</Link>
+        <Link href="/contact" style={{ color: '#F3D4B5', fontSize: '12px', fontWeight: 850, textDecoration: 'none' }}>Contact support</Link>
+      </div>
+    </div>
+  );
+}
+
 function TeaserView({ payload, onCheckout, loading }) {
   const reportData = payload.reportData;
   const { summary, task_breakdown: taskBreakdown, pivots, roadmap } = reportData;
   const color = riskColor(summary.overall_score);
   const bestPivot = pivots[0];
   const backupPivot = pivots[1] || null;
+  const recommendationStack = reportData.recommendation_stack || {};
+  const primaryRecommendation = recommendationStack.primary || {};
+  const stayPrimary = primaryRecommendation.type === 'stay';
+  const stayPath = reportData.stay_path || null;
+  const stayPlan = reportData.stay_and_advance?.ai_this_week_plan || {};
+  const stayProofTitle = reportData.stay_and_advance?.thirty_day_plan?.proof_asset?.title
+    || reportData.stay_proof_asset_builder?.title
+    || 'one manager-readable workflow case';
   const interpretation = reportData.interpretation || {};
   const messages = getMessages(payload.uiLocale || payload.locale || getBrowserLocale() || reportData.locale);
   const topPressureTask = [...taskBreakdown].sort((left, right) => Number(right?.risk_score || 0) - Number(left?.risk_score || 0))[0] || null;
-  const immediateAction = reportData.next_move?.explanation || bestPivot?.why_this_path_wins || summary.what_this_means;
-  const teaserLoopItems = [
-    backupPivot?.title ? `Why ${bestPivot?.title} beats ${backupPivot.title} right now` : `Why ${bestPivot?.title || 'this pivot'} leads over the close alternatives`,
-    `Which ${Math.max((bestPivot?.skill_gaps || []).length, 3)} skill gaps actually matter first`,
-    'What proof makes this move credible before you commit',
-  ];
-  const fullUnlocks = [
-    'Exact hard-skill gaps to close first',
-    'Proof asset that makes the pivot believable',
-    'Role-aware learning path and action plan',
-    '12-week roadmap with checkpoints',
-  ];
+  const immediateAction = stayPrimary
+    ? stayPlan.workflow || reportData.stay_and_advance?.thirty_day_plan?.this_week?.[0] || reportData.stay_and_advance?.recommendation || summary.what_this_means
+    : reportData.next_move?.explanation || bestPivot?.why_this_path_wins || summary.what_this_means;
+  const teaserLoopItems = stayPrimary
+    ? [
+        {
+          title: 'Which current-role workflow to redesign first',
+          body: 'The paid layer names the first live workflow, the systems it lives in, and what the first credible win should look like.',
+        },
+        {
+          title: 'What AI should touch and what stays human-owned',
+          body: 'It makes the operating boundary explicit so the stay path feels safer, more credible, and easier to explain.',
+        },
+        {
+          title: 'What proof and manager story make this promotable',
+          body: 'It gives you the artifact, metric, and upward conversation that turn AI usage into broader-scope signal.',
+        },
+      ]
+    : [
+        {
+          title: backupPivot?.title ? `Why ${bestPivot?.title} beats ${backupPivot.title} right now` : `Why ${bestPivot?.title || 'this pivot'} leads over the close alternatives`,
+          body: 'The preview gives the leading path. The full report explains the ranking and tradeoff.',
+        },
+        {
+          title: `Which ${Math.max((bestPivot?.skill_gaps || []).length, 3)} skill gaps actually matter first`,
+          body: 'Not every missing skill matters equally. The paid layer ranks the ones worth closing first.',
+        },
+        {
+          title: 'What proof makes this move credible before you commit',
+          body: 'The full report tells you what to build, show, and test before you overcommit.',
+        },
+      ];
+  const fullUnlocks = stayPrimary
+    ? [
+        'First workflow to redesign',
+        'AI vs human ownership map',
+        'Manager-readable proof asset',
+        'Promotion conversation pack',
+      ]
+    : [
+        'Exact hard-skill gaps to close first',
+        'Proof asset that makes the pivot believable',
+        'Role-aware learning path and action plan',
+        '12-week roadmap with checkpoints',
+      ];
+  const unlockItemsData = stayPrimary
+    ? [
+        { icon: 'task-diagnostics', tone: 'orange', val: '1 first workflow', sub: 'so you know exactly where to start inside the current role' },
+        { icon: 'pivot-paths', tone: 'default', val: 'AI + human ownership map', sub: 'so it is clear what AI should touch and what stays under your judgment' },
+        { icon: 'skill-gaps', tone: 'teal', val: `${stayPath?.skill_gaps?.length || 0} stay-skill actions`, sub: 'ranked around the workflow and proof that make you safer in the current lane' },
+        { icon: 'roadmap', tone: 'default', val: stayProofTitle, sub: 'with the metric and manager story that turn the stay path into visible scope signal' },
+      ]
+    : [
+        { icon: 'task-diagnostics', tone: 'orange', val: `${taskBreakdown.length} ${messages.report.unlockItems[0][0]}`, sub: messages.report.unlockItems[0][1] },
+        { icon: 'pivot-paths', tone: 'default', val: `${pivots.length} ${messages.report.unlockItems[1][0]}`, sub: messages.report.unlockItems[1][1] },
+        { icon: 'skill-gaps', tone: 'teal', val: `${bestPivot?.skill_gaps?.length || 0} ${messages.report.unlockItems[2][0]}`, sub: messages.report.unlockItems[2][1] },
+        { icon: 'roadmap', tone: 'default', val: `${roadmap.total_weeks}-${messages.report.unlockItems[3][0]}`, sub: messages.report.unlockItems[3][1] },
+      ];
 
   return (
     <div style={{ minHeight: '100vh', background: palette.bg, paddingBottom: '90px', position: 'relative', overflow: 'hidden' }}>
@@ -2758,8 +3274,14 @@ function TeaserView({ payload, onCheckout, loading }) {
             <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '16px' }}>
               {[
                 topPressureTask ? `Most exposed task: ${topPressureTask.task_name}` : null,
-                bestPivot?.title ? `Leading direction: ${bestPivot.title}` : null,
-                'Full report adds the proof and hard-skill logic',
+                stayPrimary
+                  ? `Leading direction: ${stayPath?.title || messages.report.stayAndAdvance}`
+                  : bestPivot?.title
+                    ? `Leading direction: ${bestPivot.title}`
+                    : null,
+                stayPrimary
+                  ? 'Full report adds the workflow, proof, and manager logic'
+                  : 'Full report adds the proof and hard-skill logic',
               ].filter(Boolean).map((item) => (
                 <span key={item} style={{ padding: '8px 12px', borderRadius: '999px', background: 'rgba(255,255,255,0.6)', border: `1px solid ${palette.border}`, color: palette.textSoft, fontSize: '12px', fontWeight: 800 }}>
                   {item}
@@ -2822,27 +3344,39 @@ function TeaserView({ payload, onCheckout, loading }) {
                 <MonoIcon name="best-pivot" tone="orange" />
                 <div>
                   <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: `${pivotColors[0]}10`, border: `1px solid ${pivotColors[0]}26`, color: '#9A5727', borderRadius: '999px', padding: '4px 9px', fontSize: '11px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '8px' }}>
-                    {decisionFrameLabel(bestPivot.decision_frame, messages)}
+                    {stayPrimary ? messages.report.stayAndAdvance : decisionFrameLabel(bestPivot.decision_frame, messages)}
                   </div>
-                  <div style={{ color: palette.text, fontSize: '15px', fontWeight: 800, marginBottom: '4px' }}>{bestPivot.title}</div>
-                  <div style={{ color: 'var(--text-muted)', fontSize: '13px', lineHeight: 1.65 }}>{bestPivot.why_this_path_wins || bestPivot.outcome || bestPivot.fit_summary}</div>
+                  <div style={{ color: palette.text, fontSize: '15px', fontWeight: 800, marginBottom: '4px' }}>
+                    {stayPrimary ? stayPath?.title || messages.report.stayAndAdvance : bestPivot.title}
+                  </div>
+                  <div style={{ color: 'var(--text-muted)', fontSize: '13px', lineHeight: 1.65 }}>
+                    {stayPrimary
+                      ? reportData.stay_and_advance?.recommendation || reportData.stay_and_advance?.rationale || summary.what_this_means
+                      : bestPivot.why_this_path_wins || bestPivot.outcome || bestPivot.fit_summary}
+                  </div>
                 </div>
               </div>
-              {bestPivot.what_you_are_betting_on && (
+              {(stayPrimary ? stayPlan.compounding_now : bestPivot.what_you_are_betting_on) && (
                 <div className="hook-item" style={{ alignItems: 'flex-start' }}>
                   <MonoIcon name="bet" tone="teal" />
                   <div>
-                    <div style={{ color: palette.text, fontSize: '14px', fontWeight: 700, marginBottom: '4px' }}>{messages.report.whatYouAreBettingOn}</div>
-                    <div style={{ color: 'var(--text-muted)', fontSize: '13px', lineHeight: 1.65 }}>{bestPivot.what_you_are_betting_on}</div>
+                    <div style={{ color: palette.text, fontSize: '14px', fontWeight: 700, marginBottom: '4px' }}>
+                      {stayPrimary ? 'What still compounds' : messages.report.whatYouAreBettingOn}
+                    </div>
+                    <div style={{ color: 'var(--text-muted)', fontSize: '13px', lineHeight: 1.65 }}>
+                      {stayPrimary ? stayPlan.compounding_now : bestPivot.what_you_are_betting_on}
+                    </div>
                   </div>
                 </div>
               )}
-              {reportData.next_move?.explanation && (
+              {(stayPrimary ? immediateAction : reportData.next_move?.explanation) && (
                 <div className="hook-item" style={{ alignItems: 'flex-start', borderColor: 'rgba(65, 194, 174, 0.18)' }}>
                   <MonoIcon name="next-first" tone="default" />
                   <div>
                     <div style={{ color: palette.text, fontSize: '14px', fontWeight: 700, marginBottom: '4px' }}>{messages.report.whatToDoFirst}</div>
-                    <div style={{ color: 'var(--text-muted)', fontSize: '13px', lineHeight: 1.65 }}>{reportData.next_move.explanation}</div>
+                    <div style={{ color: 'var(--text-muted)', fontSize: '13px', lineHeight: 1.65 }}>
+                      {stayPrimary ? immediateAction : reportData.next_move?.explanation}
+                    </div>
                   </div>
                 </div>
               )}
@@ -2872,7 +3406,9 @@ function TeaserView({ payload, onCheckout, loading }) {
                   This free scan gives you the direction.
                 </div>
                 <div style={{ color: 'var(--text-muted)', fontSize: '13px', lineHeight: 1.65 }}>
-                  The paid report turns that direction into the exact skill, proof, and milestone logic you would need to follow through.
+                  {stayPrimary
+                    ? 'The paid report turns that direction into the exact workflow, AI boundary, proof asset, and manager ask that make staying look like upward movement.'
+                    : 'The paid report turns that direction into the exact skill, proof, and milestone logic you would need to follow through.'}
                 </div>
               </div>
             </div>
@@ -2883,17 +3419,11 @@ function TeaserView({ payload, onCheckout, loading }) {
           <span className="section-label">What the full report settles next</span>
           <div className="hook-grid">
             {teaserLoopItems.map((item, index) => (
-              <div key={item} className="hook-item" style={{ alignItems: 'flex-start' }}>
+              <div key={item.title} className="hook-item" style={{ alignItems: 'flex-start' }}>
                 <MonoIcon name={index === 0 ? 'decision' : index === 1 ? 'skill-gaps' : 'roadmap'} tone={index === 0 ? 'orange' : index === 1 ? 'teal' : 'default'} />
                 <div>
-                  <div style={{ color: palette.text, fontSize: '14px', fontWeight: 800, marginBottom: '4px' }}>{item}</div>
-                  <div style={{ color: 'var(--text-muted)', fontSize: '12px', lineHeight: 1.55 }}>
-                    {index === 0
-                      ? 'The preview gives the leading path. The full report explains the ranking and tradeoff.'
-                      : index === 1
-                        ? 'Not every missing skill matters equally. The paid layer ranks the ones worth closing first.'
-                        : 'The full report tells you what to build, show, and test before you overcommit.'}
-                  </div>
+                  <div style={{ color: palette.text, fontSize: '14px', fontWeight: 800, marginBottom: '4px' }}>{item.title}</div>
+                  <div style={{ color: 'var(--text-muted)', fontSize: '12px', lineHeight: 1.55 }}>{item.body}</div>
                 </div>
               </div>
             ))}
@@ -2903,12 +3433,7 @@ function TeaserView({ payload, onCheckout, loading }) {
         <div className="hook-stats">
           <span className="section-label">{messages.report.unlocksNext}</span>
           <div className="hook-grid">
-            {[
-              { icon: 'task-diagnostics', tone: 'orange', val: `${taskBreakdown.length} ${messages.report.unlockItems[0][0]}`, sub: messages.report.unlockItems[0][1] },
-              { icon: 'pivot-paths', tone: 'default', val: `${pivots.length} ${messages.report.unlockItems[1][0]}`, sub: messages.report.unlockItems[1][1] },
-              { icon: 'skill-gaps', tone: 'teal', val: `${bestPivot?.skill_gaps?.length || 0} ${messages.report.unlockItems[2][0]}`, sub: messages.report.unlockItems[2][1] },
-              { icon: 'roadmap', tone: 'default', val: `${roadmap.total_weeks}-${messages.report.unlockItems[3][0]}`, sub: messages.report.unlockItems[3][1] },
-            ].map(({ icon, tone, val, sub }) => (
+            {unlockItemsData.map(({ icon, tone, val, sub }) => (
               <div key={val} className="hook-item">
                 <MonoIcon name={icon} tone={tone} />
                 <div>
@@ -2954,6 +3479,7 @@ function TeaserView({ payload, onCheckout, loading }) {
                   </span>
                 ))}
               </div>
+              <PreCheckoutTrustPanel />
               <div className="upgrade-btns">
                 <button className="btn-full-upgrade" style={{ background: 'linear-gradient(135deg, #FF8F4D, #FFC66C)', color: '#14181F', boxShadow: '0 18px 40px rgba(255, 143, 77, 0.25)' }} disabled={!!loading} onClick={() => onCheckout('full')}>
                   {loading === 'full' ? messages.report.redirectingCheckout : messages.report.unlockButton}
@@ -3387,7 +3913,7 @@ export default function ReportExperience({ payload, embedded = false }) {
 
   return (
     <div style={{ minHeight: '100vh', background: palette.bg, position: 'relative', overflow: 'hidden' }}>
-      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(circle at 18% 0%, rgba(242, 138, 67, 0.16), transparent 26%), radial-gradient(circle at 82% 12%, rgba(27, 111, 99, 0.14), transparent 28%)' }} />
+      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(circle at 18% 0%, rgba(169, 103, 60, 0.08), transparent 24%), radial-gradient(circle at 82% 12%, rgba(36, 94, 86, 0.08), transparent 24%)' }} />
       {!embedded && (
         <nav style={{ position: 'relative', zIndex: 2, maxWidth: '1180px', margin: '0 auto', width: '100%', padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
           <BrandLogo subtitle={messages.report.fullSubtitle} />
@@ -3405,11 +3931,11 @@ export default function ReportExperience({ payload, embedded = false }) {
         </nav>
       )}
 
-      <div style={{ position: 'relative', zIndex: 2, background: `linear-gradient(180deg, ${color}10 0%, transparent 100%)`, borderBottom: `1px solid ${palette.border}`, padding: '48px 24px' }}>
+      <div style={{ position: 'relative', zIndex: 2, background: `linear-gradient(180deg, ${color}08 0%, transparent 100%)`, borderBottom: `1px solid ${palette.border}`, padding: '48px 24px 40px' }}>
         <div className="report-hero" style={{ maxWidth: '1100px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'minmax(0, 220px) minmax(0, 1fr)', gap: '32px', alignItems: 'center' }}>
           <RiskRing score={summary.overall_score || 0} label={messages.report.riskScore} />
           <div>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: `${color}20`, border: `1px solid ${color}55`, color: color === '#F4E4C7' ? '#7A5A43' : color, borderRadius: '999px', padding: '5px 14px', fontSize: '11px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '14px' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', ...toneBadgeStyle(color === '#F4E4C7' ? '#7A5A43' : color), marginBottom: '14px' }}>
               ● {summary.risk_level} risk · {tier === 'full' ? messages.report.fullReport : messages.report.quickPeek}
             </div>
             <h1 style={{ color: palette.navy, fontSize: 'clamp(30px,5vw,46px)', fontWeight: 900, marginBottom: '10px', letterSpacing: '-0.05em', lineHeight: 0.98, fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif' }}>
@@ -3420,33 +3946,44 @@ export default function ReportExperience({ payload, embedded = false }) {
             </p>
             <p style={{ color: palette.textMuted, fontSize: '15px', lineHeight: 1.78, marginBottom: '8px' }}>{summary.narrative}</p>
             <p style={{ color: palette.textSoft, fontSize: '14px', lineHeight: 1.7, marginBottom: '10px' }}>{summary.what_this_means}</p>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: `${color}14`, border: `1px solid ${color}30`, borderRadius: '10px', padding: '8px 14px' }}>
-              <span style={{ color: color === '#F4E4C7' ? '#7A5A43' : color, fontSize: '12px', fontWeight: 800 }}>TL {summary.displacement_timeline}</span>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', ...accentPanelStyle(color === '#F4E4C7' ? '#7A5A43' : color), padding: '8px 14px', borderRadius: '12px' }}>
+              <span style={{ color: color === '#F4E4C7' ? '#7A5A43' : color, fontSize: '12px', fontWeight: 800 }}>Timeline: {summary.displacement_timeline}</span>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '10px', marginTop: '16px' }} className="three-col">
               <SignalStatCard label={messages.report.riskScore} value={summary.overall_score || 0} tone={color} />
               <SignalStatCard label={messages.report.skillGapMap} value={(pivot.skill_gaps || []).length} tone={pColor} />
               <SignalStatCard label={messages.report.week} value={pivot.roadmap?.weeks?.length || 0} tone={palette.teal} />
             </div>
-            {tier === 'full' && <RecommendationWhyCard pivot={pivot} color={pColor} first30Days={first30Days} />}
           </div>
         </div>
       </div>
 
       <div style={{ position: 'relative', zIndex: 2, maxWidth: '1100px', margin: '0 auto', padding: '0 24px' }}>
         {tier === 'full' && (
+          <ExecutiveSummaryBrief
+            reportData={reportData}
+            stack={recommendationStack}
+            pivot={pivot}
+            decision={decision}
+            first30Days={first30Days}
+            proofAssetBuilder={proofAssetBuilder}
+            color={pColor}
+          />
+        )}
+
+        {tier === 'full' && (
           <RecommendationStackCard stack={recommendationStack} pivotColor={pColor} stayColor={palette.teal} />
         )}
 
         {tier === 'full' && (
-          <div className="piq-card" style={{ marginBottom: '18px', padding: '24px', background: 'linear-gradient(180deg, rgba(255,255,255,0.94), rgba(249,243,235,0.98))' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.1fr) minmax(280px, 0.9fr)', gap: '16px', marginBottom: '16px' }} className="two-col">
-              <div style={{ padding: '20px', borderRadius: '22px', background: `${recommendationAccent(decision.recommendation_type).bg}`, border: `1px solid ${recommendationAccent(decision.recommendation_type).border}` }}>
+          <div className="piq-card" style={sectionShell()}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.08fr) minmax(280px, 0.92fr)', gap: '16px', marginBottom: '16px' }} className="two-col">
+              <div style={{ ...accentPanelStyle(recommendationAccent(decision.recommendation_type).color), padding: '20px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
                   <MonoIcon name="decision" tone="orange" />
                   <div className="section-label" style={{ color: recommendationAccent(decision.recommendation_type).color, marginBottom: 0 }}>{messages.report.decisionClarity}</div>
                 </div>
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 12px', borderRadius: '999px', background: 'rgba(255,255,255,0.62)', border: `1px solid ${recommendationAccent(decision.recommendation_type).border}`, color: recommendationAccent(decision.recommendation_type).color, fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '12px' }}>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', ...toneBadgeStyle(recommendationAccent(decision.recommendation_type).color), marginBottom: '12px' }}>
                   {decision.urgency || messages.report.recommendedNextMove}
                 </div>
                 <div style={{ color: palette.text, fontSize: '28px', fontWeight: 900, letterSpacing: '-0.04em', lineHeight: 1.02, marginBottom: '10px', fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif' }}>
@@ -3455,18 +3992,15 @@ export default function ReportExperience({ payload, embedded = false }) {
                 <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.8, marginBottom: '12px' }}>
                   {decision.rationale}
                 </div>
-                <div style={{ padding: '12px 14px', borderRadius: '16px', background: 'rgba(255,255,255,0.72)', border: `1px solid ${palette.border}` }}>
+                <div style={{ ...mutedPanelStyle(), padding: '12px 14px' }}>
                   <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '4px' }}>{decision.confidence_label || messages.report.moderateConfidence}</div>
                   <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{decision.confidence_reason}</div>
                 </div>
               </div>
 
               <div style={{ display: 'grid', gap: '12px' }}>
-                <div style={{ padding: '18px', borderRadius: '22px', background: 'rgba(255,255,255,0.74)', border: `1px solid ${palette.border}` }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
-                    <MonoIcon name="roi" tone="teal" />
-                    <div className="section-label" style={{ marginBottom: 0 }}>{messages.report.careerRoi}</div>
-                  </div>
+                <div style={{ ...mutedPanelStyle(), padding: '18px' }}>
+                  <div className="section-label" style={{ marginBottom: '8px' }}>{messages.report.careerRoi}</div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
                     {[
                       [messages.report.roiLabels[0], careerRoi.salary_delta || pivot.salary_delta],
@@ -3474,8 +4008,8 @@ export default function ReportExperience({ payload, embedded = false }) {
                       [messages.report.roiLabels[2], careerRoi.learning_cost_estimate || 'TBD'],
                       [messages.report.roiLabels[3], careerRoi.payback_period || 'TBD'],
                     ].map(([label, value]) => (
-                      <div key={label} style={{ padding: '12px 13px', borderRadius: '16px', background: 'rgba(244,239,231,0.9)', border: `1px solid ${palette.border}` }}>
-                        <div style={{ color: palette.textSoft, fontSize: '11px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '5px' }}>{label}</div>
+                      <div key={label} style={{ ...mutedPanelStyle(), padding: '12px 13px', background: 'rgba(255,255,255,0.7)' }}>
+                        <div style={{ color: palette.textSoft, fontSize: '11px', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '5px' }}>{label}</div>
                         <div style={{ color: palette.text, fontSize: '14px', fontWeight: 800, lineHeight: 1.35 }}>{value}</div>
                       </div>
                     ))}
@@ -3484,10 +4018,45 @@ export default function ReportExperience({ payload, embedded = false }) {
                     {careerRoi.roi_read}
                   </div>
                 </div>
+
+                {(interpretation.role_read || interpretation.stop_assuming || interpretation.durable_advantages?.length) && (
+                  <div style={{ ...mutedPanelStyle(), padding: '18px' }}>
+                    <div className="section-label" style={{ color: pColor, marginBottom: '8px' }}>{messages.report.whatThisSaysAboutRole}</div>
+                    <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7, marginBottom: '10px' }}>
+                      {interpretation.role_read || summary.what_this_means}
+                    </div>
+                    <div style={{ display: 'grid', gap: '8px' }}>
+                      {Array.isArray(interpretation.durable_advantages) && interpretation.durable_advantages.length > 0 && (
+                        <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>
+                          <strong style={{ color: palette.text }}>{messages.report.durableAdvantages}:</strong> {interpretation.durable_advantages.slice(0, 2).join(' · ')}
+                        </div>
+                      )}
+                      {interpretation.stop_assuming && (
+                        <div style={{ ...accentPanelStyle(palette.orange), padding: '10px 12px', color: palette.textMuted, fontSize: '12px', lineHeight: 1.6 }}>
+                          <strong style={{ color: palette.text }}>{messages.report.stopAssuming}:</strong> {interpretation.stop_assuming}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
-            <div style={{ padding: '20px', borderRadius: '22px', background: 'rgba(255,255,255,0.7)', border: `1px solid ${palette.border}` }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '12px', marginBottom: '16px' }} className="two-col">
+              {[
+                [messages.report.bestFitDirection, pivot.title],
+                [messages.report.salarySignal, pivot.salary_delta || pivot.salary_range],
+                [messages.report.transitionWindow, pivot.transition_time],
+                [messages.report.nextMove, reportData.next_move?.title || messages.report.yourMoveThisWeek],
+              ].map(([label, value], index) => (
+                <div key={label} style={{ ...(index === 0 ? accentPanelStyle(pColor) : mutedPanelStyle()), padding: '14px 16px' }}>
+                  <div style={{ color: index === 0 ? pColor : palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>{label}</div>
+                  <div style={{ color: palette.text, fontSize: '14px', fontWeight: 800, lineHeight: 1.5 }}>{value}</div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ ...mutedPanelStyle(), padding: '20px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
                 <MonoIcon name="proof" tone="default" />
                 <div>
@@ -3500,12 +4069,12 @@ export default function ReportExperience({ payload, embedded = false }) {
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '12px', marginBottom: '12px' }} className="two-col">
                 {[
-                  [messages.report.first30DayBuckets[0], first30Days.next_7_days || [], 'rgba(242, 138, 67, 0.08)', '#8B4A1B'],
-                  [messages.report.first30DayBuckets[1], first30Days.next_30_days || [], 'rgba(27, 111, 99, 0.08)', '#1B6F63'],
-                  [messages.report.first30DayBuckets[2], first30Days.avoid || [], 'rgba(19, 32, 42, 0.06)', palette.text],
-                ].map(([label, items, bg, headingColor]) => (
-                  <div key={label} style={{ padding: '16px', borderRadius: '18px', background: bg, border: `1px solid ${palette.border}` }}>
-                    <div style={{ color: headingColor, fontSize: '12px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>{label}</div>
+                  [messages.report.first30DayBuckets[0], first30Days.next_7_days || [], palette.orange],
+                  [messages.report.first30DayBuckets[1], first30Days.next_30_days || [], palette.teal],
+                  [messages.report.first30DayBuckets[2], first30Days.avoid || [], palette.navy],
+                ].map(([label, items, tone]) => (
+                  <div key={label} style={{ ...accentPanelStyle(tone), padding: '16px' }}>
+                    <div style={{ color: tone, fontSize: '12px', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '10px' }}>{label}</div>
                     <div style={{ display: 'grid', gap: '8px' }}>
                       {items.map((item) => (
                         <div key={item} style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{item}</div>
@@ -3515,143 +4084,20 @@ export default function ReportExperience({ payload, embedded = false }) {
                 ))}
               </div>
 
-              <div style={{ padding: '16px', borderRadius: '18px', background: `${pColor}0F`, border: `1px solid ${pColor}22` }}>
-                <div style={{ color: pColor, fontSize: '12px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '8px' }}>{messages.report.proofAssetToShip}</div>
+              <div style={{ ...accentPanelStyle(pColor), padding: '16px' }}>
+                <div style={{ color: pColor, fontSize: '12px', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '8px' }}>{messages.report.proofAssetToShip}</div>
                 <div style={{ color: palette.text, fontSize: '16px', fontWeight: 800, marginBottom: '6px' }}>{first30Days.proof_asset?.title}</div>
                 <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7, marginBottom: '8px' }}>{first30Days.proof_asset?.description}</div>
                 <div style={{ color: palette.textSoft, fontSize: '12px', lineHeight: 1.6 }}>{first30Days.proof_asset?.why_it_matters}</div>
               </div>
-            </div>
-          </div>
-        )}
 
-        {tier === 'full' && (interpretation.role_read || interpretation.stop_assuming || interpretation.durable_advantages?.length) && (
-          <div className="piq-card" style={{ marginBottom: '18px', padding: '24px', background: 'linear-gradient(180deg, rgba(255,255,255,0.92), rgba(249,243,235,0.96))' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: '14px' }} className="two-col">
-              <div>
-                <div className="section-label" style={{ color: pColor, marginBottom: '8px' }}>{messages.report.whatThisSaysAboutRole}</div>
-                <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.75 }}>
-                  {interpretation.role_read || summary.what_this_means}
+              {actionEmailStatus !== 'idle' && (
+                <div style={{ marginTop: '12px', color: actionEmailStatus === 'failed' ? '#8B4A1B' : palette.textSoft, fontSize: '12px', lineHeight: 1.55 }}>
+                  {actionEmailStatus === 'sent' && 'Action-plan email sent.'}
+                  {actionEmailStatus === 'unavailable' && 'Action-plan email is configured for production; local demo mode skipped the real send.'}
+                  {actionEmailStatus === 'failed' && 'Action-plan email could not be sent automatically. Your report is still saved here.'}
                 </div>
-              </div>
-              <div style={{ display: 'grid', gap: '12px' }}>
-                {Array.isArray(interpretation.durable_advantages) && interpretation.durable_advantages.length > 0 && (
-                  <div style={{ padding: '14px 16px', borderRadius: '16px', background: 'rgba(255,255,255,0.58)', border: `1px solid ${palette.border}` }}>
-                    <div style={{ color: palette.text, fontSize: '12px', fontWeight: 800, marginBottom: '8px' }}>{messages.report.durableAdvantages}</div>
-                    <div style={{ display: 'grid', gap: '7px' }}>
-                      {interpretation.durable_advantages.slice(0, 3).map((item) => (
-                        <div key={item} style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.6 }}>{item}</div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                {interpretation.stop_assuming && (
-                  <div style={{ padding: '14px 16px', borderRadius: '16px', background: 'rgba(242, 138, 67, 0.10)', border: '1px solid rgba(242, 138, 67, 0.18)' }}>
-                    <div style={{ color: '#8B4A1B', fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>{messages.report.stopAssuming}</div>
-                    <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.65 }}>{interpretation.stop_assuming}</div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {tier === 'full' && (
-          <div style={{ marginBottom: '20px' }}>
-            <PaidValueSummaryCard summary={paidValueSummary} pivot={pivot} color={pColor} emailStatus={actionEmailStatus} />
-            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.1fr) repeat(3, minmax(160px, 0.63fr))', gap: '12px' }} className="two-col">
-              <div className="piq-card" style={{ padding: '20px', background: `linear-gradient(145deg, ${pColor}12, rgba(255,255,255,0.92) 60%)`, border: `1px solid ${pColor}28` }}>
-                <div style={{ color: pColor, fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>
-                  {messages.report.bestFitDirection}
-                </div>
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: `${pColor}14`, border: `1px solid ${pColor}30`, color: pColor, borderRadius: '999px', padding: '4px 9px', fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>
-                  {decisionFrameLabel(pivot.decision_frame, messages)}
-                </div>
-                <div style={{ color: palette.text, fontSize: '20px', fontWeight: 900, letterSpacing: '-0.03em', marginBottom: '6px' }}>
-                  {pivot.title}
-                </div>
-                <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.7 }}>
-                  {pivot.outcome || pivot.fit_summary}
-                </div>
-              </div>
-
-              <div className="piq-card" style={{ padding: '20px' }}>
-                <div style={{ color: palette.textSoft, fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>
-                  {messages.report.salarySignal}
-                </div>
-                <div style={{ color: palette.text, fontSize: '20px', fontWeight: 900, marginBottom: '6px' }}>{pivot.salary_delta || pivot.salary_range}</div>
-                <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.6 }}>{pivot.salary_range}</div>
-              </div>
-
-              <div className="piq-card" style={{ padding: '20px' }}>
-                <div style={{ color: palette.textSoft, fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>
-                  {messages.report.transitionWindow}
-                </div>
-                <div style={{ color: palette.text, fontSize: '20px', fontWeight: 900, marginBottom: '6px' }}>{pivot.transition_time}</div>
-                <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.6 }}>{pivot.difficulty} {messages.report.difficultySuffix}</div>
-              </div>
-
-              <div className="piq-card" style={{ padding: '20px' }}>
-                <div style={{ color: palette.textSoft, fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>
-                  {messages.report.nextMove}
-                </div>
-                <div style={{ color: palette.text, fontSize: '15px', fontWeight: 800, marginBottom: '6px' }}>{reportData.next_move?.title || messages.report.yourMoveThisWeek}</div>
-                <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.6 }}>
-                  {(reportData.next_move?.explanation || '').slice(0, 150)}{(reportData.next_move?.explanation || '').length > 150 ? '…' : ''}
-                </div>
-              </div>
-            </div>
-
-            <div
-              className="piq-card"
-              style={{
-                marginTop: '14px',
-                padding: '24px',
-                background: 'linear-gradient(180deg, rgba(255,255,255,0.94), rgba(247,241,233,0.98))',
-                border: `1px solid ${palette.border}`,
-                position: 'relative',
-                overflow: 'hidden',
-              }}
-            >
-              <div
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  pointerEvents: 'none',
-                  background: `radial-gradient(circle at 0% 0%, ${pColor}12, transparent 34%)`,
-                }}
-              />
-              <div style={{ position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: 'minmax(0, 0.9fr) minmax(0, 1.1fr)', gap: '20px' }} className="two-col">
-                <div>
-                  <div style={{ color: pColor, fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '10px' }}>
-                    {messages.report.strategicRead}
-                  </div>
-                  <div style={{ color: palette.text, fontSize: '28px', fontWeight: 900, lineHeight: 1.02, letterSpacing: '-0.04em', marginBottom: '10px', fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif' }}>
-                    {messages.report.strategicReadTitle}
-                  </div>
-                  <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.8 }}>
-                    {messages.report.strategicReadBody}
-                  </div>
-                </div>
-
-                <div style={{ display: 'grid', gap: '10px' }}>
-                  {[
-                    [messages.report.whatWeakensFirst, summary.narrative],
-                    [messages.report.whatStillCompounds, interpretation.durable_advantages?.[0] || summary.what_this_means],
-                    [messages.report.whyThisPathWinsNow, pivot.why_this_path_wins || pivot.outcome || pivot.fit_summary],
-                    [messages.report.whatToDoThisWeek, reportData.next_move?.explanation || messages.report.defaultWeeklyMove],
-                  ].map(([label, value]) => (
-                    <div key={label} style={{ padding: '14px 16px', borderRadius: '16px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
-                      <div style={{ color: palette.textSoft, fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px' }}>
-                        {label}
-                      </div>
-                      <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.75 }}>
-                        {value}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              )}
             </div>
           </div>
         )}
@@ -3861,7 +4307,7 @@ export default function ReportExperience({ payload, embedded = false }) {
 
         {activeTab === 'stay' && tier === 'full' && stayPath && (
           <>
-            <div className="piq-card" style={{ padding: '24px', marginBottom: '22px', background: 'linear-gradient(160deg, rgba(27,111,99,0.12) 0%, rgba(255,255,255,0.96) 64%)', border: `1px solid ${stayColor}24`, boxShadow: '0 24px 50px rgba(19, 32, 42, 0.08)' }}>
+            <div className="piq-card" style={{ ...sectionShell({ tone: stayColor, strong: true }), marginBottom: '22px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', alignItems: 'start', flexWrap: 'wrap', marginBottom: '18px' }}>
                 <div style={{ maxWidth: '760px' }}>
                   <div style={{ color: stayColor, fontSize: '11px', fontWeight: 900, letterSpacing: '1.4px', textTransform: 'uppercase', marginBottom: '8px' }}>{messages.report.stayAndAdvance}</div>
@@ -3872,7 +4318,7 @@ export default function ReportExperience({ payload, embedded = false }) {
                     {compactCopy(stayAndAdvance.recommendation || stayPath.fit_summary, 155)}
                   </p>
                 </div>
-                <div style={{ padding: '14px 16px', borderRadius: '18px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${stayColor}24`, minWidth: '210px' }}>
+                <div style={{ ...mutedPanelStyle(), padding: '14px 16px', minWidth: '210px' }}>
                   <div style={{ color: stayColor, fontSize: '11px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>{messages.report.promotionPath}</div>
                   <div style={{ color: palette.text, fontSize: '17px', fontWeight: 900, marginBottom: '4px' }}>{stayAndAdvance.promotion_path?.next_title || stayPath.title}</div>
                   <div style={{ color: palette.textMuted, fontSize: '12px', lineHeight: 1.6 }}>{stayAndAdvance.promotion_path?.timeline || '3-9 months'}</div>
@@ -3886,7 +4332,7 @@ export default function ReportExperience({ payload, embedded = false }) {
                   [messages.report.advance30DayLabels[2], stayAndAdvance.thirty_day_plan?.metric_to_move],
                   [messages.report.proofAssetToShip, stayAndAdvance.thirty_day_plan?.proof_asset?.title],
                 ].map(([label, value]) => (
-                  <div key={label} style={{ padding: '14px 16px', borderRadius: '18px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
+                  <div key={label} style={{ ...mutedPanelStyle(), padding: '14px 16px' }}>
                     <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>{label}</div>
                     <div style={{ color: palette.text, fontSize: '14px', fontWeight: 800, lineHeight: 1.5 }}>{value}</div>
                   </div>
@@ -3899,7 +4345,7 @@ export default function ReportExperience({ payload, embedded = false }) {
                   ['Ship this', stayAndAdvance?.ai_this_week_plan?.output],
                   ['Tell leadership', stayAndAdvance?.ai_this_week_plan?.share_with_manager],
                 ].map(([label, value]) => (
-                  <div key={label} style={{ padding: '14px 16px', borderRadius: '18px', background: 'rgba(255,255,255,0.76)', border: `1px solid ${palette.border}` }}>
+                  <div key={label} style={{ ...accentPanelStyle(stayColor), padding: '14px 16px' }}>
                     <div style={{ color: stayColor, fontSize: '10px', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>{label}</div>
                     <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.55 }}>{compactCopy(value, 92)}</div>
                   </div>
@@ -3917,14 +4363,8 @@ export default function ReportExperience({ payload, embedded = false }) {
 
             <div style={{ marginBottom: '28px' }}>
               <div style={{ display: 'grid', gap: '14px', marginBottom: '14px' }}>
-                <StaySectionHeader
-                  color={stayColor}
-                  eyebrow="Work this role differently"
-                  title="Use AI to change the shape of the job before you chase a new title."
-                  body="Start with one workflow, one visible proof point, and one leadership signal that makes your current role harder to replace."
-                />
                 {!stayPath.live_market_signal && (
-                  <div className="piq-card" style={{ padding: '20px', background: 'linear-gradient(180deg, rgba(27,111,99,0.08), rgba(255,255,255,0.92))', border: `1px solid ${stayColor}22` }}>
+                  <div className="piq-card" style={{ ...sectionShell({ tone: stayColor }), padding: '20px' }}>
                     <div style={{ color: stayColor, fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>
                       Market reality check
                     </div>
@@ -3936,16 +4376,24 @@ export default function ReportExperience({ payload, embedded = false }) {
                     </div>
                     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                       {['Current-lane leverage', 'Workflow redesign', 'Faster visible proof'].map((item) => (
-                        <span key={item} style={{ padding: '7px 10px', borderRadius: '999px', background: 'rgba(255,255,255,0.82)', border: `1px solid ${palette.border}`, color: palette.textMuted, fontSize: '12px', fontWeight: 700 }}>
+                        <span key={item} style={{ ...toneBadgeStyle(stayColor, true), color: palette.textMuted }}>
                           {item}
                         </span>
                       ))}
                     </div>
                   </div>
                 )}
-                <UseAiThisWeekCard plan={stayAndAdvance?.ai_this_week_plan} color={stayColor} />
-                <JobSafetyCaseCard safetyCase={jobSafetyCase} color={stayColor} />
-                <PromotionCaseCard promotionCase={promotionCase} color={stayColor} />
+                <StayOperatingNarrativeCard
+                  stayAndAdvance={stayAndAdvance}
+                  stayPath={stayPath}
+                  safetyCase={jobSafetyCase}
+                  promotionCase={promotionCase}
+                  playbook={aiLeveragePlaybook}
+                  system={roleOperatingSystem}
+                  proofBuilder={stayProofAssetBuilder}
+                  conversationPack={promotionConversationPack}
+                  color={stayColor}
+                />
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap' }}>
@@ -3963,8 +4411,8 @@ export default function ReportExperience({ payload, embedded = false }) {
                 title="Make your workflow, proof, and promotion story feel like one operating system."
                 body="This is the part that turns AI from a tool you use into a reason the team trusts you with broader scope."
               />
-              <RoleOperatingSystemCard system={roleOperatingSystem} color={stayColor} />
-              <AiLeveragePlaybookCard playbook={aiLeveragePlaybook} color={stayColor} />
+              <ProofReadinessCard builder={stayProofAssetBuilder} first30Days={stayAndAdvance?.thirty_day_plan} color={stayColor} />
+              <SkillGapDeltaSummaryCard skillGaps={stayPath.skill_gaps || []} color={stayColor} />
               <ProofAssetBuilderCard builder={stayProofAssetBuilder} color={stayColor} />
               <PromotionConversationPackCard pack={promotionConversationPack} color={stayColor} />
               <LearningPathCard path={stayPath} color={stayColor} />
@@ -4057,6 +4505,11 @@ export default function ReportExperience({ payload, embedded = false }) {
 
             <div style={{ marginBottom: '28px' }}>
               <ExecutionLoopCard summary={executionSummary} planColor={planColor} progressPercent={progressPercent} />
+              <ProofConfidenceLadderCard
+                refreshContext={refreshContext}
+                outcomeSummary={outcomeSummary}
+                color={planColor}
+              />
               <RefreshFromProgressCard
                 refreshContext={refreshContext}
                 refreshSummary={refreshSummary}
@@ -4082,6 +4535,8 @@ export default function ReportExperience({ payload, embedded = false }) {
                   </div>
                 </div>
               </div>
+              <ProofReadinessCard builder={proofAssetBuilder} first30Days={first30Days} color={planColor} />
+              <SkillGapDeltaSummaryCard skillGaps={activePath.skill_gaps || []} color={planColor} />
               <ProofAssetBuilderCard builder={proofAssetBuilder} color={planColor} />
               <LearningPathCard path={activePath} color={planColor} />
               <div style={{ display: 'grid', gap: '14px' }}>

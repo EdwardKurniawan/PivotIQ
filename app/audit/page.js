@@ -38,6 +38,9 @@ const palette = {
   navy: '#13202A',
 };
 
+const auditDisplayFont = "Baskerville, 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Georgia, serif";
+const auditBodyFont = "Charter, 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Georgia, serif";
+
 function panelStyle({ accent = 'rgba(143, 162, 179, 0.12)', background = palette.panel, padding = '22px' } = {}) {
   return {
     borderRadius: '26px',
@@ -542,7 +545,7 @@ export default function AuditPage() {
       <nav className="audit-nav" style={{ position: 'relative', zIndex: 2, maxWidth: '1180px', margin: '0 auto', width: '100%', padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
         <BrandLogo subtitle={messages.audit.subtitle} />
         <div className="audit-nav-actions" style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-          <span className="hide-mobile" style={{ color: palette.textSoft, fontSize: '13px', padding: '10px 14px', borderRadius: '999px', border: `1px solid ${palette.border}`, background: 'rgba(255,255,255,0.58)' }}>
+          <span className="hide-mobile" style={{ color: palette.textSoft, fontSize: '13px', padding: '10px 14px', borderRadius: '999px', border: `1px solid ${palette.border}`, background: 'rgba(255,255,255,0.58)', fontFamily: auditBodyFont }}>
             {messages.audit.helper}
           </span>
           <LanguageSwitcher locale={locale} onChange={setLocale} />
@@ -564,7 +567,7 @@ export default function AuditPage() {
       </nav>
 
       <div className="audit-shell" style={{ flex: 1, display: 'flex', justifyContent: 'center', padding: '34px 24px 88px', position: 'relative', zIndex: 2 }}>
-        <div style={{ width: '100%', maxWidth: '880px' }} className="anim-fade-in audit-content">
+        <div style={{ width: '100%', maxWidth: '880px', fontFamily: auditBodyFont }} className="anim-fade-in audit-content">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
             <span style={{ color: palette.textSoft, fontSize: '13px', letterSpacing: '0.04em', textTransform: 'uppercase' }}>{messages.audit.step} {step} {messages.audit.of} 2</span>
             <span style={{ color: palette.textSoft, fontSize: '13px' }}>
@@ -599,10 +602,10 @@ export default function AuditPage() {
                   ))}
                 </div>
                 <div style={{ color: '#6A7882', fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '12px' }}>{messages.audit.startLabel}</div>
-                <h1 style={{ color: palette.text, fontSize: 'clamp(34px, 6vw, 58px)', fontWeight: 900, marginBottom: '10px', letterSpacing: '-0.05em', lineHeight: 0.96, fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif' }}>
+                <h1 style={{ color: palette.text, fontSize: 'clamp(34px, 6vw, 58px)', fontWeight: 900, marginBottom: '10px', letterSpacing: '-0.05em', lineHeight: 0.96, fontFamily: auditDisplayFont }}>
                   {messages.audit.startTitle}
                 </h1>
-                <p style={{ color: palette.textMuted, fontSize: '16px', lineHeight: 1.72 }}>
+                <p style={{ color: palette.textMuted, fontSize: '18px', lineHeight: 1.74, maxWidth: '58ch' }}>
                   {messages.audit.startBody}
                 </p>
               </div>
@@ -615,7 +618,7 @@ export default function AuditPage() {
                 ].map(([label, body]) => (
                   <div key={label} style={{ ...panelStyle({ accent: 'rgba(19, 27, 35, 0.08)', background: 'rgba(255,255,255,0.62)', padding: '16px' }), boxShadow: 'none' }}>
                     <div style={{ color: palette.textSoft, fontSize: '10px', fontWeight: 900, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '8px' }}>{label}</div>
-                    <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.65 }}>{body}</div>
+                    <div style={{ color: palette.textMuted, fontSize: '15px', lineHeight: 1.72 }}>{body}</div>
                   </div>
                 ))}
               </div>
@@ -743,10 +746,10 @@ export default function AuditPage() {
             <div style={stepShell} className="audit-step-shell">
               <div style={{ maxWidth: '680px', marginBottom: '28px' }}>
                 <div style={{ color: '#6A7882', fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '12px' }}>{messages.audit.workloadLabel}</div>
-                <h1 style={{ color: palette.text, fontSize: 'clamp(32px, 5vw, 54px)', fontWeight: 900, marginBottom: '10px', letterSpacing: '-0.05em', lineHeight: 0.98, fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif' }}>
+                <h1 style={{ color: palette.text, fontSize: 'clamp(32px, 5vw, 54px)', fontWeight: 900, marginBottom: '10px', letterSpacing: '-0.05em', lineHeight: 0.98, fontFamily: auditDisplayFont }}>
                   {messages.audit.tasksLabel}
                 </h1>
-                <p style={{ color: palette.textMuted, fontSize: '16px', lineHeight: 1.72, marginBottom: '6px' }}>
+                <p style={{ color: palette.textMuted, fontSize: '18px', lineHeight: 1.74, marginBottom: '6px', maxWidth: '60ch' }}>
                   {messages.audit.tasksBody}
                 </p>
                 <p style={{ color: palette.textSoft, fontSize: '13px' }}>

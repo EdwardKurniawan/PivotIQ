@@ -150,11 +150,11 @@ input, textarea, select { font-family: var(--font); }
   border-radius: var(--radius-xl);
   padding: 24px;
   transition: border-color 0.2s, transform 0.2s;
-  box-shadow: 0 24px 70px rgba(19, 33, 45, 0.12);
+  box-shadow: 0 16px 38px rgba(19, 33, 45, 0.06);
 }
 .piq-card:hover { border-color: var(--border-light); }
 .piq-card-clickable { cursor: pointer; }
-.piq-card-clickable:hover { border-color: var(--border-light); transform: translateY(-1px); }
+.piq-card-clickable:hover { border-color: var(--border-light); transform: translateY(-1px); box-shadow: 0 18px 42px rgba(19, 33, 45, 0.08); }
 
 /* ── Section labels / headings ──────────────────────────────────────────────── */
 .section-label {
@@ -409,29 +409,37 @@ input, textarea, select { font-family: var(--font); }
 /* ── Tab bar ────────────────────────────────────────────────────────────────── */
 .tab-bar {
   display: flex;
+  gap: 8px;
   border-bottom: 1px solid var(--border);
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
+  padding: 0 0 14px;
 }
 .tab-bar::-webkit-scrollbar { display: none; }
 .tab-btn {
-  padding: 16px 22px;
-  border: none;
-  background: transparent;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(255,255,255,0.62);
   color: var(--text-muted);
   font-size: 14px;
-  font-weight: 500;
-  border-bottom: 2px solid transparent;
+  font-weight: 600;
   white-space: nowrap;
-  transition: color 0.2s, border-color 0.2s;
+  transition: color 0.2s, border-color 0.2s, background 0.2s, transform 0.2s;
   cursor: pointer;
 }
-.tab-btn:hover { color: var(--text); }
+.tab-btn:hover {
+  color: var(--text);
+  background: rgba(255,255,255,0.86);
+  transform: translateY(-1px);
+}
 .tab-btn.active {
-  color: white;
+  color: var(--text);
   font-weight: 700;
-  border-bottom-color: var(--primary);
+  background: rgba(255,255,255,0.94);
+  border-color: var(--border-light);
+  box-shadow: 0 10px 24px rgba(19, 33, 45, 0.06);
 }
 
 /* ── Lock gate / paywall ─────────────────────────────────────────────────────── */

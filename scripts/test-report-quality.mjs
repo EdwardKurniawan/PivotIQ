@@ -318,8 +318,12 @@ function testBroadRoleStayPathUsesRoleNativeLearningAndWeeklyPlan() {
   assert.match(stayGaps[2].resource_title, /Marketing Lifecycle Operating System/i);
   assert.doesNotMatch(normalized.stay_and_advance.job_safety_case.summary, /The goal is not to look “good at AI.”/i);
   assert.ok(normalized.stay_and_advance.ai_this_week_plan.headline);
+  assert.match(normalized.stay_and_advance.ai_this_week_plan.weakening_now, /campaign|reporting|brief/i);
+  assert.match(normalized.stay_and_advance.ai_this_week_plan.compounding_now, /experiment|judgment|growth/i);
   assert.ok(normalized.stay_and_advance.ai_this_week_plan.workflow);
   assert.ok(normalized.stay_and_advance.ai_this_week_plan.output);
+  assert.ok(normalized.stay_and_advance.ai_this_week_plan.business_result);
+  assert.ok(normalized.stay_and_advance.ai_this_week_plan.manager_ask);
   assert.ok((normalized.stay_and_advance.ai_this_week_plan.systems || []).length >= 1);
   assert.notEqual(normalized.stay_and_advance.ai_leverage_playbook.plays[0].title, 'Redesign one recurring workflow');
 }
@@ -634,9 +638,38 @@ function testStayWeeklyPlanUsesRoleNativeSystemsAndStayFirstActions() {
 
   const normalized = normalizeReportData(report);
   assert.deepEqual(normalized.stay_and_advance.ai_this_week_plan.systems, ['Excel or planning model', 'forecast review deck', 'variance summary']);
+  assert.match(normalized.stay_and_advance.ai_this_week_plan.human_checkpoint, /model logic|assumption review|trade-off/i);
+  assert.match(normalized.stay_and_advance.ai_this_week_plan.business_result, /planning-cycle|decision-ready/i);
   const first7 = (normalized.first_30_days.next_7_days || []).join(' ');
   assert.match(first7, /leadership can see|stronger version|Finance Planning Lead|Finance/i);
   assert.doesNotMatch(first7, /review 12 live job descriptions/i);
+}
+
+function testProcurementStayPlanExplainsWorkflowBoundaryAndManagerAsk() {
+  const report = buildDemoReportData(
+    'Procurement Analyst',
+    'Manufacturing',
+    ['Vendor performance reporting', 'Sourcing analysis', 'Stakeholder updates'],
+    {
+      selected_tasks: [{ label: 'Vendor performance reporting' }],
+      primary_tasks: ['Vendor performance reporting', 'Sourcing analysis', 'Stakeholder updates'],
+      clarifiers: {
+        goal_now: 'stay_and_advance',
+        ai_maturity: 'weekly',
+        core_systems: 'supplier intake, vendor comparison sheet',
+        domain_focus: 'supplier performance and spend analytics',
+      },
+    }
+  );
+
+  const normalized = normalizeReportData(report);
+  const stayPlan = normalized.stay_and_advance.ai_this_week_plan;
+
+  assert.match(stayPlan.weakening_now, /comparison|sourcing|vendor/i);
+  assert.match(stayPlan.compounding_now, /supplier judgment|trade-offs|recommendation/i);
+  assert.match(stayPlan.human_checkpoint, /supplier judgment|commercial trade-offs|final recommendations/i);
+  assert.ok(stayPlan.manager_ask);
+  assert.match(normalized.stay_and_advance.job_safety_case.summary, /procurement operating cadence|supplier judgment|buying decisions/i);
 }
 
 function testExecutiveAssistantGetsRoleNativeStayPath() {
@@ -2166,6 +2199,7 @@ testDuplicateHardSkillGapsCollapseToOneCanonicalGap();
 testStayPathPrefersRoleNativeSystemOverSideTool();
 testOperationsStayPathAvoidsGenericAiAcademyDefault();
 testStayWeeklyPlanUsesRoleNativeSystemsAndStayFirstActions();
+testProcurementStayPlanExplainsWorkflowBoundaryAndManagerAsk();
 testExecutiveAssistantGetsRoleNativeStayPath();
 testHrStayPathStartsWithWorkflowContextBeforeGenericAiLiteracy();
 testOperationsStayPathStartsWithWorkflowDesignResource();

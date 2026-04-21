@@ -253,6 +253,9 @@ export default function FullReportIntake({
           <p style={{ color: palette.textMuted, fontSize: '16px', lineHeight: 1.8, maxWidth: '760px', margin: 0 }}>
             {messages.audit.fullIntakeBody}
           </p>
+          <div style={{ display: 'inline-flex', marginTop: '16px', borderRadius: '999px', padding: '9px 13px', background: 'rgba(27,111,99,0.10)', border: '1px solid rgba(27,111,99,0.18)', color: palette.teal, fontSize: '12px', fontWeight: 900 }}>
+            {messages.audit.fullIntakeTimeNote}
+          </div>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.5fr) minmax(320px, 0.9fr)', gap: '20px' }} className="two-col">

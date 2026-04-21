@@ -119,6 +119,16 @@ export default function Home() {
   ]).slice(0, 3);
   const sampleTaskNotes = messages.home.sampleNotes;
   const sampleTaskLabels = messages.home.sampleTaskLabels;
+  const launchPromiseCards = messages.home.launchPromiseCards || [
+    ['Free scan', 'Task-level risk read and one strongest next move.'],
+    ['Full report', 'Ranked stay-vs-pivot decision, proof asset, skill gaps, and 30-day plan.'],
+    ['Methodology', 'Built from role signals, task exposure, market transfer, and proof readiness.'],
+  ];
+  const sampleRecommendation = messages.home.sampleRecommendation || {
+    eyebrow: 'Example output',
+    title: 'Not "learn AI." Own one workflow that changes your leverage.',
+    body: 'If your role is heavy on reporting and stakeholder coordination, the safer move may be to become the person who owns AI-assisted operating cadence before jumping into a new title.',
+  };
   const editorialSignals = [
     { label: 'Pressure', value: '82', tone: '#F28A43' },
     { label: 'Leverage', value: '61', tone: '#13202A' },
@@ -286,6 +296,48 @@ export default function Home() {
             <Link className="home-primary-cta" href="/audit" style={{ ...primaryLinkStyle(), width: '100%', maxWidth: '660px' }}>
               {messages.common.runFreeScan}
             </Link>
+          </div>
+
+          <div className="home-reveal-5 three-col" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '10px', maxWidth: '660px', marginBottom: '14px' }}>
+            {launchPromiseCards.map(([label, body], index) => (
+              <div
+                key={label}
+                style={{
+                  borderRadius: '18px',
+                  padding: '14px',
+                  background: index === 1 ? 'rgba(242, 138, 67, 0.10)' : 'rgba(255,255,255,0.58)',
+                  border: `1px solid ${index === 1 ? 'rgba(242, 138, 67, 0.20)' : palette.border}`,
+                }}
+              >
+                <div style={{ color: index === 0 ? palette.orange : index === 1 ? palette.navy : palette.teal, fontSize: '11px', fontWeight: 900, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '7px' }}>
+                  {label}
+                </div>
+                <div style={{ color: palette.textMuted, fontSize: '13px', lineHeight: 1.55 }}>
+                  {body}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div
+            className="home-reveal-5 home-hero-note"
+            style={{
+              maxWidth: '660px',
+              borderRadius: '22px',
+              padding: '16px 18px',
+              background: 'rgba(255,255,255,0.62)',
+              border: `1px solid ${palette.border}`,
+            }}
+          >
+            <div style={{ color: palette.teal, fontSize: '11px', fontWeight: 900, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '7px' }}>
+              {sampleRecommendation.eyebrow}
+            </div>
+            <div style={{ color: palette.text, fontSize: '16px', fontWeight: 900, lineHeight: 1.25, letterSpacing: '-0.03em', marginBottom: '6px' }}>
+              {sampleRecommendation.title}
+            </div>
+            <div style={{ color: palette.textMuted, fontSize: '14px', lineHeight: 1.65 }}>
+              {sampleRecommendation.body}
+            </div>
           </div>
 
         </div>

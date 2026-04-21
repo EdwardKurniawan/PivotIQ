@@ -141,6 +141,9 @@ function SuccessContent() {
               ? messages.success.fullUnlockedBody
               : messages.success.quickUnlockedBody}
           </p>
+          <p style={{ color: palette.textSoft, fontSize: '13px', lineHeight: 1.6, margin: '0 auto 18px', maxWidth: '440px' }}>
+            {messages.success.savedAccessLine}
+          </p>
 
           {tier === 'full' && (
             <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '18px' }}>
@@ -184,9 +187,15 @@ function SuccessContent() {
 
           <Link href={destination}>
             <button style={{ border: 'none', borderRadius: '20px', background: palette.navy, color: '#FFF7F1', padding: '16px 28px', fontSize: '16px', fontWeight: 900, cursor: 'pointer', boxShadow: '0 18px 40px rgba(19, 32, 42, 0.18)' }}>
-              {messages.success.viewNow}
+              {tier === 'full' ? messages.success.continueFinalQuestions : messages.success.viewNow}
             </button>
           </Link>
+
+          <div style={{ marginTop: '16px' }}>
+            <Link href="/contact" style={{ color: palette.teal, fontSize: '13px', fontWeight: 800, textDecoration: 'none' }}>
+              {messages.success.supportLine}
+            </Link>
+          </div>
 
           {tier === 'peek' && (
             <div style={{ marginTop: '28px', background: 'rgba(255,255,255,0.03)', border: `1px solid ${palette.border}`, borderRadius: '22px', padding: '22px', textAlign: 'left' }}>

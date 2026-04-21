@@ -220,6 +220,76 @@ export default function MethodologyPage() {
           margin: '0 auto',
           padding: '0 28px 52px',
           display: 'grid',
+          gridTemplateColumns: 'minmax(280px, 0.74fr) minmax(0, 1.26fr)',
+          gap: '22px',
+          alignItems: 'stretch',
+        }}
+      >
+        <div style={{ ...shellCardStyle(), borderRadius: '34px', padding: '30px' }}>
+          <div style={{ fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6A7882', marginBottom: '12px', fontWeight: 800 }}>
+            {content.mappingEyebrow}
+          </div>
+          <div
+            style={{
+              fontSize: 'clamp(34px, 5vw, 56px)',
+              lineHeight: 0.98,
+              letterSpacing: '-0.055em',
+              fontWeight: 700,
+              fontFamily: 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif',
+              marginBottom: '14px',
+            }}
+          >
+            {content.mappingTitle}
+          </div>
+          <p style={{ fontSize: '17px', lineHeight: 1.76, color: '#495863', margin: 0 }}>
+            {content.mappingBody}
+          </p>
+        </div>
+
+        <div
+          className="two-col"
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+            gap: '14px',
+          }}
+        >
+          {content.mappingItems.map(([label, body], index) => {
+            const tone = index === 0 ? '#F28A43' : index === 1 ? '#13202A' : index === 2 ? '#1B6F63' : index === 3 ? '#8B6B2E' : '#50606B';
+            return (
+              <article
+                key={label}
+                style={{
+                  ...shellCardStyle(),
+                  borderRadius: '26px',
+                  padding: '22px 24px',
+                  border: `1px solid ${tone}22`,
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                  <span style={{ width: '28px', height: '28px', borderRadius: '999px', display: 'grid', placeItems: 'center', background: `${tone}12`, color: tone, border: `1px solid ${tone}24`, fontSize: '12px', fontWeight: 900 }}>
+                    {index + 1}
+                  </span>
+                  <h2 style={{ margin: 0, color: '#13202A', fontSize: '20px', lineHeight: 1.12, letterSpacing: '-0.035em', fontWeight: 700 }}>
+                    {label}
+                  </h2>
+                </div>
+                <p style={{ margin: 0, fontSize: '15px', lineHeight: 1.72, color: '#50606B' }}>
+                  {body}
+                </p>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+
+      <section
+        className="pillar-sections"
+        style={{
+          maxWidth: '1220px',
+          margin: '0 auto',
+          padding: '0 28px 52px',
+          display: 'grid',
           gridTemplateColumns: 'minmax(280px, 0.78fr) minmax(0, 1.22fr)',
           gap: '22px',
           alignItems: 'start',
@@ -337,4 +407,3 @@ export default function MethodologyPage() {
     </main>
   );
 }
-
